@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+
+# Production output
+dist/
+
+# Local tooling and caches
+.vite/
+.vinext/
+.wrangler/
+.eslintcache
+*.tsbuildinfo
+vite.config.js
+vite.config.d.ts
+work/
+outputs/
+*.local
+
+# Editors and operating systems
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Environment files
+.env
+.env.*
+!.env.example
