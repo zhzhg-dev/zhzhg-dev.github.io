@@ -43,6 +43,8 @@ test("projects include real cover assets and verified public links", () => {
     "https://github.com/zhzhg-dev/course-review-system",
     "https://zhzhg-dev.github.io/svelte-study-planner/",
     "https://github.com/zhzhg-dev/svelte-study-planner",
+    "https://nz-electricity-forecasting.streamlit.app/",
+    "https://github.com/zhzhg-dev/nz-electricity-forecasting",
   ]) {
     assert.match(dataSource, new RegExp(expected.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
   }
@@ -51,6 +53,7 @@ test("projects include real cover assets and verified public links", () => {
     "course-review.webp",
     "study-planner.webp",
     "rumour-simulation.webp",
+    "nz-electricity-forecast.png",
   ]) {
     assert.match(dataSource, new RegExp(cover));
   }
@@ -100,6 +103,7 @@ test("production public assets are emitted", async () => {
     "projects/course-review.webp",
     "projects/study-planner.webp",
     "projects/rumour-simulation.webp",
+    "projects/nz-electricity-forecast.png",
   ]) {
     await access(new URL(`../dist/${asset}`, import.meta.url));
   }

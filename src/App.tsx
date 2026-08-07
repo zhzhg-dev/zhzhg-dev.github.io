@@ -222,7 +222,7 @@ function HomePage() {
           ))}
         </div>
         <div className="section-end reveal">
-          <span>Four projects · Two live demos · One evolving research direction</span>
+          <span>Five projects · Three live demos · One evolving research direction</span>
           <a className="button button--quiet" href="/projects/">
             View all projects <span aria-hidden="true">→</span>
           </a>
@@ -359,20 +359,20 @@ function ProjectsPage() {
         index="02"
         eyebrow="Projects"
         title="Systems, simulations, and useful software."
-        description="Selected work across intelligent systems, full-stack development, browser applications, and mathematical modelling."
+        description="Selected work across machine learning, energy forecasting, intelligent systems, full-stack development, and mathematical modelling."
       />
 
       <section className="project-stats" aria-label="Project overview">
         <div>
-          <strong>04</strong>
+          <strong>05</strong>
           <span>Selected projects</span>
         </div>
         <div>
-          <strong>02</strong>
+          <strong>03</strong>
           <span>Live demos</span>
         </div>
         <div>
-          <strong>03</strong>
+          <strong>04</strong>
           <span>Technical domains</span>
         </div>
       </section>

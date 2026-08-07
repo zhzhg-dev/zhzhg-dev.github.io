@@ -100,6 +100,27 @@ export const projects: Project[] = [
     featured: true,
   },
   {
+    slug: "nz-electricity-forecasting",
+    title: "NZ Electricity Intelligence",
+    eyebrow: "Machine learning · Energy analytics",
+    status: "Live ML demo",
+    description:
+      "An end-to-end forecasting system trained on 52,608 New Zealand electricity-market periods. It predicts Upper North Island demand across four horizons, estimates wholesale price-spike risk, and presents model uncertainty and explanations in an interactive dashboard. The 1-hour model achieved a 17.2 MW MAE on the untouched 2025 holdout—76.9% better than the strongest seasonal baseline.",
+    technologies: [
+      "Python",
+      "scikit-learn",
+      "Time series",
+      "Streamlit",
+      "GitHub Actions",
+    ],
+    cover: "/projects/nz-electricity-forecast.png",
+    coverAlt:
+      "NZ Electricity Intelligence dashboard showing market coverage and demand forecast metrics",
+    liveUrl: "https://nz-electricity-forecasting.streamlit.app/",
+    sourceUrl: "https://github.com/zhzhg-dev/nz-electricity-forecasting",
+    featured: true,
+  },
+  {
     slug: "course-review-system",
     title: "Course Review & Campus Platform",
     eyebrow: "Full-stack team application",
