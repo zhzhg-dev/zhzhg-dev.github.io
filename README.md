@@ -6,7 +6,7 @@ A responsive, multi-page professional portfolio for Grant Zhang, focused on earl
 
 - Home — positioning, profile, core capabilities, and selected work
 - Experience — work history, academic foundation, leadership, and technical toolkit
-- Projects — four project case studies with verified live demos and public source links where available
+- Projects — five project case studies with verified live demos and public source links where available
 
 ## Technology
 
