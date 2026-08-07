@@ -1,6 +1,12 @@
 # Grant Zhang — Portfolio
 
-A responsive, single-page professional portfolio for Grant Zhang, focused on early-career AI, data, and software engineering opportunities in New Zealand.
+A responsive, multi-page professional portfolio for Grant Zhang, focused on early-career AI, data, and software engineering opportunities in New Zealand.
+
+## Pages
+
+- Home — positioning, profile, core capabilities, and selected work
+- Experience — work history, academic foundation, leadership, and technical toolkit
+- Projects — four project case studies with verified live demos and public source links where available
 
 ## Technology
 
@@ -10,7 +16,7 @@ A responsive, single-page professional portfolio for Grant Zhang, focused on ear
 - Custom CSS
 - GitHub Actions and GitHub Pages
 
-The site is fully static. It has no backend, database, remote image dependency, API key, or paid service.
+The site is fully static. It has no backend, database, API key, or paid service dependency.
 
 ## Local development
 
@@ -21,8 +27,6 @@ npm ci
 npm run dev
 ```
 
-Vite will print the local address. Open it in a browser to view the site.
-
 ## Quality checks
 
 ```bash
@@ -31,24 +35,16 @@ npm run test
 npm run build
 ```
 
-The test command creates a production build, checks core metadata and required sections, and guards key accuracy-sensitive wording.
+The test suite verifies all three page outputs, public project links, cover assets, metadata, accuracy-sensitive wording, and the GitHub Pages workflow.
 
-## Updating portfolio content
+## Updating content
 
-Personal details, experience, projects, skills, education, and community information are stored in one typed file:
+Personal details, experience, projects, skills, education, and community information are stored in `src/data/profile.ts`. Project cover images are stored in `public/projects/`.
 
-`src/data/profile.ts`
-
-To add a project, add another object to the `projects` array. Each project includes a title, short context label, description, technology list, and link. Only use a direct repository link after confirming that the public repository matches the project; otherwise retain the GitHub-profile fallback.
-
-Optional fields such as an email address, LinkedIn profile, CV, or profile photo should be added to the `profile` object first and then rendered in `src/App.tsx`. Add only verified public details. A CV or photo can be placed in `public/` and referenced with a root-relative path such as `/grant-zhang-cv.pdf`.
+Only add a live demo or source link after confirming that it is public and belongs to the matching project. Research work without a public release should remain an honest summary rather than linking to a generic profile page.
 
 ## Deployment
 
 The workflow at `.github/workflows/deploy.yml` builds and deploys the site on every push to `main` using the official GitHub Pages actions.
 
-For the intended `zhzhg-dev/zhzhg-dev.github.io` repository, the production URL is:
-
-<https://zhzhg-dev.github.io/>
-
-In GitHub repository settings, Pages must use **GitHub Actions** as its source. The committed workflow then handles subsequent deployments automatically.
+Production: <https://zhzhg-dev.github.io/>

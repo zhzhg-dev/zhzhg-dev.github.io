@@ -3,26 +3,51 @@ import type { Project } from "../data/profile";
 type ProjectCardProps = {
   project: Project;
   index: number;
+  compact?: boolean;
 };
 
-export function ProjectCard({ project, index }: ProjectCardProps) {
+function ExternalArrow() {
+  return <span aria-hidden="true">↗</span>;
+}
+
+export function ProjectCard({ project, index, compact = false }: ProjectCardProps) {
   return (
-    <article className={`project-card reveal ${project.featured ? "project-card--featured" : ""}`}>
-      <div className="project-card__topline">
-        <span className="project-card__number">0{index + 1}</span>
-        <span className="project-card__eyebrow">{project.eyebrow}</span>
+    <article
+      className={`project-card reveal ${project.featured ? "project-card--featured" : ""} ${compact ? "project-card--compact" : ""}`}
+    >
+      <div className="project-card__media">
+        <img src={project.cover} alt={project.coverAlt} loading="lazy" />
+        <span className="project-card__index">0{index + 1}</span>
+        <span className="project-card__status">{project.status}</span>
       </div>
-      <h3>{project.title}</h3>
-      <p>{project.description}</p>
-      <ul className="tag-list" aria-label={`${project.title} technologies`}>
-        {project.technologies.map((technology) => (
-          <li key={technology}>{technology}</li>
-        ))}
-      </ul>
-      <a className="text-link" href={project.link.href} target="_blank" rel="noreferrer">
-        {project.link.label}
-        <span aria-hidden="true">↗</span>
-      </a>
+
+      <div className="project-card__body">
+        <p className="project-card__eyebrow">{project.eyebrow}</p>
+        <h2>{project.title}</h2>
+        <p className="project-card__description">{project.description}</p>
+
+        <ul className="tag-list" aria-label={`${project.title} technologies`}>
+          {project.technologies.map((technology) => (
+            <li key={technology}>{technology}</li>
+          ))}
+        </ul>
+
+        <div className="project-card__links">
+          {project.liveUrl && (
+            <a href={project.liveUrl} target="_blank" rel="noreferrer">
+              Live demo <ExternalArrow />
+            </a>
+          )}
+          {project.sourceUrl && (
+            <a href={project.sourceUrl} target="_blank" rel="noreferrer">
+              Source code <ExternalArrow />
+            </a>
+          )}
+          {!project.liveUrl && !project.sourceUrl && (
+            <span className="project-card__private">Case study summary</span>
+          )}
+        </div>
+      </div>
     </article>
   );
 }
