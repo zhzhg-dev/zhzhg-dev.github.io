@@ -22,12 +22,14 @@ const workflow = await readFile(
 );
 
 test("production emits three distinct portfolio pages", () => {
-  assert.match(homeHtml, /Grant Zhang \| AI, Data & Software Portfolio/);
+  assert.match(homeHtml, /Grant Zhang \| AI Product Builder/);
   assert.match(experienceHtml, /Experience \| Grant Zhang/);
   assert.match(projectsHtml, /Projects \| Grant Zhang/);
   assert.match(homeHtml, /data-page="home"/);
   assert.match(experienceHtml, /data-page="experience"/);
   assert.match(projectsHtml, /data-page="projects"/);
+  assert.match(projectsHtml, /name="twitter:title" content="Projects \| Grant Zhang"/);
+  assert.match(projectsHtml, /property="og:description" content="Explore Folio, ExplainLab/);
 });
 
 test("primary navigation links to standalone page addresses", () => {
@@ -45,6 +47,9 @@ test("projects include real cover assets and verified public links", () => {
     "https://github.com/zhzhg-dev/svelte-study-planner",
     "https://nz-electricity-forecasting.streamlit.app/",
     "https://github.com/zhzhg-dev/nz-electricity-forecasting",
+    "https://github.com/zhzhg-dev/folio",
+    "https://zhzhg-dev.github.io/explainlab/",
+    "https://github.com/zhzhg-dev/explainlab",
   ]) {
     assert.match(dataSource, new RegExp(expected.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
   }
@@ -54,16 +59,25 @@ test("projects include real cover assets and verified public links", () => {
     "study-planner.webp",
     "rumour-simulation.webp",
     "nz-electricity-forecast.png",
+    "folio.png",
+    "explainlab.png",
   ]) {
     assert.match(dataSource, new RegExp(cover));
   }
 });
 
-test("research claims remain accurate and unpublished work has no fake links", () => {
+test("profile and project publication claims reflect the current state", () => {
   assert.match(dataSource, /Research in progress/);
   assert.match(dataSource, /Undergraduate thesis/);
   assert.doesNotMatch(dataSource, /improved performance|production-ready AI/);
-  assert.doesNotMatch(dataSource, /@gmail\.com|linkedin\.com/);
+  assert.doesNotMatch(dataSource, /@gmail\.com/);
+  assert.match(dataSource, /https:\/\/www\.linkedin\.com\/in\/grant-zhang-zahz\//);
+  assert.match(dataSource, /Building AI products · Exploring game AI/);
+  assert.match(dataSource, /built on a dataset of 52,608/);
+  assert.doesNotMatch(dataSource + appSource, /Tencent|腾讯|Incoming|Open to internship|internship and graduate opportunities/i);
+  const folio = dataSource.slice(dataSource.indexOf('slug: "folio"'), dataSource.indexOf('slug: "explainlab"'));
+  assert.match(folio, /Working preview/);
+  assert.doesNotMatch(folio, /liveUrl:/);
 });
 
 test("experience, education, community, and skills are merged into the experience page", () => {
@@ -104,6 +118,8 @@ test("production public assets are emitted", async () => {
     "projects/study-planner.webp",
     "projects/rumour-simulation.webp",
     "projects/nz-electricity-forecast.png",
+    "projects/folio.png",
+    "projects/explainlab.png",
   ]) {
     await access(new URL(`../dist/${asset}`, import.meta.url));
   }

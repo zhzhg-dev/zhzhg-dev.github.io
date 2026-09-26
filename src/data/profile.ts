@@ -16,6 +16,7 @@ export type Project = {
   technologies: string[];
   cover: string;
   coverAlt: string;
+  coverPosition?: "top" | "center";
   liveUrl?: string;
   sourceUrl?: string;
   featured?: boolean;
@@ -32,14 +33,16 @@ export const profile = {
   name: "Grant Zhang",
   alternativeName: "Zhang Zihang",
   headline:
-    "Mathematics-trained problem solver building practical AI and software systems.",
+    "I turn ideas into practical AI-enabled products—connecting user needs, working prototypes, and evidence from evaluation.",
   location: "Auckland, New Zealand",
-  availability: "Open to internship and graduate opportunities",
+  availability: "Building AI products · Exploring game AI",
   github: "https://github.com/zhzhg-dev",
+  linkedin: "https://www.linkedin.com/in/grant-zhang-zahz/",
   canonicalUrl: "https://zhzhg-dev.github.io/",
   about: [
-    "I began with mathematics and theoretical modelling, then became increasingly interested in turning analytical ideas into software people can use.",
-    "Today I work across machine learning, data systems, and full-stack development. Teaching has shaped the way I build: make the difficult idea clear, test the next step, and keep the person using the system in view.",
+    "I’m a Master of Information Technology student and Graduate Teaching Assistant at the University of Auckland, with a foundation in mathematics and computational science. I enjoy turning an unclear problem into a useful product: understand the need, define the requirements, build a prototype, and evaluate what works.",
+    "My recent projects include Folio, a research workspace with traceable evidence and optional on-device AI; ExplainLab, an interactive systems simulator; and machine-learning forecasts for New Zealand electricity demand. I’m especially interested in AI product experiences, model evaluation, and how intelligent systems can support games and creative work.",
+    "Teaching keeps my work grounded in the person using it. I value clear explanations, testable assumptions, and thoughtful iteration as much as the technology itself.",
   ],
 };
 
@@ -81,6 +84,70 @@ export const experience: Experience[] = [
 
 export const projects: Project[] = [
   {
+    slug: "folio",
+    title: "Folio",
+    eyebrow: "AI-enabled research · Product development",
+    status: "Working preview",
+    description:
+      "A local-first research workspace for comparing options and writing evidence-backed decision briefs. It brings versioned citations, bilingual passage retrieval, and human review into one workflow, with optional on-device AI. Documents and source history stay in the browser, while background tasks keep evidence search and backup restoration cancellable.",
+    technologies: [
+      "React",
+      "TypeScript",
+      "WebLLM / WebGPU",
+      "IndexedDB",
+      "Web Workers",
+    ],
+    cover: "/projects/folio.png",
+    coverAlt:
+      "Folio comparison workspace with linked sources, evidence review status, and a decision brief action",
+    coverPosition: "top",
+    sourceUrl: "https://github.com/zhzhg-dev/folio",
+    featured: true,
+  },
+  {
+    slug: "explainlab",
+    title: "ExplainLab",
+    eyebrow: "Interactive systems · Learning experience",
+    status: "Live systems lab",
+    description:
+      "An interactive lab that makes retry storms, cache stampedes, and queue overload visible. A deterministic simulation engine gives two strategies the same seeded workload, so users can change a policy, replay the outcome, and inspect the trade-offs. Reproducible scenario links and bilingual explanations make experiments easy to share and discuss.",
+    technologies: [
+      "TypeScript",
+      "React",
+      "Discrete-event simulation",
+      "Web Workers",
+      "Vitest",
+    ],
+    cover: "/projects/explainlab.png",
+    coverAlt:
+      "ExplainLab retry-storm experiment comparing fixed retries with exponential backoff and jitter",
+    coverPosition: "top",
+    liveUrl: "https://zhzhg-dev.github.io/explainlab/",
+    sourceUrl: "https://github.com/zhzhg-dev/explainlab",
+    featured: true,
+  },
+  {
+    slug: "nz-electricity-forecasting",
+    title: "NZ Electricity Intelligence",
+    eyebrow: "Machine learning · Energy analytics",
+    status: "Live ML demo",
+    description:
+      "An end-to-end forecasting project built on a dataset of 52,608 New Zealand electricity-market periods. It predicts Upper North Island demand across four horizons, estimates wholesale price-spike risk, and presents model uncertainty and explanations in an interactive dashboard. The 1-hour model achieved a 17.2 MW MAE on the untouched 2025 holdout—76.9% better than the strongest seasonal baseline.",
+    technologies: [
+      "Python",
+      "scikit-learn",
+      "Time series",
+      "Streamlit",
+      "GitHub Actions",
+    ],
+    cover: "/projects/nz-electricity-forecast.png",
+    coverAlt:
+      "NZ Electricity Intelligence dashboard showing market coverage and demand forecast metrics",
+    liveUrl: "https://nz-electricity-forecasting.streamlit.app/",
+    sourceUrl: "https://github.com/zhzhg-dev/nz-electricity-forecasting",
+    featured: true,
+  },
+  {
     slug: "learn-to-race",
     title: "Learn-to-Race Autonomous Racing",
     eyebrow: "Reinforcement learning · Group research",
@@ -97,28 +164,6 @@ export const projects: Project[] = [
     cover: "/projects/autonomous-racing.webp",
     coverAlt:
       "Abstract autonomous racing simulation with cyan and amber control trajectories",
-    featured: true,
-  },
-  {
-    slug: "nz-electricity-forecasting",
-    title: "NZ Electricity Intelligence",
-    eyebrow: "Machine learning · Energy analytics",
-    status: "Live ML demo",
-    description:
-      "An end-to-end forecasting system trained on 52,608 New Zealand electricity-market periods. It predicts Upper North Island demand across four horizons, estimates wholesale price-spike risk, and presents model uncertainty and explanations in an interactive dashboard. The 1-hour model achieved a 17.2 MW MAE on the untouched 2025 holdout—76.9% better than the strongest seasonal baseline.",
-    technologies: [
-      "Python",
-      "scikit-learn",
-      "Time series",
-      "Streamlit",
-      "GitHub Actions",
-    ],
-    cover: "/projects/nz-electricity-forecast.png",
-    coverAlt:
-      "NZ Electricity Intelligence dashboard showing market coverage and demand forecast metrics",
-    liveUrl: "https://nz-electricity-forecasting.streamlit.app/",
-    sourceUrl: "https://github.com/zhzhg-dev/nz-electricity-forecasting",
-    featured: true,
   },
   {
     slug: "course-review-system",
@@ -132,7 +177,6 @@ export const projects: Project[] = [
     coverAlt: "Course Review System live demo home page",
     liveUrl: "https://zhzhg-dev.github.io/course-review-system/",
     sourceUrl: "https://github.com/zhzhg-dev/course-review-system",
-    featured: true,
   },
   {
     slug: "svelte-study-planner",
@@ -146,7 +190,6 @@ export const projects: Project[] = [
     coverAlt: "Svelte Study Planner live demo dashboard",
     liveUrl: "https://zhzhg-dev.github.io/svelte-study-planner/",
     sourceUrl: "https://github.com/zhzhg-dev/svelte-study-planner",
-    featured: true,
   },
   {
     slug: "rumour-propagation",
@@ -167,7 +210,24 @@ export const projects: Project[] = [
   },
 ];
 
+export const projectStats = {
+  total: projects.length,
+  live: projects.filter((project) => project.liveUrl).length,
+  source: projects.filter((project) => project.sourceUrl).length,
+};
+
 export const skills = [
+  {
+    category: "Product & evaluation",
+    items: [
+      "Requirements analysis",
+      "Prototyping",
+      "Research workflows",
+      "Model evaluation",
+      "Evidence review",
+      "Technical communication",
+    ],
+  },
   {
     category: "Programming",
     items: ["Python", "Java", "JavaScript", "TypeScript", "C", "C++"],
@@ -192,6 +252,8 @@ export const skills = [
       "Reinforcement learning",
       "Data analysis",
       "Mathematical modelling",
+      "On-device AI",
+      "Retrieval evaluation",
       "scikit-learn",
       "pandas",
       "NumPy",

@@ -16,7 +16,12 @@ export function ProjectCard({ project, index, compact = false }: ProjectCardProp
       className={`project-card reveal ${project.featured ? "project-card--featured" : ""} ${compact ? "project-card--compact" : ""}`}
     >
       <div className="project-card__media">
-        <img src={project.cover} alt={project.coverAlt} loading="lazy" />
+        <img
+          src={project.cover}
+          alt={project.coverAlt}
+          loading="lazy"
+          style={{ objectPosition: project.coverPosition }}
+        />
         <span className="project-card__index">0{index + 1}</span>
         <span className="project-card__status">{project.status}</span>
       </div>

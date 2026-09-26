@@ -1195,6 +1195,13 @@ img {
   font-size: 1.03rem;
 }
 
+.contact__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.85rem;
+}
+
 .site-footer {
   display: flex;
   width: min(100%, calc(var(--max-width) + (var(--gutter) * 2)));

@@ -8,6 +8,7 @@ import {
   navigation,
   profile,
   projects,
+  projectStats,
   skills,
 } from "./data/profile";
 
@@ -19,21 +20,21 @@ type AppProps = {
 
 const pageMeta: Record<PageName, { title: string; description: string; url: string }> = {
   home: {
-    title: "Grant Zhang | AI, Data & Software Portfolio",
+    title: "Grant Zhang | AI Product Builder",
     description:
-      "Grant Zhang is a mathematics-trained problem solver in Auckland building practical AI, data, and software systems.",
+      "Grant Zhang builds practical AI-enabled products, connecting user needs, working prototypes, and model evaluation. Based in Auckland, New Zealand.",
     url: profile.canonicalUrl,
   },
   experience: {
     title: "Experience | Grant Zhang",
     description:
-      "Grant Zhang's technical experience, education, leadership, and growing engineering toolkit.",
+      "Grant Zhang's teaching experience, mathematics foundation, and toolkit for product prototyping, requirements analysis, and model evaluation.",
     url: `${profile.canonicalUrl}experience/`,
   },
   projects: {
     title: "Projects | Grant Zhang",
     description:
-      "Selected AI, full-stack, Svelte, and mathematical modelling projects by Grant Zhang.",
+      "Explore Folio, ExplainLab, electricity forecasting, and other AI, simulation, and software projects by Grant Zhang.",
     url: `${profile.canonicalUrl}projects/`,
   },
 };
@@ -135,15 +136,15 @@ function HomePage() {
             {profile.availability}
           </div>
 
-          <p className="hero__kicker">Auckland · AI / Data / Software</p>
+          <p className="hero__kicker">Auckland · AI Product Builder</p>
           <h1 id="hero-title">
             <span>Grant</span>
             <span className="hero__surname">Zhang.</span>
           </h1>
           <p className="hero__headline">{profile.headline}</p>
           <p className="hero__intro">
-            From mathematical models to systems people can use—with a focus on
-            machine learning, data, and thoughtful software.
+            A mathematics background, a builder’s curiosity, and a focus on
+            useful AI experiences—from research workflows to intelligent systems.
           </p>
 
           <div className="hero__actions">
@@ -199,9 +200,9 @@ function HomePage() {
               <p key={paragraph}>{paragraph}</p>
             ))}
             <div className="capability-rail" aria-label="Core capabilities">
-              <span>01 · Machine learning</span>
-              <span>02 · Full-stack systems</span>
-              <span>03 · Mathematical modelling</span>
+              <span>01 · Requirements analysis</span>
+              <span>02 · Product prototyping</span>
+              <span>03 · Model evaluation</span>
               <span>04 · Technical communication</span>
             </div>
           </div>
@@ -214,7 +215,7 @@ function HomePage() {
           index="02"
           eyebrow="Selected work"
           title="Ideas made concrete."
-          description="Research, software, and learning tools built with care for the problem behind the interface."
+          description="AI-enabled research, interactive learning, and forecasting—built around a clear problem and evaluated with care."
         />
         <div className="project-grid project-grid--home">
           {selectedProjects.map((project, index) => (
@@ -222,7 +223,9 @@ function HomePage() {
           ))}
         </div>
         <div className="section-end reveal">
-          <span>Five projects · Three live demos · One evolving research direction</span>
+          <span>
+            {projectStats.total} projects · {projectStats.live} live demos · {projectStats.source} public repositories
+          </span>
           <a className="button button--quiet" href="/projects/">
             View all projects <span aria-hidden="true">→</span>
           </a>
@@ -359,21 +362,21 @@ function ProjectsPage() {
         index="02"
         eyebrow="Projects"
         title="Systems, simulations, and useful software."
-        description="Selected work across machine learning, energy forecasting, intelligent systems, full-stack development, and mathematical modelling."
+        description="From evidence-backed research workflows to interactive systems experiments: projects that connect product thinking, AI exploration, and practical engineering."
       />
 
       <section className="project-stats" aria-label="Project overview">
         <div>
-          <strong>05</strong>
+          <strong>{String(projectStats.total).padStart(2, "0")}</strong>
           <span>Selected projects</span>
         </div>
         <div>
-          <strong>03</strong>
+          <strong>{String(projectStats.live).padStart(2, "0")}</strong>
           <span>Live demos</span>
         </div>
         <div>
-          <strong>04</strong>
-          <span>Technical domains</span>
+          <strong>{String(projectStats.source).padStart(2, "0")}</strong>
+          <span>Public repositories</span>
         </div>
       </section>
 
@@ -383,7 +386,7 @@ function ProjectsPage() {
           index="02A"
           eyebrow="Selected work"
           title="Built to be explored."
-          description="Open the live products, inspect the public source, or read the research summary for work that is not publicly released."
+          description="Try a live demo, inspect the source, or explore the ideas behind ongoing research. Folio is available as an open-source working preview."
         />
         <div className="project-grid">
           {projects.map((project, index) => (
@@ -391,8 +394,9 @@ function ProjectsPage() {
           ))}
         </div>
         <p className="project-disclosure reveal">
-          Live demos use portfolio-safe sample data. Ongoing research and thesis
-          work are presented as summaries where public source is not available.
+          Demonstrations include sample workflows, simulated systems, and historical
+          market data. Project descriptions distinguish working previews and research
+          from released demos; ExplainLab’s results are educational simulations.
         </p>
       </section>
 
@@ -410,19 +414,30 @@ function ContactPanel() {
         <span />
       </div>
       <p className="contact__eyebrow">LET’S CONNECT</p>
-      <h2 id="contact-title">Looking for an engineer who thinks in systems?</h2>
+      <h2 id="contact-title">Have an idea worth exploring?</h2>
       <p>
-        I’m interested in internship and graduate opportunities across AI,
-        data, and software engineering in New Zealand.
+        I enjoy exchanging ideas about AI products, game AI, and tools that make
+        complex work easier. Let’s connect around a project, a useful question,
+        or something we could build together.
       </p>
-      <a
-        className="button button--primary"
-        href={profile.github}
-        target="_blank"
-        rel="noreferrer"
-      >
-        Start with GitHub <ArrowIcon />
-      </a>
+      <div className="contact__actions">
+        <a
+          className="button button--primary"
+          href={profile.linkedin}
+          target="_blank"
+          rel="noreferrer"
+        >
+          Connect on LinkedIn <ArrowIcon />
+        </a>
+        <a
+          className="button button--quiet"
+          href={profile.github}
+          target="_blank"
+          rel="noreferrer"
+        >
+          Explore GitHub <ArrowIcon />
+        </a>
+      </div>
     </section>
   );
 }

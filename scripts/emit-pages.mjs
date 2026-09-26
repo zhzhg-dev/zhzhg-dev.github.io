@@ -6,13 +6,13 @@ const pages = [
     path: "experience",
     title: "Experience | Grant Zhang",
     description:
-      "Grant Zhang's technical experience, education, leadership, and growing engineering toolkit.",
+      "Grant Zhang's teaching experience, mathematics foundation, and toolkit for product prototyping, requirements analysis, and model evaluation.",
   },
   {
     path: "projects",
     title: "Projects | Grant Zhang",
     description:
-      "Selected AI, full-stack, Svelte, and mathematical modelling projects by Grant Zhang.",
+      "Explore Folio, ExplainLab, electricity forecasting, and other AI, simulation, and software projects by Grant Zhang.",
   },
 ];
 
@@ -37,6 +37,18 @@ for (const page of pages) {
     .replace(
       /<meta property="og:url" content="[^"]*"\s*\/>/,
       `<meta property="og:url" content="${pageUrl}" />`,
+    )
+    .replace(
+      /<meta\s+property="og:description"\s+content="[^"]*"\s*\/>/,
+      `<meta property="og:description" content="${page.description}" />`,
+    )
+    .replace(
+      /<meta name="twitter:title" content="[^"]*"\s*\/>/,
+      `<meta name="twitter:title" content="${page.title}" />`,
+    )
+    .replace(
+      /<meta\s+name="twitter:description"\s+content="[^"]*"\s*\/>/,
+      `<meta name="twitter:description" content="${page.description}" />`,
     )
     .replace('data-page="home"', `data-page="${page.path}"`);
 
