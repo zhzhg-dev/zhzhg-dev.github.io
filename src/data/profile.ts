@@ -52,9 +52,9 @@ export const profile = {
 };
 
 export const navigation = [
-  { label: "Home", href: "/", page: "home" },
-  { label: "Experience", href: "/experience/", page: "experience" },
+  { label: "About", href: "/", page: "home" },
   { label: "Projects", href: "/projects/", page: "projects" },
+  { label: "Contact", href: "/contact/", page: "contact" },
 ] as const;
 
 export const experience: Experience[] = [

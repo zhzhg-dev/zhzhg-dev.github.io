@@ -14,6 +14,12 @@ const pages = [
     description:
       "Explore Folio, ExplainLab, electricity forecasting, and other AI, simulation, and software projects by Grant Zhang.",
   },
+  {
+    path: "contact",
+    title: "Contact | Grant Zhang",
+    description:
+      "Connect with Grant Zhang on LinkedIn and GitHub. Based in Auckland, exploring AI products, game AI, and useful software.",
+  },
 ];
 
 const homeHtml = await readFile(new URL("../dist/index.html", import.meta.url), "utf8");

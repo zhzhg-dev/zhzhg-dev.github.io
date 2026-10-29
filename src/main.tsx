@@ -7,7 +7,7 @@ document.documentElement.classList.add("js");
 
 const requestedPage = document.body.dataset.page;
 const page: PageName =
-  requestedPage === "experience" || requestedPage === "projects"
+  requestedPage === "experience" || requestedPage === "projects" || requestedPage === "contact"
     ? requestedPage
     : "home";
 
