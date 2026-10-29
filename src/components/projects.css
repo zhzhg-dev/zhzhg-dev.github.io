@@ -1,11 +1,11 @@
 .projects-editorial,
 .project-archive-item,
 .editorial-preview {
-  --project-ink: #242127;
-  --project-muted: #67616a;
-  --project-accent: #60243f;
-  --project-rose: #f1e5eb;
-  --project-line: #e5dfe3;
+  --project-ink: #152335;
+  --project-muted: #647385;
+  --project-accent: #163b6b;
+  --project-soft: #edf3f9;
+  --project-line: #dce4ed;
   color: var(--project-ink);
 }
 
@@ -87,7 +87,7 @@
   font-weight: 550;
   line-height: 1.5;
   text-decoration: underline;
-  text-decoration-color: #b997a7;
+  text-decoration-color: #9aaec4;
   text-decoration-thickness: 1px;
   text-underline-offset: 6px;
 }
@@ -169,7 +169,7 @@
 }
 
 .project-preview.editorial-preview {
-  --preview-mount: #f4f1f3;
+  --preview-mount: #f1f4f7;
   display: block;
   min-width: 0;
   margin: 0;
@@ -179,9 +179,9 @@
   background: transparent;
 }
 
-.editorial-preview.project-preview--folio { --preview-mount: #e9eee7; }
-.editorial-preview.project-preview--explainlab { --preview-mount: #e9eff4; }
-.editorial-preview.project-preview--nz-electricity-forecasting { --preview-mount: #eeebf3; }
+.editorial-preview.project-preview--folio { --preview-mount: #e9eef2; }
+.editorial-preview.project-preview--explainlab { --preview-mount: #e7eff7; }
+.editorial-preview.project-preview--nz-electricity-forecasting { --preview-mount: #edf1f5; }
 
 .editorial-preview .project-preview__image {
   position: relative;
@@ -210,7 +210,7 @@
   object-fit: contain;
   border: 0;
   border-radius: 3px;
-  box-shadow: 0 6px 25px #24212712;
+  box-shadow: 0 6px 25px #15233512;
   transition: transform 240ms ease;
 }
 
@@ -258,7 +258,7 @@
   color: var(--project-accent);
   font: inherit;
   text-decoration: underline;
-  text-decoration-color: #b997a7;
+  text-decoration-color: #9aaec4;
   text-underline-offset: 4px;
   cursor: pointer;
 }
@@ -277,11 +277,11 @@ body.preview-open { overflow: hidden; }
   border-radius: 10px;
   background: #fff;
   color: var(--project-ink);
-  box-shadow: 0 20px 80px #24212733;
+  box-shadow: 0 20px 80px #15233533;
 }
 
 .editorial-preview .project-preview__dialog::backdrop {
-  background: #242127b8;
+  background: #152335b8;
   backdrop-filter: blur(5px);
 }
 
@@ -315,9 +315,9 @@ body.preview-open { overflow: hidden; }
   gap: 10px;
   min-height: 44px;
   padding: 8px 14px;
-  border: 1px solid #d9c4ce;
+  border: 1px solid #c6d5e5;
   border-radius: 5px;
-  background: var(--project-rose);
+  background: var(--project-soft);
   color: var(--project-accent);
   font-size: 13px;
   line-height: 1.5;
@@ -365,7 +365,7 @@ body.preview-open { overflow: hidden; }
   font-size: 13px;
   line-height: 1.5;
   text-decoration: underline;
-  text-decoration-color: #b997a7;
+  text-decoration-color: #9aaec4;
   text-underline-offset: 5px;
 }
 
@@ -482,7 +482,7 @@ body.preview-open { overflow: hidden; }
     text-decoration-thickness: 2px;
   }
   .project-details > summary:hover { text-decoration: underline; text-underline-offset: 4px; }
-  .editorial-preview .project-preview__close:hover { background: #e7d4de; }
+  .editorial-preview .project-preview__close:hover { background: #e1ebf5; }
 }
 
 @media (max-width: 700px) {

@@ -6,16 +6,16 @@
 }
 :root{
   font-family:Onest,'Segoe UI',sans-serif;
-  color:#252128;
+  color:#152335;
   background:#fff;
   font-synthesis:none;
   text-rendering:optimizeLegibility;
   -webkit-font-smoothing:antialiased;
-  --ink:#252128;
-  --accent:#60243f;
-  --muted:#716b74;
-  --line:#e6e1e5;
-  --soft:#f6f2f5;
+  --ink:#152335;
+  --accent:#163b6b;
+  --muted:#647385;
+  --line:#dce4ed;
+  --soft:#f0f5fa;
   --gutter:clamp(24px,5.3vw,100px);
   color-scheme:light
 }
@@ -73,8 +73,8 @@ a:focus-visible,button:focus-visible,summary:focus-visible{
   outline:2px solid var(--accent)
 }
 ::selection{
-  background:#ead7e2;
-  color:#492135
+  background:#d9e7f6;
+  color:#123b67
 }
 section[id],article[id],h2[id]{
   scroll-margin-top:36px
@@ -134,7 +134,7 @@ section[id],article[id],h2[id]{
   padding-right:5px
 }
 .brand-symbol>span{
-  color:#a56787
+  color:#658bb3
 }
 .header-location{
   font-size:12px;
@@ -149,7 +149,7 @@ section[id],article[id],h2[id]{
   width:6px;
   height:6px;
   border-radius:50%;
-  background:#8a536d
+  background:#4577a5
 }
 .site-nav{
   display:flex;
@@ -251,7 +251,7 @@ section[id],article[id],h2[id]{
   justify-content:center;
   width:42px;
   height:42px;
-  border:1px solid #d7c6d0;
+  border:1px solid #c8d8e9;
   border-radius:50%;
   transition:background .25s,color .25s,transform .25s
 }
@@ -361,7 +361,7 @@ section[id],article[id],h2[id]{
   font-weight:450
 }
 .intro-layout h2>span{
-  color:#8c7181
+  color:#5c7898
 }
 .intro-copy{
   max-width:550px
@@ -446,7 +446,7 @@ section[id],article[id],h2[id]{
   border:0;
   border-bottom:1px solid var(--line);
   padding:24px 0;
-  color:#897580;
+  color:#6882a0;
   text-align:left;
   font-size:clamp(27px,3.6vw,54px);
   letter-spacing:-.045em;
@@ -577,7 +577,7 @@ section[id],article[id],h2[id]{
   max-width:1250px
 }
 .page-hero h1>span{
-  color:#8c7181
+  color:#5c7898
 }
 .page-hero__bottom{
   display:flex;
@@ -824,7 +824,7 @@ section[id],article[id],h2[id]{
   letter-spacing:-.06em
 }
 .contact-main h2>span{
-  color:#a27891
+  color:#6486aa
 }
 .contact-circle{
   width:165px;
@@ -852,7 +852,7 @@ section[id],article[id],h2[id]{
   display:flex;
   align-items:center;
   gap:30px;
-  border-top:1px solid #e0d5dc;
+  border-top:1px solid #d4dfeb;
   padding-top:25px
 }
 .contact-links>a{

@@ -311,14 +311,29 @@ test("the personal signature has an accessible server-rendered default without b
     .map((button) => button.label), ["Think"]);
   const groups = [...html.matchAll(/<[a-z][^>]*>/g)].map(([tag]) => attributes(tag));
   assert.ok(groups.some((group) => group.role === "group" && group["aria-label"] === "Ways I work"));
-  const canvas = html.match(/<canvas\b[^>]*>/)?.[0];
-  assert.ok(canvas, "the personal sculpture should render its canvas independently of browser effects");
-  assert.equal(attributes(canvas)["aria-hidden"], "true");
+  const svg = html.match(/<svg\b[^>]*>/)?.[0];
+  assert.ok(svg, "the two-dimensional signature must be present before browser effects run");
+  assert.equal(attributes(svg).viewbox, "0 0 620 520");
+  assert.equal(attributes(svg)["aria-hidden"], "true");
+  const paths = [...html.matchAll(/<path\b[^>]*>/g)].map(([tag]) => attributes(tag))
+    .filter((path) => "data-signature-line" in path);
+  assert.equal(paths.length, 48, "the initial interference field should contain its complete line drawing");
+  for (const path of paths) {
+    assert.ok("data-signature-line" in path);
+    assert.match(path.d, /^M[\d.+-]/);
+    assert.match(path.d, /\bZ\s*$/, "each server-rendered line should already form a closed curve");
+    assert.doesNotMatch(path.d, /NaN|Infinity|undefined/);
+    assert.equal(path["vector-effect"], "non-scaling-stroke");
+  }
+  assert.doesNotMatch(html, /<canvas\b|<filter\b|<meshgradient\b/i);
   assert.ok(elements(html, "figcaption").some((caption) => caption.text.trim()),
-    "the decorative canvas needs an accompanying text explanation");
-  assert.ok(elements(html, "button").some((button) =>
-    button.type === "button" && button["aria-label"] === "Change sculpture form, currently Think"),
-  "the sculpture must offer a native keyboard-operable action rather than pointer-only input");
+    "the decorative line drawing needs an accompanying text explanation");
+  const stage = elements(html, "button").find((button) =>
+    button.type === "button" && button["aria-label"] === "Change signature, currently Think");
+  assert.ok(stage, "the signature must offer a native button for keyboard and touch activation");
+  assert.ok(stage["aria-describedby"]);
+  assert.equal(elements(html, "p").filter((paragraph) =>
+    paragraph.id === stage["aria-describedby"] && paragraph.text.trim()).length, 1);
 });
 
 test("Home introduces Grant and personal interests without project screenshots, selectors, or case lists", () => {
