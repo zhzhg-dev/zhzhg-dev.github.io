@@ -13,9 +13,14 @@ export type Project = {
   eyebrow: string;
   status: string;
   description: string;
+  shortDescription?: string;
+  decisionTitle?: string;
+  decision?: string;
   technologies: string[];
   cover: string;
   coverAlt: string;
+  coverWidth?: number;
+  coverHeight?: number;
   coverPosition?: "top" | "center";
   liveUrl?: string;
   sourceUrl?: string;
@@ -89,7 +94,12 @@ export const projects: Project[] = [
     eyebrow: "AI-enabled research · Product development",
     status: "Working preview",
     description:
-      "A local-first research workspace for comparing options and writing evidence-backed decision briefs. It brings versioned citations, bilingual passage retrieval, and human review into one workflow, with optional on-device AI. Documents and source history stay in the browser, while background tasks keep evidence search and backup restoration cancellable.",
+      "A research workspace for collecting passages, comparing options, and producing briefs with versioned citations. It combines bilingual passage retrieval, optional on-device AI, and explicit review workflows, with local storage and optional manual cloud backups.",
+    shortDescription:
+      "Turn source material into research you can revisit, without losing the passages behind a finding.",
+    decisionTitle: "Review stays a human decision",
+    decision:
+      "Source updates flag affected findings for review. They don’t silently rewrite a conclusion or mark it as verified.",
     technologies: [
       "React",
       "TypeScript",
@@ -100,6 +110,8 @@ export const projects: Project[] = [
     cover: "/projects/folio.png",
     coverAlt:
       "Folio comparison workspace with linked sources, evidence review status, and a decision brief action",
+    coverWidth: 1440,
+    coverHeight: 1000,
     coverPosition: "top",
     sourceUrl: "https://github.com/zhzhg-dev/folio",
     featured: true,
@@ -111,6 +123,11 @@ export const projects: Project[] = [
     status: "Live systems lab",
     description:
       "An interactive lab that makes retry storms, cache stampedes, and queue overload visible. A deterministic simulation engine gives two strategies the same seeded workload, so users can change a policy, replay the outcome, and inspect the trade-offs. Reproducible scenario links and bilingual explanations make experiments easy to share and discuss.",
+    shortDescription:
+      "See when retries prevent recovery, why cache misses pile up, and what happens when a queue accepts too much work.",
+    decisionTitle: "Both strategies get the same workload",
+    decision:
+      "Shared arrival times and seeded service costs make policy comparisons reproducible. Failures, rejections, and pending requests stay visible beside successful-request latency.",
     technologies: [
       "TypeScript",
       "React",
@@ -118,9 +135,11 @@ export const projects: Project[] = [
       "Web Workers",
       "Vitest",
     ],
-    cover: "/projects/explainlab.png",
+    cover: "/projects/explainlab-landscape.jpg",
     coverAlt:
       "ExplainLab retry-storm experiment comparing fixed retries with exponential backoff and jitter",
+    coverWidth: 1265,
+    coverHeight: 712,
     coverPosition: "top",
     liveUrl: "https://zhzhg-dev.github.io/explainlab/",
     sourceUrl: "https://github.com/zhzhg-dev/explainlab",
@@ -132,7 +151,12 @@ export const projects: Project[] = [
     eyebrow: "Machine learning · Energy analytics",
     status: "Live ML demo",
     description:
-      "An end-to-end forecasting project built on a dataset of 52,608 New Zealand electricity-market periods. It predicts Upper North Island demand across four horizons, estimates wholesale price-spike risk, and presents model uncertainty and explanations in an interactive dashboard. The 1-hour model achieved a 17.2 MW MAE on the untouched 2025 holdout—76.9% better than the strongest seasonal baseline.",
+      "An end-to-end forecasting project built on a dataset of 52,608 New Zealand electricity-market periods. It predicts Upper North Island demand across four horizons, estimates wholesale price-spike risk, and presents uncertainty and explanations in a historical-data dashboard. The selected 1-hour model achieved 76.9% lower MAE than the previous-week baseline on the 2025 H2 holdout.",
+    shortDescription:
+      "Explore electricity-demand forecasts for New Zealand’s Upper North Island, with forecast uncertainty and errors visible beside the result.",
+    decisionTitle: "Evaluate on later, unseen data",
+    decision:
+      "The 1-hour model recorded 17.2 MW MAE on the untouched July–December 2025 holdout. Models were selected using earlier time blocks, not a random split.",
     technologies: [
       "Python",
       "scikit-learn",
@@ -143,6 +167,8 @@ export const projects: Project[] = [
     cover: "/projects/nz-electricity-forecast.png",
     coverAlt:
       "NZ Electricity Intelligence dashboard showing market coverage and demand forecast metrics",
+    coverWidth: 1280,
+    coverHeight: 720,
     liveUrl: "https://nz-electricity-forecasting.streamlit.app/",
     sourceUrl: "https://github.com/zhzhg-dev/nz-electricity-forecasting",
     featured: true,
@@ -164,6 +190,8 @@ export const projects: Project[] = [
     cover: "/projects/autonomous-racing.webp",
     coverAlt:
       "Abstract autonomous racing simulation with cyan and amber control trajectories",
+    coverWidth: 1280,
+    coverHeight: 720,
   },
   {
     slug: "course-review-system",
@@ -175,6 +203,8 @@ export const projects: Project[] = [
     technologies: ["React", "Node.js", "Express", "MongoDB", "REST APIs"],
     cover: "/projects/course-review.webp",
     coverAlt: "Course Review System live demo home page",
+    coverWidth: 1280,
+    coverHeight: 720,
     liveUrl: "https://zhzhg-dev.github.io/course-review-system/",
     sourceUrl: "https://github.com/zhzhg-dev/course-review-system",
   },
@@ -188,6 +218,8 @@ export const projects: Project[] = [
     technologies: ["SvelteKit", "JavaScript", "localStorage", "Responsive UI"],
     cover: "/projects/study-planner.webp",
     coverAlt: "Svelte Study Planner live demo dashboard",
+    coverWidth: 1280,
+    coverHeight: 720,
     liveUrl: "https://zhzhg-dev.github.io/svelte-study-planner/",
     sourceUrl: "https://github.com/zhzhg-dev/svelte-study-planner",
   },
@@ -207,6 +239,8 @@ export const projects: Project[] = [
     cover: "/projects/rumour-simulation.webp",
     coverAlt:
       "Abstract cellular automata grid showing an uneven propagation wave",
+    coverWidth: 1280,
+    coverHeight: 720,
   },
 ];
 

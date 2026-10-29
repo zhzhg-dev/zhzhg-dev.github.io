@@ -60,7 +60,7 @@ test("projects include real cover assets and verified public links", () => {
     "rumour-simulation.webp",
     "nz-electricity-forecast.png",
     "folio.png",
-    "explainlab.png",
+    "explainlab-landscape.jpg",
   ]) {
     assert.match(dataSource, new RegExp(cover));
   }
@@ -119,7 +119,7 @@ test("production public assets are emitted", async () => {
     "projects/rumour-simulation.webp",
     "projects/nz-electricity-forecast.png",
     "projects/folio.png",
-    "projects/explainlab.png",
+    "projects/explainlab-landscape.jpg",
   ]) {
     await access(new URL(`../dist/${asset}`, import.meta.url));
   }

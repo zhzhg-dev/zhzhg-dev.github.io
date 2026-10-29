@@ -1,6 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ProjectCard } from "./components/ProjectCard";
 import { SectionHeading } from "./components/SectionHeading";
+import { FeaturedWork } from "./components/FeaturedWork";
+import { HeroWorkbench } from "./components/HeroWorkbench";
+import { IdentityOrbit } from "./components/IdentityOrbit";
+export { HeroWorkbench } from "./components/HeroWorkbench";
 import {
   community,
   education,
@@ -45,29 +49,63 @@ function ArrowIcon() {
 
 function Header({ page }: { page: PageName }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const headerRef = useRef<HTMLElement>(null);
+  const toggleRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     document.body.classList.toggle("menu-open", menuOpen);
     return () => document.body.classList.remove("menu-open");
   }, [menuOpen]);
 
+  useEffect(() => {
+    const desktop = window.matchMedia("(min-width: 861px)");
+    const closeOnDesktop = () => { if (desktop.matches) setMenuOpen(false); };
+    desktop.addEventListener("change", closeOnDesktop);
+    return () => desktop.removeEventListener("change", closeOnDesktop);
+  }, []);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    headerRef.current?.querySelector<HTMLAnchorElement>("nav a")?.focus();
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setMenuOpen(false);
+        toggleRef.current?.focus();
+      }
+      if (event.key === "Tab") {
+        const items = headerRef.current?.querySelectorAll<HTMLElement>("a, button");
+        if (!items?.length) return;
+        const first = items[0];
+        const last = items[items.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault(); last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault(); first.focus();
+        }
+      }
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [menuOpen]);
+
   return (
-    <header className="site-header">
+    <header className="site-header" ref={headerRef}>
       <a className="brand" href="/" aria-label="Grant Zhang, home">
         <span className="brand__mark">GZ</span>
-        <span className="brand__label">Grant Zhang</span>
+        <span className="brand__label" translate="no">Grant Zhang</span>
       </a>
 
       <button
         className="menu-toggle"
+        ref={toggleRef}
         type="button"
+        aria-label={menuOpen ? "Close navigation" : "Open navigation"}
         aria-expanded={menuOpen}
         aria-controls="site-navigation"
         onClick={() => setMenuOpen((open) => !open)}
       >
-        <span className="sr-only">Toggle navigation</span>
-        <span />
-        <span />
+        <span aria-hidden="true" />
+        <span aria-hidden="true" />
       </button>
 
       <nav
@@ -99,57 +137,65 @@ function Header({ page }: { page: PageName }) {
 }
 
 function PageHero({
-  index,
   eyebrow,
   title,
   description,
+  links,
 }: {
-  index: string;
   eyebrow: string;
   title: string;
   description: string;
+  links: { label: string; href: string }[];
 }) {
   return (
     <section className="page-hero" id="top">
-      <div className="page-hero__grid" aria-hidden="true" />
-      <div className="page-hero__code">PORTFOLIO / {index}</div>
-      <p className="page-hero__eyebrow">{eyebrow}</p>
-      <h1>{title}</h1>
-      <p className="page-hero__description">{description}</p>
-      <div className="page-hero__line" aria-hidden="true">
-        <span />
+      <div className="page-hero__atmosphere" aria-hidden="true">
+        <svg viewBox="0 0 480 360" fill="none">
+          <ellipse cx="348" cy="178" rx="190" ry="144" transform="rotate(-28 348 178)" />
+          <ellipse cx="348" cy="178" rx="162" ry="118" transform="rotate(-28 348 178)" />
+          <path d="M143 178h20 M348 0v20 M348 336v20 M167 57h16v16 M454 294h-16v-16" />
+          <circle cx="190" cy="91" r="3" className="page-hero__point" />
+          <circle cx="469" cy="254" r="3" className="page-hero__point" />
+        </svg>
+      </div>
+      <div className="page-hero__content">
+        <p className="page-hero__eyebrow">{eyebrow}</p>
+        <h1>{title}</h1>
+        <p className="page-hero__description">{description}</p>
+        <nav className="page-hero__links" aria-label={`${eyebrow} sections`}>
+          {links.map((link) => (
+            <a key={link.href} href={link.href}>{link.label}<span aria-hidden="true">↓</span></a>
+          ))}
+        </nav>
       </div>
     </section>
   );
 }
 
 function HomePage() {
-  const selectedProjects = projects.filter((project) => project.featured).slice(0, 3);
-
   return (
     <>
       <section className="hero" id="top" aria-labelledby="hero-title">
         <div className="hero__grid" aria-hidden="true" />
         <div className="hero__content">
           <div className="status-pill">
-            <span className="status-pill__dot" />
+            <span className="status-pill__dot" aria-hidden="true" />
             {profile.availability}
           </div>
-
-          <p className="hero__kicker">Auckland · AI Product Builder</p>
-          <h1 id="hero-title">
+          <p className="hero__kicker">Auckland · AI product builder</p>
+          <h1 id="hero-title" translate="no">
             <span>Grant</span>
             <span className="hero__surname">Zhang.</span>
           </h1>
-          <p className="hero__headline">{profile.headline}</p>
+          <p className="hero__headline">I build useful AI products—from a question to a working system.</p>
           <p className="hero__intro">
             A mathematics background, a builder’s curiosity, and a focus on
             useful AI experiences—from research workflows to intelligent systems.
           </p>
 
           <div className="hero__actions">
-            <a className="button button--primary" href="/projects/">
-              Explore selected work <span aria-hidden="true">→</span>
+            <a className="button button--primary" href="#selected-title">
+              Explore my work <span aria-hidden="true">↓</span>
             </a>
             <a className="button button--quiet" href="/experience/">
               View experience
@@ -157,55 +203,12 @@ function HomePage() {
           </div>
         </div>
 
-        <div className="hero__visual" aria-label="Grant Zhang monogram">
-          <div className="orbit orbit--outer" />
-          <div className="orbit orbit--inner" />
-          <div className="monogram">
-            <span className="monogram__small">MATHEMATICS × TECHNOLOGY</span>
-            <strong>GZ</strong>
-            <span className="monogram__location">36.85° S / 174.76° E</span>
-          </div>
-          <span className="visual-note visual-note--one">MODELLING</span>
-          <span className="visual-note visual-note--two">BUILDING</span>
-        </div>
+        <IdentityOrbit />
 
         <div className="hero__meta">
           <span>{profile.alternativeName}</span>
           <span>{profile.location}</span>
           <span>Master of Information Technology</span>
-        </div>
-      </section>
-
-      <section className="section profile-section" aria-labelledby="profile-title">
-        <SectionHeading
-          id="profile-title"
-          index="01"
-          eyebrow="Profile"
-          title="Analytical by training. Practical by choice."
-        />
-
-        <div className="profile-layout">
-          <div className="profile-statement reveal">
-            <p>
-              I like work that begins with a difficult question and ends with
-              something <em>clear, testable, and useful.</em>
-            </p>
-            <a className="text-link" href="/experience/">
-              Follow my journey <ArrowIcon />
-            </a>
-          </div>
-
-          <div className="profile-copy reveal">
-            {profile.about.map((paragraph) => (
-              <p key={paragraph}>{paragraph}</p>
-            ))}
-            <div className="capability-rail" aria-label="Core capabilities">
-              <span>01 · Requirements analysis</span>
-              <span>02 · Product prototyping</span>
-              <span>03 · Model evaluation</span>
-              <span>04 · Technical communication</span>
-            </div>
-          </div>
         </div>
       </section>
 
@@ -215,13 +218,9 @@ function HomePage() {
           index="02"
           eyebrow="Selected work"
           title="Ideas made concrete."
-          description="AI-enabled research, interactive learning, and forecasting—built around a clear problem and evaluated with care."
+          description="Research tools, systems experiments, and forecasts. Choose a project to take a closer look."
         />
-        <div className="project-grid project-grid--home">
-          {selectedProjects.map((project, index) => (
-            <ProjectCard key={project.slug} project={project} index={index} compact />
-          ))}
-        </div>
+        <HeroWorkbench />
         <div className="section-end reveal">
           <span>
             {projectStats.total} projects · {projectStats.live} live demos · {projectStats.source} public repositories
@@ -229,6 +228,18 @@ function HomePage() {
           <a className="button button--quiet" href="/projects/">
             View all projects <span aria-hidden="true">→</span>
           </a>
+        </div>
+      </section>
+
+      <section className="section profile-section" aria-labelledby="profile-title">
+        <div className="profile-heading">
+          <span className="profile-heading__mark" aria-hidden="true">GZ</span>
+          <div><p>A little background</p><h2 id="profile-title">A builder’s curiosity.<br />A teacher’s patience.</h2></div>
+        </div>
+        <div className="profile-copy">
+          <p>{profile.about[0]}</p>
+          <p>Currently exploring game AI, simulation, and how intelligent systems can support creative work.</p>
+          <a className="text-link" href="/experience/">Experience & education <ArrowIcon /></a>
         </div>
       </section>
 
@@ -241,10 +252,15 @@ function ExperiencePage() {
   return (
     <>
       <PageHero
-        index="01"
         eyebrow="Experience"
-        title="Learning in public. Building with purpose."
-        description="A path shaped by technical study, patient teaching, and the habit of turning complex questions into useful next steps."
+        title="Experience & background."
+        description="Teaching, a mathematical foundation, and the skills I use to build."
+        links={[
+          { label: "Work & teaching", href: "#work-title" },
+          { label: "Education", href: "#education-title" },
+          { label: "Community", href: "#impact-title" },
+          { label: "Toolkit", href: "#toolkit-title" },
+        ]}
       />
 
       <section className="section" aria-labelledby="work-title">
@@ -252,7 +268,7 @@ function ExperiencePage() {
           id="work-title"
           index="01A"
           eyebrow="Work"
-          title="Technical support, explained humanly."
+          title="Work & teaching."
         />
         <div className="timeline">
           {experience.map((role, index) => (
@@ -286,7 +302,7 @@ function ExperiencePage() {
           id="education-title"
           index="01B"
           eyebrow="Academic foundation"
-          title="From theory toward application."
+          title="Education."
         />
         <div className="education-grid">
           {education.map((item, index) => (
@@ -306,7 +322,7 @@ function ExperiencePage() {
           id="impact-title"
           index="01C"
           eyebrow="Leadership & impact"
-          title="Technology exists in a wider world."
+          title="Beyond the classroom."
         />
         <article className="impact-card reveal">
           <div className="impact-card__mark" aria-hidden="true">
@@ -326,8 +342,7 @@ function ExperiencePage() {
           id="toolkit-title"
           index="01D"
           eyebrow="Working toolkit"
-          title="Capabilities developed through use."
-          description="Tools applied across coursework, research, projects, and independent practice."
+          title="Tools I work with."
         />
         <div className="skills-grid">
           {skills.map((group, index) => (
@@ -359,23 +374,29 @@ function ProjectsPage() {
   return (
     <>
       <PageHero
-        index="02"
         eyebrow="Projects"
-        title="Systems, simulations, and useful software."
-        description="From evidence-backed research workflows to interactive systems experiments: projects that connect product thinking, AI exploration, and practical engineering."
+        title="Projects worth opening."
+        description="Research tools, systems experiments, forecasting, and the software I’ve built along the way."
+        links={[
+          ...projects.filter((project) => project.featured).map((project) => ({
+            label: project.slug === "nz-electricity-forecasting" ? "NZ Electricity" : project.title,
+            href: `#${project.slug}`,
+          })),
+          { label: "More projects", href: "#archive-title" },
+        ]}
       />
 
       <section className="project-stats" aria-label="Project overview">
         <div>
-          <strong>{String(projectStats.total).padStart(2, "0")}</strong>
+          <strong>{projectStats.total}</strong>
           <span>Selected projects</span>
         </div>
         <div>
-          <strong>{String(projectStats.live).padStart(2, "0")}</strong>
+          <strong>{projectStats.live}</strong>
           <span>Live demos</span>
         </div>
         <div>
-          <strong>{String(projectStats.source).padStart(2, "0")}</strong>
+          <strong>{projectStats.source}</strong>
           <span>Public repositories</span>
         </div>
       </section>
@@ -385,19 +406,24 @@ function ProjectsPage() {
           id="projects-title"
           index="02A"
           eyebrow="Selected work"
-          title="Built to be explored."
-          description="Try a live demo, inspect the source, or explore the ideas behind ongoing research. Folio is available as an open-source working preview."
+          title="Current work."
+          description="A look at the problem, the implementation, and a decision that shaped each project."
         />
-        <div className="project-grid">
-          {projects.map((project, index) => (
-            <ProjectCard key={project.slug} project={project} index={index} />
-          ))}
-        </div>
+        <FeaturedWork projects={projects.filter((project) => project.featured)} detailed />
         <p className="project-disclosure reveal">
           Demonstrations include sample workflows, simulated systems, and historical
           market data. Project descriptions distinguish working previews and research
           from released demos; ExplainLab’s results are educational simulations.
         </p>
+      </section>
+
+      <section className="section archive-section" aria-labelledby="archive-title">
+        <SectionHeading id="archive-title" eyebrow="More projects" title="The rest of the collection." />
+        <div className="project-grid project-grid--archive">
+          {projects.filter((project) => !project.featured).map((project, index) => (
+            <ProjectCard key={project.slug} project={project} index={index} compact />
+          ))}
+        </div>
       </section>
 
       <ContactPanel />
@@ -408,18 +434,9 @@ function ProjectsPage() {
 function ContactPanel() {
   return (
     <section className="contact" aria-labelledby="contact-title">
-      <div className="contact__signal" aria-hidden="true">
-        <span />
-        <span />
-        <span />
-      </div>
-      <p className="contact__eyebrow">LET’S CONNECT</p>
-      <h2 id="contact-title">Have an idea worth exploring?</h2>
-      <p>
-        I enjoy exchanging ideas about AI products, game AI, and tools that make
-        complex work easier. Let’s connect around a project, a useful question,
-        or something we could build together.
-      </p>
+      <div className="contact__copy"><p className="contact__eyebrow">Let’s connect</p>
+      <h2 id="contact-title">What are you working on?</h2>
+      <p>I’m always interested in a useful question, an AI product idea, or a new way to explain something complex.</p></div>
       <div className="contact__actions">
         <a
           className="button button--primary"
@@ -445,8 +462,8 @@ function ContactPanel() {
 function Footer() {
   return (
     <footer className="site-footer">
-      <p>© {new Date().getFullYear()} Grant Zhang</p>
-      <p>Designed and built with care in Auckland.</p>
+      <p>© {new Intl.DateTimeFormat("en-NZ", { year: "numeric" }).format(new Date())} Grant Zhang</p>
+      <p>Building in Auckland, New Zealand.</p>
       <a href="#top">Back to top ↑</a>
     </footer>
   );
@@ -461,30 +478,6 @@ function App({ page }: AppProps) {
       ?.setAttribute("content", meta.description);
     document.querySelector('link[rel="canonical"]')?.setAttribute("href", meta.url);
 
-    const prefersReducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-    const elements = document.querySelectorAll<HTMLElement>(".reveal");
-
-    if (prefersReducedMotion || !("IntersectionObserver" in window)) {
-      elements.forEach((element) => element.classList.add("is-visible"));
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("is-visible");
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.1 },
-    );
-
-    elements.forEach((element) => observer.observe(element));
-    return () => observer.disconnect();
   }, [page]);
 
   return (
@@ -493,7 +486,7 @@ function App({ page }: AppProps) {
         Skip to content
       </a>
       <Header page={page} />
-      <main id="main-content">
+      <main id="main-content" tabIndex={-1}>
         {page === "home" && <HomePage />}
         {page === "experience" && <ExperiencePage />}
         {page === "projects" && <ProjectsPage />}
