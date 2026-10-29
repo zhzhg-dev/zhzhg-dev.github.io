@@ -22,7 +22,7 @@ const workflow = await readFile(
 );
 
 test("production emits three distinct portfolio pages", () => {
-  assert.match(homeHtml, /Grant Zhang \| AI Product Builder/);
+  assert.match(homeHtml, /<title>[^<]*Grant Zhang[^<]*<\/title>/);
   assert.match(experienceHtml, /Experience \| Grant Zhang/);
   assert.match(projectsHtml, /Projects \| Grant Zhang/);
   assert.match(homeHtml, /data-page="home"/);
@@ -72,7 +72,7 @@ test("profile and project publication claims reflect the current state", () => {
   assert.doesNotMatch(dataSource, /improved performance|production-ready AI/);
   assert.doesNotMatch(dataSource, /@gmail\.com/);
   assert.match(dataSource, /https:\/\/www\.linkedin\.com\/in\/grant-zhang-zahz\//);
-  assert.match(dataSource, /Building AI products · Exploring game AI/);
+  assert.match(dataSource, /game AI/i);
   assert.match(dataSource, /built on a dataset of 52,608/);
   assert.doesNotMatch(dataSource + appSource, /Tencent|腾讯|Incoming|Open to internship|internship and graduate opportunities/i);
   const folio = dataSource.slice(dataSource.indexOf('slug: "folio"'), dataSource.indexOf('slug: "explainlab"'));
@@ -80,13 +80,12 @@ test("profile and project publication claims reflect the current state", () => {
   assert.doesNotMatch(folio, /liveUrl:/);
 });
 
-test("experience, education, community, and skills are merged into the experience page", () => {
-  for (const label of [
-    "Academic foundation",
-    "Leadership & impact",
-    "Working toolkit",
-  ]) {
-    assert.match(appSource, new RegExp(label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+test("all standalone pages expose canonical addresses and light browser chrome", () => {
+  for (const [html, path] of [[homeHtml, "/"], [experienceHtml, "/experience/"], [projectsHtml, "/projects/"]]) {
+    assert.match(html, /<html\b[^>]*\blang="en"/);
+    assert.match(html, /name="color-scheme"\s+content="light"/);
+    const canonical = html.match(/<link\b[^>]*rel="canonical"[^>]*href="([^"]+)"/)?.[1];
+    assert.equal(canonical, `https://zhzhg-dev.github.io${path}`);
   }
 });
 

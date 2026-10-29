@@ -14,6 +14,8 @@ function releasePage(dialog: HTMLDialogElement) {
 }
 
 export function ProjectPreview({ project, className }: ProjectPreviewProps) {
+  const isIllustration = project.coverAlt.toLowerCase().startsWith("abstract");
+  const imageKind = isIllustration ? "illustration" : "screenshot";
   const dialogRef = useRef<HTMLDialogElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   const originalRef = useRef<HTMLAnchorElement>(null);
@@ -78,11 +80,11 @@ export function ProjectPreview({ project, className }: ProjectPreviewProps) {
   }
 
   return (
-    <figure className={["project-preview", className].filter(Boolean).join(" ")}>
+    <figure className={["project-preview", "editorial-preview", `project-preview--${project.slug}`, className].filter(Boolean).join(" ")}>
       <button
         className="project-preview__image"
         type="button"
-        aria-label={`Expand ${project.title} screenshot`}
+        aria-label={`Expand ${project.title} ${imageKind}`}
         aria-haspopup="dialog"
         aria-controls={dialogId}
         onClick={openPreview}
@@ -96,9 +98,10 @@ export function ProjectPreview({ project, className }: ProjectPreviewProps) {
           decoding="async"
           style={{ objectPosition: project.coverPosition }}
         />
+        <span className="project-preview__view" aria-hidden="true">View</span>
       </button>
       <figcaption className="project-preview__caption">
-        <span>Interface preview</span>
+        <span>{isIllustration ? "Project illustration" : "Interface preview"}</span>
         <button
           className="project-preview__expand"
           type="button"
@@ -121,7 +124,7 @@ export function ProjectPreview({ project, className }: ProjectPreviewProps) {
       >
         <div className="project-preview__dialog-header">
           <h2 className="project-preview__dialog-title" id={titleId}>
-            <span translate="no">{project.title}</span> Screenshot
+            <span translate="no">{project.title}</span> {isIllustration ? "Illustration" : "Screenshot"}
           </h2>
           <button
             ref={closeRef}
@@ -150,7 +153,7 @@ export function ProjectPreview({ project, className }: ProjectPreviewProps) {
             href={project.cover}
             target="_blank"
             rel="noreferrer"
-            aria-label={`Open ${project.title} original screenshot in a new tab`}
+            aria-label={`Open ${project.title} original ${imageKind} in a new tab`}
           >
             Open original image <span aria-hidden="true">↗</span>
           </a>

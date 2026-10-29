@@ -1,499 +1,366 @@
-import { useEffect, useRef, useState } from "react";
-import { ProjectCard } from "./components/ProjectCard";
-import { SectionHeading } from "./components/SectionHeading";
+import { useEffect, useRef, useState, type ReactNode, type PointerEvent } from "react";
 import { FeaturedWork } from "./components/FeaturedWork";
-import { HeroWorkbench } from "./components/HeroWorkbench";
-import { IdentityOrbit } from "./components/IdentityOrbit";
-export { HeroWorkbench } from "./components/HeroWorkbench";
-import {
-  community,
-  education,
-  experience,
-  navigation,
-  profile,
-  projects,
-  projectStats,
-  skills,
-} from "./data/profile";
-
+import { ProjectCard } from "./components/ProjectCard";
+import { SignatureField } from "./components/SignatureField";
+import { community, education, experience, navigation, profile, projects, skills } from "./data/profile";
 export type PageName = "home" | "experience" | "projects";
-
 type AppProps = {
-  page: PageName;
+    page: PageName;
 };
-
-const pageMeta: Record<PageName, { title: string; description: string; url: string }> = {
-  home: {
-    title: "Grant Zhang | AI Product Builder",
-    description:
-      "Grant Zhang builds practical AI-enabled products, connecting user needs, working prototypes, and model evaluation. Based in Auckland, New Zealand.",
-    url: profile.canonicalUrl,
-  },
-  experience: {
-    title: "Experience | Grant Zhang",
-    description:
-      "Grant Zhang's teaching experience, mathematics foundation, and toolkit for product prototyping, requirements analysis, and model evaluation.",
-    url: `${profile.canonicalUrl}experience/`,
-  },
-  projects: {
-    title: "Projects | Grant Zhang",
-    description:
-      "Explore Folio, ExplainLab, electricity forecasting, and other AI, simulation, and software projects by Grant Zhang.",
-    url: `${profile.canonicalUrl}projects/`,
-  },
+const pageMeta = {
+    home: { title: "Grant Zhang | AI Product Builder", description: "Grant Zhang: a mathematical mind, an AI builder, and a teacher. A personal space for curiosity, craft, and what comes next.", url: profile.canonicalUrl },
+    experience: { title: "Experience | Grant Zhang", description: "Grant Zhang’s teaching experience, education, community work, and technical toolkit.", url: `${profile.canonicalUrl}experience/` },
+    projects: { title: "Projects | Grant Zhang", description: "Explore Folio, ExplainLab, electricity forecasting, and other AI, simulation, and software projects by Grant Zhang.", url: `${profile.canonicalUrl}projects/` },
 };
-
-function ArrowIcon() {
-  return <span aria-hidden="true">↗</span>;
-}
-
-function Header({ page }: { page: PageName }) {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const headerRef = useRef<HTMLElement>(null);
-  const toggleRef = useRef<HTMLButtonElement>(null);
-
-  useEffect(() => {
-    document.body.classList.toggle("menu-open", menuOpen);
-    return () => document.body.classList.remove("menu-open");
-  }, [menuOpen]);
-
-  useEffect(() => {
-    const desktop = window.matchMedia("(min-width: 861px)");
-    const closeOnDesktop = () => { if (desktop.matches) setMenuOpen(false); };
-    desktop.addEventListener("change", closeOnDesktop);
-    return () => desktop.removeEventListener("change", closeOnDesktop);
-  }, []);
-
-  useEffect(() => {
-    if (!menuOpen) return;
-    headerRef.current?.querySelector<HTMLAnchorElement>("nav a")?.focus();
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setMenuOpen(false);
-        toggleRef.current?.focus();
-      }
-      if (event.key === "Tab") {
-        const items = headerRef.current?.querySelectorAll<HTMLElement>("a, button");
-        if (!items?.length) return;
-        const first = items[0];
-        const last = items[items.length - 1];
-        if (event.shiftKey && document.activeElement === first) {
-          event.preventDefault(); last.focus();
-        } else if (!event.shiftKey && document.activeElement === last) {
-          event.preventDefault(); first.focus();
-        }
-      }
-    };
-    document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
-  }, [menuOpen]);
-
-  return (
-    <header className="site-header" ref={headerRef}>
-      <a className="brand" href="/" aria-label="Grant Zhang, home">
-        <span className="brand__mark">GZ</span>
-        <span className="brand__label" translate="no">Grant Zhang</span>
-      </a>
-
-      <button
-        className="menu-toggle"
-        ref={toggleRef}
-        type="button"
-        aria-label={menuOpen ? "Close navigation" : "Open navigation"}
-        aria-expanded={menuOpen}
-        aria-controls="site-navigation"
-        onClick={() => setMenuOpen((open) => !open)}
-      >
-        <span aria-hidden="true" />
-        <span aria-hidden="true" />
-      </button>
-
-      <nav
-        id="site-navigation"
-        className={`site-nav ${menuOpen ? "is-open" : ""}`}
-        aria-label="Primary navigation"
-      >
-        {navigation.map((item) => (
-          <a
-            key={item.page}
-            href={item.href}
-            aria-current={page === item.page ? "page" : undefined}
-            onClick={() => setMenuOpen(false)}
-          >
-            {item.label}
-          </a>
-        ))}
-        <a
-          className="nav-github"
-          href={profile.github}
-          target="_blank"
-          rel="noreferrer"
-        >
-          GitHub <ArrowIcon />
-        </a>
-      </nav>
-    </header>
-  );
-}
-
-function PageHero({
-  eyebrow,
-  title,
-  description,
-  links,
-}: {
-  eyebrow: string;
-  title: string;
-  description: string;
-  links: { label: string; href: string }[];
+function Arrow({ diagonal = false }: {
+    diagonal?: boolean;
 }) {
-  return (
-    <section className="page-hero" id="top">
-      <div className="page-hero__atmosphere" aria-hidden="true">
-        <svg viewBox="0 0 480 360" fill="none">
-          <ellipse cx="348" cy="178" rx="190" ry="144" transform="rotate(-28 348 178)" />
-          <ellipse cx="348" cy="178" rx="162" ry="118" transform="rotate(-28 348 178)" />
-          <path d="M143 178h20 M348 0v20 M348 336v20 M167 57h16v16 M454 294h-16v-16" />
-          <circle cx="190" cy="91" r="3" className="page-hero__point" />
-          <circle cx="469" cy="254" r="3" className="page-hero__point" />
-        </svg>
-      </div>
-      <div className="page-hero__content">
-        <p className="page-hero__eyebrow">{eyebrow}</p>
-        <h1>{title}</h1>
-        <p className="page-hero__description">{description}</p>
-        <nav className="page-hero__links" aria-label={`${eyebrow} sections`}>
-          {links.map((link) => (
-            <a key={link.href} href={link.href}>{link.label}<span aria-hidden="true">↓</span></a>
-          ))}
-        </nav>
-      </div>
-    </section>
-  );
+    return <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className={diagonal ? "arrow arrow--diagonal" : "arrow"}>
+    <path d="M4 12h15M12 5l7 7-7 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>;
 }
-
+function MagneticLink({ href, children, className = "", external = false }: {
+    href: string;
+    children: ReactNode;
+    className?: string;
+    external?: boolean;
+}) {
+    function move(event: PointerEvent<HTMLAnchorElement>) {
+        if (!window.matchMedia("(hover:hover) and (pointer:fine)").matches || window.matchMedia("(prefers-reduced-motion:reduce)").matches)
+            return;
+        const bounds = event.currentTarget.getBoundingClientRect();
+        event.currentTarget.style.setProperty("--mx", `${(event.clientX - bounds.left - bounds.width / 2) * .08}px`);
+        event.currentTarget.style.setProperty("--my", `${(event.clientY - bounds.top - bounds.height / 2) * .12}px`);
+    }
+    function reset(event: PointerEvent<HTMLAnchorElement>) { event.currentTarget.style.setProperty("--mx", "0px"); event.currentTarget.style.setProperty("--my", "0px"); }
+    return <a href={href} className={`magnetic-link ${className}`} onPointerMove={move} onPointerLeave={reset} {...(external ? { target: "_blank", rel: "noreferrer" } : {})}>{children}</a>;
+}
+function Header({ page }: {
+    page: PageName;
+}) {
+    const [menuOpen, setMenuOpen] = useState(false);
+    const headerRef = useRef<HTMLElement>(null);
+    const toggleRef = useRef<HTMLButtonElement>(null);
+    useEffect(() => {
+        document.body.classList.toggle("menu-open", menuOpen);
+        const background = document.querySelectorAll<HTMLElement>("main,footer");
+        background.forEach(element => { element.inert = menuOpen; });
+        const restoreBackground = () => { document.body.classList.remove("menu-open"); background.forEach(element => { element.inert = false; }); };
+        if (!menuOpen)
+            return restoreBackground;
+        headerRef.current?.querySelector<HTMLAnchorElement>("nav a")?.focus();
+        const key = (event: KeyboardEvent) => {
+            if (event.key === "Escape") {
+                setMenuOpen(false);
+                toggleRef.current?.focus();
+            }
+            if (event.key === "Tab") {
+                const items = headerRef.current?.querySelectorAll<HTMLElement>("a,button");
+                if (!items?.length)
+                    return;
+                const first = items[0], last = items[items.length - 1];
+                if (event.shiftKey && document.activeElement === first) {
+                    event.preventDefault();
+                    last.focus();
+                }
+                else if (!event.shiftKey && document.activeElement === last) {
+                    event.preventDefault();
+                    first.focus();
+                }
+            }
+        };
+        document.addEventListener("keydown", key);
+        return () => { restoreBackground(); document.removeEventListener("keydown", key); };
+    }, [menuOpen]);
+    useEffect(() => {
+        const wide = window.matchMedia("(min-width:761px)");
+        const close = () => { if (wide.matches)
+            setMenuOpen(false); };
+        wide.addEventListener("change", close);
+        return () => wide.removeEventListener("change", close);
+    }, []);
+    return <header className="site-header" ref={headerRef}>
+    <a href="/" className="brand" aria-label="Grant Zhang, home">
+    <span className="brand-symbol" aria-hidden="true">g<span>.</span>
+    </span>
+    <span translate="no">Grant Zhang</span>
+    </a>
+    <span className="header-location">
+    <span aria-hidden="true"/>Based in Auckland, NZ</span>
+    <button className="menu-toggle" type="button" ref={toggleRef} aria-label={menuOpen ? "Close navigation" : "Open navigation"} aria-expanded={menuOpen} aria-controls="site-navigation" onClick={() => setMenuOpen(!menuOpen)}>
+    <span />
+    <span />
+    </button>
+    <nav id="site-navigation" className={`site-nav ${menuOpen ? "is-open" : ""}`} aria-label="Primary navigation">{navigation.map(item => <a key={item.page} href={item.href} aria-current={page === item.page ? "page" : undefined} onClick={() => setMenuOpen(false)}>
+        <span>{item.label}</span>
+        <span className="nav-dot" aria-hidden="true"/>
+        </a>)}</nav>
+  </header>;
+}
+const interests = [
+    { title: "AI products", text: "I’m interested in the space between what a model can do and what a person actually needs. Research workflows, on-device AI, and careful evaluation are where I’m spending time.", note: "Useful before impressive." },
+    { title: "Game AI", text: "Simulation, reinforcement learning, and intelligent systems for games keep drawing me in. I like environments where a small change in the rules can produce an entirely different behaviour.", note: "A good question is something you can play with." },
+    { title: "Making it clear", text: "Teaching introductory computing reminds me that understanding is something you build together. A patient explanation, a smaller example, or the right question can change everything.", note: "Clarity is part of the work." },
+];
+function PersonalFocus() {
+    const [active, setActive] = useState(0);
+    return <section className="personal-focus section-shell" aria-labelledby="focus-title">
+    <div className="section-caption">
+    <span className="small-orbit" aria-hidden="true"/>
+    <h2 id="focus-title">What holds my attention</h2>
+    </div>
+    <div className="focus-layout">
+    <div className="focus-choices" role="group" aria-label="Explore my interests">{interests.map((item, index) => <button key={item.title} type="button" aria-pressed={active === index} aria-controls="interest-detail" onClick={() => setActive(index)}>
+        <span>{item.title}</span>
+        <Arrow />
+        </button>)}</div>
+    <div className="focus-detail" id="interest-detail" aria-live="polite">
+    <div key={active} className="focus-detail__content">
+    <span className="focus-asterisk" aria-hidden="true">✳</span>
+    <p>{interests[active].text}</p>
+    <span>{interests[active].note}</span>
+    </div>
+    </div>
+    </div>
+    </section>;
+}
 function HomePage() {
-  return (
-    <>
-      <section className="hero" id="top" aria-labelledby="hero-title">
-        <div className="hero__grid" aria-hidden="true" />
-        <div className="hero__content">
-          <div className="status-pill">
-            <span className="status-pill__dot" aria-hidden="true" />
-            {profile.availability}
-          </div>
-          <p className="hero__kicker">Auckland · AI product builder</p>
-          <h1 id="hero-title" translate="no">
-            <span>Grant</span>
-            <span className="hero__surname">Zhang.</span>
-          </h1>
-          <p className="hero__headline">I build useful AI products—from a question to a working system.</p>
-          <p className="hero__intro">
-            A mathematics background, a builder’s curiosity, and a focus on
-            useful AI experiences—from research workflows to intelligent systems.
-          </p>
-
-          <div className="hero__actions">
-            <a className="button button--primary" href="#selected-title">
-              Explore my work <span aria-hidden="true">↓</span>
-            </a>
-            <a className="button button--quiet" href="/experience/">
-              View experience
-            </a>
-          </div>
-        </div>
-
-        <IdentityOrbit />
-
-        <div className="hero__meta">
-          <span>{profile.alternativeName}</span>
-          <span>{profile.location}</span>
-          <span>Master of Information Technology</span>
-        </div>
-      </section>
-
-      <section className="section selected-work" aria-labelledby="selected-title">
-        <SectionHeading
-          id="selected-title"
-          index="02"
-          eyebrow="Selected work"
-          title="Ideas made concrete."
-          description="Research tools, systems experiments, and forecasts. Choose a project to take a closer look."
-        />
-        <HeroWorkbench />
-        <div className="section-end reveal">
-          <span>
-            {projectStats.total} projects · {projectStats.live} live demos · {projectStats.source} public repositories
-          </span>
-          <a className="button button--quiet" href="/projects/">
-            View all projects <span aria-hidden="true">→</span>
-          </a>
-        </div>
-      </section>
-
-      <section className="section profile-section" aria-labelledby="profile-title">
-        <div className="profile-heading">
-          <span className="profile-heading__mark" aria-hidden="true">GZ</span>
-          <div><p>A little background</p><h2 id="profile-title">A builder’s curiosity.<br />A teacher’s patience.</h2></div>
-        </div>
-        <div className="profile-copy">
-          <p>{profile.about[0]}</p>
-          <p>Currently exploring game AI, simulation, and how intelligent systems can support creative work.</p>
-          <a className="text-link" href="/experience/">Experience & education <ArrowIcon /></a>
-        </div>
-      </section>
-
-      <ContactPanel />
-    </>
-  );
-}
-
-function ExperiencePage() {
-  return (
-    <>
-      <PageHero
-        eyebrow="Experience"
-        title="Experience & background."
-        description="Teaching, a mathematical foundation, and the skills I use to build."
-        links={[
-          { label: "Work & teaching", href: "#work-title" },
-          { label: "Education", href: "#education-title" },
-          { label: "Community", href: "#impact-title" },
-          { label: "Toolkit", href: "#toolkit-title" },
-        ]}
-      />
-
-      <section className="section" aria-labelledby="work-title">
-        <SectionHeading
-          id="work-title"
-          index="01A"
-          eyebrow="Work"
-          title="Work & teaching."
-        />
-        <div className="timeline">
-          {experience.map((role, index) => (
-            <article className="timeline__item reveal" key={role.role}>
-              <div className="timeline__rail" aria-hidden="true">
-                <span>0{index + 1}</span>
-              </div>
-              <div className="timeline__when">{role.period}</div>
-              <div className="timeline__content">
-                <p className="timeline__organisation">{role.organisation}</p>
-                <h2>{role.role}</h2>
-                <p className="timeline__summary">{role.summary}</p>
-                <ul className="timeline__points">
-                  {role.points.map((point) => (
-                    <li key={point}>{point}</li>
-                  ))}
-                </ul>
-                <ul className="tag-list" aria-label={`${role.role} capabilities`}>
-                  {role.tags.map((tag) => (
-                    <li key={tag}>{tag}</li>
-                  ))}
-                </ul>
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="section" aria-labelledby="education-title">
-        <SectionHeading
-          id="education-title"
-          index="01B"
-          eyebrow="Academic foundation"
-          title="Education."
-        />
-        <div className="education-grid">
-          {education.map((item, index) => (
-            <article className="education-card reveal" key={item.degree}>
-              <div className="education-card__number">0{index + 1}</div>
-              <p className="education-card__period">{item.period}</p>
-              <h2>{item.degree}</h2>
-              <p className="education-card__institution">{item.institution}</p>
-              <p className="education-card__detail">{item.detail}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="section impact-section" aria-labelledby="impact-title">
-        <SectionHeading
-          id="impact-title"
-          index="01C"
-          eyebrow="Leadership & impact"
-          title="Beyond the classroom."
-        />
-        <article className="impact-card reveal">
-          <div className="impact-card__mark" aria-hidden="true">
-            <span>TEAM</span>
-            <strong>共</strong>
-          </div>
-          <div>
-            <p className="impact-card__distinction">{community.distinction}</p>
-            <h2>{community.title}</h2>
-            <p>{community.description}</p>
-          </div>
-        </article>
-      </section>
-
-      <section className="section" aria-labelledby="toolkit-title">
-        <SectionHeading
-          id="toolkit-title"
-          index="01D"
-          eyebrow="Working toolkit"
-          title="Tools I work with."
-        />
-        <div className="skills-grid">
-          {skills.map((group, index) => (
-            <article className="skill-group reveal" key={group.category}>
-              <div className="skill-group__head">
-                <span>0{index + 1}</span>
-                <h2>{group.category}</h2>
-              </div>
-              <ul>
-                {group.items.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </article>
-          ))}
-        </div>
-        <div className="section-end reveal">
-          <span>Experience is the context. Projects are the evidence.</span>
-          <a className="button button--primary" href="/projects/">
-            Explore projects <span aria-hidden="true">→</span>
-          </a>
-        </div>
-      </section>
-    </>
-  );
-}
-
-function ProjectsPage() {
-  return (
-    <>
-      <PageHero
-        eyebrow="Projects"
-        title="Projects worth opening."
-        description="Research tools, systems experiments, forecasting, and the software I’ve built along the way."
-        links={[
-          ...projects.filter((project) => project.featured).map((project) => ({
-            label: project.slug === "nz-electricity-forecasting" ? "NZ Electricity" : project.title,
-            href: `#${project.slug}`,
-          })),
-          { label: "More projects", href: "#archive-title" },
-        ]}
-      />
-
-      <section className="project-stats" aria-label="Project overview">
-        <div>
-          <strong>{projectStats.total}</strong>
-          <span>Selected projects</span>
-        </div>
-        <div>
-          <strong>{projectStats.live}</strong>
-          <span>Live demos</span>
-        </div>
-        <div>
-          <strong>{projectStats.source}</strong>
-          <span>Public repositories</span>
-        </div>
-      </section>
-
-      <section className="section projects-page" aria-labelledby="projects-title">
-        <SectionHeading
-          id="projects-title"
-          index="02A"
-          eyebrow="Selected work"
-          title="Current work."
-          description="A look at the problem, the implementation, and a decision that shaped each project."
-        />
-        <FeaturedWork projects={projects.filter((project) => project.featured)} detailed />
-        <p className="project-disclosure reveal">
-          Demonstrations include sample workflows, simulated systems, and historical
-          market data. Project descriptions distinguish working previews and research
-          from released demos; ExplainLab’s results are educational simulations.
-        </p>
-      </section>
-
-      <section className="section archive-section" aria-labelledby="archive-title">
-        <SectionHeading id="archive-title" eyebrow="More projects" title="The rest of the collection." />
-        <div className="project-grid project-grid--archive">
-          {projects.filter((project) => !project.featured).map((project, index) => (
-            <ProjectCard key={project.slug} project={project} index={index} compact />
-          ))}
-        </div>
-      </section>
-
-      <ContactPanel />
-    </>
-  );
-}
-
-function ContactPanel() {
-  return (
-    <section className="contact" aria-labelledby="contact-title">
-      <div className="contact__copy"><p className="contact__eyebrow">Let’s connect</p>
-      <h2 id="contact-title">What are you working on?</h2>
-      <p>I’m always interested in a useful question, an AI product idea, or a new way to explain something complex.</p></div>
-      <div className="contact__actions">
-        <a
-          className="button button--primary"
-          href={profile.linkedin}
-          target="_blank"
-          rel="noreferrer"
-        >
-          Connect on LinkedIn <ArrowIcon />
-        </a>
-        <a
-          className="button button--quiet"
-          href={profile.github}
-          target="_blank"
-          rel="noreferrer"
-        >
-          Explore GitHub <ArrowIcon />
-        </a>
-      </div>
+    return <>
+    <section className="personal-hero section-shell" id="top" aria-labelledby="hero-title">
+    <div className="personal-hero__copy">
+    <p className="hero-greeting">Hi, I’m Grant.</p>
+    <h1 id="hero-title" translate="no">
+    <span>Grant</span>
+    <span>Zhang<span className="name-period">.</span>
+    </span>
+    </h1>
+    <p className="hero-description">A mathematical mind.<br />A builder’s curiosity.<br />A human point of view.</p>
+    <MagneticLink href="#about" className="hero-about">
+    <span className="round-arrow">
+    <Arrow />
+    </span>A little about me</MagneticLink>
+    </div>
+    <div className="personal-hero__art">
+    <SignatureField />
+    </div>
+    <div className="hero-footnote">
+    <span>Mathematics, AI & the people in between.</span>
+    <a href={profile.linkedin} target="_blank" rel="noreferrer">Say hello <Arrow diagonal/>
+    </a>
+    <span className="hero-footnote__name">{profile.alternativeName}</span>
+    </div>
     </section>
-  );
+    <section className="personal-intro section-shell" id="about" aria-labelledby="about-title">
+    <div className="section-caption">
+    <span className="small-orbit" aria-hidden="true"/>
+    <span>Behind the name</span>
+    </div>
+    <div className="intro-layout">
+    <h2 id="about-title" data-reveal>A mathematical mind.<br />
+    <span>A human point of view.</span>
+    </h2>
+    <div className="intro-copy">
+    <p>I’m Grant, a Master of Information Technology student and Graduate Teaching Assistant at the University of Auckland.</p>
+    <p>Mathematics taught me to look for patterns. Building software taught me to question them. Teaching reminds me to bring people along.</p>
+    <p>I’m drawn to AI that does something useful—and to the small, thoughtful details that make a complicated system feel simple.</p>
+    <a className="text-link" href="/experience/">My experience & background <Arrow />
+    </a>
+    </div>
+    </div>
+    <div className="personal-facts">
+    <span>
+    <small>Foundation</small>Mathematics & computation</span>
+    <span>
+    <small>Currently</small>Studying, building & teaching</span>
+    <span>
+    <small>Home base</small>Auckland, New Zealand</span>
+    </div>
+    </section>
+    <PersonalFocus />
+    <section className="personal-next section-shell" aria-labelledby="next-title">
+    <h2 id="next-title" data-reveal>A little more<br />to the story.</h2>
+    <div className="next-links">
+    <a href="/experience/">
+    <div>
+    <span>The path so far</span>
+    <h3>Experience</h3>
+    </div>
+    <span className="next-arrow">
+    <Arrow />
+    </span>
+    </a>
+    <a href="/projects/">
+    <div>
+    <span>Ideas you can open</span>
+    <h3>Projects</h3>
+    </div>
+    <span className="next-arrow">
+    <Arrow />
+    </span>
+    </a>
+    </div>
+    </section>
+    <ContactPanel />
+  </>;
 }
-
+function PageHero({ page, title, description, children }: {
+    page: string;
+    title: ReactNode;
+    description: string;
+    children?: ReactNode;
+}) {
+    return <section className="page-hero section-shell" id="top">
+    <p className="page-hero__label">{page}</p>
+    <h1>{title}</h1>
+    <div className="page-hero__bottom">
+    <p>{description}</p>{children}</div>
+    </section>;
+}
+function ExperiencePage() {
+    return <>
+    <PageHero page="Experience" title={<>Always learning.<br />
+        <span>Often explaining.</span>
+        </>} description="The people, places, and ideas that have shaped how I work.">
+    <a className="text-link" href="#work-title">Explore my background <span aria-hidden="true">↓</span>
+    </a>
+    </PageHero>
+    <section className="experience-section section-shell" aria-labelledby="work-title">
+    <div className="section-caption">
+    <span className="small-orbit" aria-hidden="true"/>
+    <h2 id="work-title">Work & teaching</h2>
+    </div>
+    <div className="experience-list">{experience.map(role => <article className="experience-entry" key={role.role}>
+        <p className="experience-period">{role.period}</p>
+        <div>
+        <p className="experience-org">{role.organisation}</p>
+        <h3>{role.role}</h3>
+        <p className="experience-summary">{role.summary}</p>
+        <details className="experience-detail">
+        <summary>What I do <span aria-hidden="true">+</span>
+        </summary>
+        <ul>{role.points.map(point => <li key={point}>{point}</li>)}</ul>
+        </details>
+        <ul className="inline-tags" aria-label={`${role.role} capabilities`}>{role.tags.map(tag => <li key={tag}>{tag}</li>)}</ul>
+        </div>
+        </article>)}</div>
+    </section>
+    <section className="experience-section section-shell" aria-labelledby="education-title">
+    <div className="section-caption">
+    <span className="small-orbit" aria-hidden="true"/>
+    <span>Academic foundation</span>
+    </div>
+    <h2 className="section-title" id="education-title">A foundation to build on.</h2>
+    <div className="education-list">{education.map(item => <article key={item.degree}>
+        <p>{item.period}</p>
+        <div>
+        <h3>{item.degree}</h3>
+        <p className="education-institution">{item.institution}</p>
+        <p className="education-detail">{item.detail}</p>
+        </div>
+        </article>)}</div>
+    </section>
+    <section className="experience-section community-section section-shell" aria-labelledby="community-title">
+    <div className="section-caption">
+    <span className="small-orbit" aria-hidden="true"/>
+    <span>Leadership & impact</span>
+    </div>
+    <div className="community-layout">
+    <h2 className="section-title" id="community-title">Beyond<br />the classroom.</h2>
+    <div>
+    <p className="community-award">{community.distinction}</p>
+    <h3>{community.title}</h3>
+    <p>{community.description}</p>
+    </div>
+    </div>
+    </section>
+    <section className="experience-section section-shell" aria-labelledby="toolkit-title">
+    <div className="section-caption">
+    <span className="small-orbit" aria-hidden="true"/>
+    <span>Working toolkit</span>
+    </div>
+    <h2 className="section-title" id="toolkit-title">Tools follow the question.</h2>
+    <div className="toolkit-list">{skills.map(group => <article key={group.category}>
+        <h3>{group.category}</h3>
+        <ul>{group.items.map(item => <li key={item}>{item}</li>)}</ul>
+        </article>)}</div>
+    </section>
+    <ContactPanel />
+  </>;
+}
+function ProjectsPage() {
+    return <>
+    <PageHero page="Projects" title={<>A few ideas.<br />
+        <span>Made tangible.</span>
+        </>} description="AI products, systems experiments, and a few useful things I wanted to exist.">
+    <nav className="project-jump" aria-label="Featured projects">{projects.filter(p => p.featured).map(p => <a href={`#${p.slug}`} key={p.slug}>{p.slug === "nz-electricity-forecasting" ? "NZ Electricity" : p.title}<span aria-hidden="true">↓</span>
+        </a>)}</nav>
+    </PageHero>
+    <section className="projects-main section-shell" aria-label="Selected project case studies">
+    <FeaturedWork projects={projects.filter(p => p.featured)} detailed/>
+    </section>
+    <section className="archive-section section-shell" aria-labelledby="archive-title">
+    <div className="archive-heading">
+    <div className="section-caption">
+    <span className="small-orbit" aria-hidden="true"/>
+    <span>More explorations</span>
+    </div>
+    <h2 className="section-title" id="archive-title">Along the way.</h2>
+    <p>Research, team projects, and smaller things built to learn.</p>
+    </div>
+    <div className="project-grid project-grid--archive">{projects.filter(p => !p.featured).map((project, index) => <ProjectCard project={project} index={index} key={project.slug} compact/>)}</div>
+    </section>
+    <ContactPanel />
+  </>;
+}
+function ContactPanel() {
+    return <section className="contact section-shell" aria-labelledby="contact-title">
+    <div className="contact-top">
+    <span className="small-orbit" aria-hidden="true"/>
+    <p>Good conversations start with curiosity.</p>
+    </div>
+    <div className="contact-main">
+    <h2 id="contact-title">Have a good<br />question<span>?</span>
+    </h2>
+    <MagneticLink href={profile.linkedin} external className="contact-circle">
+    <Arrow diagonal/>
+    <span>Let’s talk</span>
+    </MagneticLink>
+    </div>
+    <div className="contact-links">
+    <a href={profile.linkedin} target="_blank" rel="noreferrer">LinkedIn <Arrow diagonal/>
+    </a>
+    <a href={profile.github} target="_blank" rel="noreferrer">GitHub <Arrow diagonal/>
+    </a>
+    <p>AI, games, teaching—or something I haven’t thought of yet.</p>
+    </div>
+    </section>;
+}
 function Footer() {
-  return (
-    <footer className="site-footer">
-      <p>© {new Intl.DateTimeFormat("en-NZ", { year: "numeric" }).format(new Date())} Grant Zhang</p>
-      <p>Building in Auckland, New Zealand.</p>
-      <a href="#top">Back to top ↑</a>
-    </footer>
-  );
+    return <footer className="site-footer section-shell">
+    <p>© {new Intl.DateTimeFormat("en-NZ", { year: "numeric" }).format(new Date())} Grant Zhang</p>
+    <p>Made with curiosity, in Auckland.</p>
+    <a href="#top">Back to top <span aria-hidden="true">↑</span>
+    </a>
+    </footer>;
 }
-
 function App({ page }: AppProps) {
-  useEffect(() => {
-    const meta = pageMeta[page];
-    document.title = meta.title;
-    document
-      .querySelector('meta[name="description"]')
-      ?.setAttribute("content", meta.description);
-    document.querySelector('link[rel="canonical"]')?.setAttribute("href", meta.url);
-
-  }, [page]);
-
-  return (
-    <>
-      <a className="skip-link" href="#main-content">
-        Skip to content
-      </a>
-      <Header page={page} />
-      <main id="main-content" tabIndex={-1}>
-        {page === "home" && <HomePage />}
-        {page === "experience" && <ExperiencePage />}
-        {page === "projects" && <ProjectsPage />}
-      </main>
-      <Footer />
-    </>
-  );
+    useEffect(() => {
+        const meta = pageMeta[page];
+        document.title = meta.title;
+        document.querySelector('meta[name="description"]')?.setAttribute("content", meta.description);
+        document.querySelector('link[rel="canonical"]')?.setAttribute("href", meta.url);
+        const observer = new IntersectionObserver(entries => { entries.forEach(entry => { if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
+        } }); }, { threshold: .15 });
+        document.querySelectorAll("[data-reveal]").forEach(el => observer.observe(el));
+        return () => observer.disconnect();
+    }, [page]);
+    return <>
+    <a className="skip-link" href="#main-content">Skip to content</a>
+    <Header page={page}/>
+    <main id="main-content" tabIndex={-1}>{page === "home" ? <HomePage /> : page === "experience" ? <ExperiencePage /> : <ProjectsPage />}</main>
+    <Footer />
+    </>;
 }
-
 export default App;

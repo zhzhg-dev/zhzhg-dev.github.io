@@ -1,26 +1,39 @@
 # Grant Zhang — Portfolio
 
-A responsive, multi-page professional portfolio for Grant Zhang: an AI product builder connecting user needs, prototypes, and evaluation, with a foundation in mathematics and an interest in game AI.
+A personal, three-page website for Grant Zhang, a Master of Information Technology student and Graduate Teaching Assistant at the University of Auckland, with a mathematical background and an interest in practical AI products, simulation, and game AI.
 
-## Pages
+Production: [zhzhg-dev.github.io](https://zhzhg-dev.github.io/)
 
-- Home — personal introduction with the GZ orbit, a full-width project showcase below the opening section, background, and contact
-- Experience — work history, academic foundation, leadership, and technical toolkit
-- Projects — three detailed cases and four compact archive projects, with verified live demos and public source links where available
+## Page responsibilities
 
-The homepage features Folio, ExplainLab, and NZ Electricity Intelligence. Folio is an open-source working preview; its hosted workspace currently requires authentication, so the portfolio links to its source rather than presenting a public demo. ExplainLab is an educational systems simulator, not an AI application or production benchmark.
+- **Home (`/`)** introduces Grant: his mathematical background, teaching, current interests, and ways to connect. It contains no project screenshots, project selector, or case-study list. Large text links lead to the separate Experience and Projects pages.
+- **Experience (`/experience/`)** brings together work history, education, community involvement, and the working toolkit.
+- **Projects (`/projects/`)** contains three main cases—Folio, ExplainLab, and NZ Electricity Intelligence—and four compact archive entries. Each published destination belongs to its project; cases without a public release remain honest summaries.
 
-Profile and contact copy focus on building products, collaboration, and exchanging ideas. Current teaching and study remain in Experience. No future employment is represented as current experience.
+Folio is a working preview with public source code, not an advertised public live demo. ExplainLab is an educational systems simulator, not an AI application or a production benchmark. Electricity forecasting results describe historical holdout evaluation, not operational forecasts or market advice. Public copy does not present future employment as current experience or describe Grant as seeking a role.
+
+## Visual and interaction system
+
+The design uses a white background, deep burgundy emphasis, generous spacing, and a large personal wordmark. Home is an introduction to a person, not a project dashboard. The supporting pages use a quieter layout so that detailed evidence and background remain easy to read.
+
+`SignatureField` supplies the homepage's code-drawn Canvas sculpture. Its **Think**, **Build**, and **Explain** buttons change the form; clicking the sculpture cycles the same modes. The controls are native buttons with a single pressed state and keyboard support. The canvas is decorative to assistive technology, with a text description alongside it.
+
+The sculpture uses short, event-driven transitions rather than an endless animation. Reduced-motion preferences produce a static form; off-screen and background states suspend rendering. Canvas size follows its container and the device-pixel ratio is capped. Effects and observers are cleaned up when the component unmounts.
+
+A separate personal-interest control switches between **AI products**, **Game AI**, and **Making it clear**. These are statements about Grant's current focus, not project filters. Neither control changes the site's three-page information architecture.
+
+On Projects, the three main cases and four archive entries share `ProjectPreview`. Project covers keep their intrinsic dimensions and load lazily; the archive includes both interface screenshots and descriptive illustrations. Image buttons open native modal dialogs; demo and source links remain explicit, separate text actions. Dialogs support Escape, outside-click dismissal, focus restoration, and an **Open original image** link for full-resolution inspection. The archive stays compact, with implementation details available in native disclosure controls.
+
+The responsive navigation supports Escape, focus return, and keyboard cycling on narrow screens. Each page retains one primary heading, a skip link, actual route addresses, and visible keyboard focus.
 
 ## Technology
 
-- Vite
-- React
-- TypeScript
-- Custom CSS
+- React and TypeScript
+- Vite with three static page entry points
+- Custom CSS and Canvas 2D; no 3D runtime dependency
 - GitHub Actions and GitHub Pages
 
-The site is fully static. It has no backend, database, API key, or paid service dependency.
+The deployed site has no backend, database, API key, or paid-service dependency.
 
 ## Local development
 
@@ -31,7 +44,7 @@ npm ci
 npm run dev
 ```
 
-## Quality checks
+## Checks
 
 ```bash
 npm run lint
@@ -40,32 +53,33 @@ npm run build
 npm run check
 ```
 
-The test suite verifies all three page outputs, public project links, cover assets, metadata, accuracy-sensitive wording, and the GitHub Pages workflow. Component-rendering tests cover the workbench's server-rendered default, deep links, invalid parameters, selected state, and real project destinations.
+`npm run check` runs linting, the production build, and the test suite. `npm run test` also builds before testing.
 
-## Visual system
+Production-output tests cover the three page entries, canonical addresses, light browser metadata, public assets, project URLs, accuracy-sensitive copy, and the official GitHub Pages deployment workflow. Component-rendering tests cover:
 
-The original navy/cyan palette, outlined surname, grid, and GZ orbital composition remain the identity. The orbit is an inline vector drawing with calibrated ticks, elliptical paths, and restrained lighting; it has one short entrance instead of an endless loop. The display face keeps the original Segoe UI character, while Onest is self-hosted for readable supporting text in `public/fonts/`, with its SIL Open Font License included. The font source is the [Google Fonts Onest directory](https://github.com/google/fonts/tree/main/ofl/onest).
+- Home's personal content and the absence of project screenshots, project selectors, and case lists.
+- The sculpture's server-rendered default, accessible mode controls, and accompanying description.
+- Separate page responsibilities, real navigation links, one primary heading, and skip navigation.
+- Three main project cases, four archive entries, explicit demo/source destinations, and Folio's source-only publication state.
+- Native screenshot-dialog structure, unique IDs, titles, expand/close controls, image dimensions, lazy loading, and original-image links.
+- Experience's work, education, community, and skills content, and the boundaries on public employment claims.
 
-The homepage keeps the personal introduction and GZ orbit in the opening section. The next section contains a full-width project showcase: three selection buttons above project context on the left and a complete real screenshot on the right. Project context includes the full name, the problem, a specific design decision, technologies, and available demo/source links. Screenshots fit inside the media area without cropping and load lazily because the showcase sits below the first screen.
+Engine tests execute the actual sculpture code in an isolated substitute environment. They check closed, finite geometry; idle RAF termination; reduced motion; background/off-screen suspension; coarse-pointer behavior; DPR limits; and complete observer/listener cleanup. These are behavior tests, not substitutes for visual browser inspection.
 
-Selecting a project updates `?workbench=folio`, `?workbench=explainlab`, or `?workbench=nz-electricity-forecasting`; browser back/forward restores the selection. Selection buttons expose their pressed state. A polite live region announces the changed project context without repeating the screenshot, technology list, or links. The Projects page presents the cases in more detail. Motion respects reduced-motion preferences.
+The old `HeroWorkbench` remains an isolated component with regression tests for its original selection and URL handling. It is not imported by the current App, and its `workbench` query parameter does not add a project gallery to Home.
 
-On narrow screens, the selected screenshot appears before the project explanation. A shared `ProjectPreview` component lets visitors expand real screenshots from Home and the three detailed project cases. It uses a native modal dialog, keeps background content inert, supports Escape and outside-click dismissal, and restores focus to the specific trigger. The close control remains visible on short screens; an original-image link is available for full-resolution inspection. Demo and source links remain separate from image actions. Home also links directly to each project case.
-
-The inner-page headers echo the homepage's orbital geometry with static, low-contrast linework. In-page links lead to actual project cases or experience sections without expanding the primary navigation. Supporting marks use the same circular GZ geometry, and the chronological work history has a restrained vertical rail.
-
-The mobile menu supports Escape, focus return, and keyboard cycling; its content can scroll on short landscape screens. All pages retain standalone addresses, skip navigation, explicit image dimensions, and visible keyboard focus.
+The render tests do not substitute for browser QA. Before publishing, verify all three routes on desktop and mobile, the sculpture and interest controls, keyboard navigation, reduced motion, and opening/closing screenshot dialogs with focus returning to the correct trigger.
 
 ## Updating content
 
-Personal details, experience, projects, skills, education, and community information are stored in `src/data/profile.ts`. Project cover images are stored in `public/projects/`.
+Shared personal details, navigation, experience, projects, skills, education, and community information live in `src/data/profile.ts`. Homepage narrative and page composition live in `src/App.tsx`. Project covers live in `public/projects/`.
 
-Project totals, live-demo counts, and public-repository counts are derived from project data. The `featured` field selects project-showcase entries and the main case studies. `shortDescription`, `decisionTitle`, and `decision` supply the concise case copy. Folio and ExplainLab covers are real project screenshots; `coverWidth` and `coverHeight` record their intrinsic dimensions. The homepage showcase preserves each complete screenshot, while `coverPosition` remains available for other image treatments.
+The `featured` project flag selects the main cases on Projects; it does not add content to Home. `shortDescription`, `decisionTitle`, and `decision` supply case-study context. `coverWidth` and `coverHeight` record intrinsic image dimensions, and `coverAlt` describes the screenshot or illustration. Folio and ExplainLab use real interface screenshots, including the landscape ExplainLab cover.
 
-Only add a live demo or source link after confirming that it is public and belongs to the matching project. Research work without a public release should remain an honest summary rather than linking to a generic profile page.
+Keep personal-home content separate from the project catalogue. Only add a demo or source destination after verifying that it is public and belongs to the matching project. Do not add unsupported outcomes, future work as present employment, or a public demo for an authenticated workspace.
 
 ## Deployment
 
-The workflow at `.github/workflows/deploy.yml` builds and deploys the site on every push to `main` using the official GitHub Pages actions.
+`.github/workflows/deploy.yml` installs dependencies, builds `dist/`, runs the test suite, and deploys with the official GitHub Pages actions on a push to `main` or a manual workflow run. The workflow uses the repository's GitHub Pages environment; no third-party deployment token is required.
 
-Production: <https://zhzhg-dev.github.io/>
+Run the checks and inspect the finished pages before pushing the intended changes. Deployment is confirmed by the successful GitHub Actions run and a fresh inspection of the production URLs, not by a successful local build alone.

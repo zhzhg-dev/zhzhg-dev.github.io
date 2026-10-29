@@ -1,4 +1,5 @@
 import type { Project } from "../data/profile";
+import { ProjectPreview } from "./ProjectPreview";
 
 type ProjectCardProps = {
   project: Project;
@@ -9,33 +10,17 @@ type ProjectCardProps = {
 export function ProjectCard({ project, index, compact = false }: ProjectCardProps) {
   return (
     <article
-      className={`project-card ${project.featured ? "project-card--featured" : ""} ${compact ? "project-card--compact" : ""}`}
+      className={`project-card project-archive-item ${project.featured ? "project-card--featured" : ""} ${compact ? "project-card--compact" : ""}`}
       data-project-order={index + 1}
       aria-labelledby={`archive-${project.slug}-title`}
     >
-      <div className="project-card__media">
-        <img
-          src={project.cover}
-          alt={project.coverAlt}
-          width={project.coverWidth}
-          height={project.coverHeight}
-          loading="lazy"
-          decoding="async"
-          style={{ objectPosition: project.coverPosition }}
-        />
-        <span className="project-card__status">{project.status}</span>
-      </div>
+      <ProjectPreview project={project} className="project-card__media" />
 
       <div className="project-card__body">
         <p className="project-card__eyebrow">{project.eyebrow}</p>
-        <h2 id={`archive-${project.slug}-title`}>{project.title}</h2>
+        <h2 id={`archive-${project.slug}-title`} translate="no">{project.title}</h2>
+        <p className="project-card__status">{project.status}</p>
         <p className="project-card__description">{project.description}</p>
-
-        <ul className="tag-list" aria-label={`${project.title} technologies`}>
-          {project.technologies.map((technology) => (
-            <li key={technology}>{technology}</li>
-          ))}
-        </ul>
 
         <div className="project-card__links">
           {project.liveUrl && (
@@ -62,6 +47,23 @@ export function ProjectCard({ project, index, compact = false }: ProjectCardProp
             <span className="project-card__private">Case study summary</span>
           )}
         </div>
+
+        <details className="project-details project-details--archive">
+          <summary>Implementation</summary>
+          <div className="project-details__body">
+            {project.decision && (
+              <div className="feature-case__decision">
+                <h3>{project.decisionTitle ?? "A design decision"}</h3>
+                <p>{project.decision}</p>
+              </div>
+            )}
+            <ul className="project-technologies" aria-label={`${project.title} technologies`}>
+              {project.technologies.map((technology) => (
+                <li key={technology}>{technology}</li>
+              ))}
+            </ul>
+          </div>
+        </details>
       </div>
     </article>
   );

@@ -36,6 +36,9 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Test page boundaries and public project claims
+        run: node --test tests/*.test.mjs
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
