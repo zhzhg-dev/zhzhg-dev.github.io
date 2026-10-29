@@ -17,9 +17,11 @@ export function ProjectCard({ project, index, compact = false }: ProjectCardProp
       <ProjectPreview project={project} className="project-card__media" />
 
       <div className="project-card__body">
-        <p className="project-card__eyebrow">{project.eyebrow}</p>
-        <h2 id={`archive-${project.slug}-title`} translate="no">{project.title}</h2>
-        <p className="project-card__status">{project.status}</p>
+        <header className="project-card__heading">
+          <h2 id={`archive-${project.slug}-title`} translate="no">{project.title}</h2>
+          <p className="project-card__eyebrow">{project.eyebrow}</p>
+          <p className="project-card__status">{project.status}</p>
+        </header>
         <p className="project-card__description">{project.description}</p>
 
         <div className="project-card__links">

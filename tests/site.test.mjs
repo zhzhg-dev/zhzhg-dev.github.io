@@ -12,6 +12,8 @@ const projectsHtml = await readFile(
   "utf8",
 );
 const appSource = await readFile(new URL("../src/App.tsx", import.meta.url), "utf8");
+const homeSource = await readFile(new URL("../src/components/PersonalHome.tsx", import.meta.url), "utf8");
+const featuredSource = await readFile(new URL("../src/components/FeaturedWork.tsx", import.meta.url), "utf8");
 const dataSource = await readFile(
   new URL("../src/data/profile.ts", import.meta.url),
   "utf8",
@@ -74,7 +76,8 @@ test("profile and project publication claims reflect the current state", () => {
   assert.match(dataSource, /https:\/\/www\.linkedin\.com\/in\/grant-zhang-zahz\//);
   assert.match(dataSource, /game AI/i);
   assert.match(dataSource, /built on a dataset of 52,608/);
-  assert.doesNotMatch(dataSource + appSource, /Tencent|腾讯|Incoming|Open to internship|internship and graduate opportunities/i);
+  assert.doesNotMatch(dataSource + appSource + homeSource + featuredSource,
+    /Tencent|腾讯|Incoming|Open to internship|internship and graduate opportunities/i);
   const folio = dataSource.slice(dataSource.indexOf('slug: "folio"'), dataSource.indexOf('slug: "explainlab"'));
   assert.match(folio, /Working preview/);
   assert.doesNotMatch(folio, /liveUrl:/);
@@ -100,6 +103,7 @@ test("GitHub Pages workflow uses official deployment actions", () => {
     "id-token: write",
     "npm ci",
     "npm run build",
+    "node --test tests/*.test.mjs",
   ]) {
     assert.match(workflow, new RegExp(expected.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
   }
@@ -119,6 +123,10 @@ test("production public assets are emitted", async () => {
     "projects/nz-electricity-forecast.png",
     "projects/folio.png",
     "projects/explainlab-landscape.jpg",
+    "fonts/Onest-variable.ttf",
+    "fonts/OFL.txt",
+    "fonts/bricolage/BricolageGrotesque-variable.ttf",
+    "fonts/bricolage/OFL.txt",
   ]) {
     await access(new URL(`../dist/${asset}`, import.meta.url));
   }

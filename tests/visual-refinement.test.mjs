@@ -8,9 +8,9 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import ts from "typescript";
 
-let HeroWorkbench;
+let PersonalHome;
+let FeaturedWork;
 let ProjectPreview;
-let SignatureField;
 let App;
 let featuredProjects;
 let allProjects;
@@ -20,18 +20,19 @@ let profileData;
 // dependency. This also works when a checkout shares its parent's node_modules.
 const sourceModules = new Map();
 
-function loadSourceModule(filename) {
-  if (sourceModules.has(filename)) return sourceModules.get(filename).exports;
+function loadSourceModule(filename, { modules = sourceModules, reactHooks } = {}) {
+  if (modules.has(filename)) return modules.get(filename).exports;
   const loaded = { exports: {} };
-  sourceModules.set(filename, loaded);
+  modules.set(filename, loaded);
   const nodeRequire = createRequire(filename);
   const sourceRequire = (specifier) => {
+    if (specifier === "react" && reactHooks) return { ...nodeRequire(specifier), ...reactHooks };
     // Component-owned styles are built by Vite, not executed by the SSR test.
     if (specifier.endsWith(".css")) return {};
     if (specifier.startsWith(".")) {
       const base = resolve(dirname(filename), specifier);
       const source = [base, `${base}.tsx`, `${base}.ts`].find(existsSync);
-      if (source) return loadSourceModule(source);
+      if (source) return loadSourceModule(source, { modules, reactHooks });
     }
     return nodeRequire(specifier);
   };
@@ -50,14 +51,14 @@ function loadSourceModule(filename) {
 }
 
 before(() => {
-  ({ HeroWorkbench } = loadSourceModule(
-    fileURLToPath(new URL("../src/components/HeroWorkbench.tsx", import.meta.url)),
+  ({ PersonalHome } = loadSourceModule(
+    fileURLToPath(new URL("../src/components/PersonalHome.tsx", import.meta.url)),
+  ));
+  ({ FeaturedWork } = loadSourceModule(
+    fileURLToPath(new URL("../src/components/FeaturedWork.tsx", import.meta.url)),
   ));
   ({ ProjectPreview } = loadSourceModule(
     fileURLToPath(new URL("../src/components/ProjectPreview.tsx", import.meta.url)),
-  ));
-  ({ SignatureField } = loadSourceModule(
-    fileURLToPath(new URL("../src/components/SignatureField.tsx", import.meta.url)),
   ));
   ({ default: App } = loadSourceModule(fileURLToPath(new URL("../src/App.tsx", import.meta.url))));
   profileData = loadSourceModule(
@@ -73,7 +74,7 @@ function renderAt(Component, props = {}, address) {
   if (address) {
     Object.defineProperty(globalThis, "window", {
       configurable: true,
-      value: { location: new URL(address) },
+      value: { location: new URL(address), history: { state: null } },
     });
   } else {
     delete globalThis.window;
@@ -117,21 +118,20 @@ function elements(html, tagName) {
     }));
 }
 
-function sectionByClass(html, className) {
-  let start;
-  let depth = 0;
-  for (const match of html.matchAll(/<\/?section\b[^>]*>/g)) {
-    const closing = match[0].startsWith("</");
-    if (start === undefined) {
-      if (closing || !attributes(match[0]).class?.split(/\s+/).includes(className)) continue;
-      start = match.index;
-      depth = 1;
+function disclosures(html) {
+  const stack = [];
+  const entries = [];
+  for (const match of html.matchAll(/<\/?details\b[^>]*>/g)) {
+    if (!match[0].startsWith("</")) {
+      stack.push({ start: match.index, ...attributes(match[0]) });
     } else {
-      depth += closing ? -1 : 1;
-      if (depth === 0) return html.slice(start, match.index + match[0].length);
+      const opening = stack.pop();
+      assert.ok(opening, "every closing disclosure needs an opening element");
+      entries.push({ ...opening, markup: html.slice(opening.start, match.index + match[0].length) });
     }
   }
-  assert.fail(`Expected a complete ${className} section`);
+  assert.equal(stack.length, 0, "native disclosures must have balanced markup");
+  return entries.sort((a, b) => a.start - b.start);
 }
 
 function selectionButtons(html) {
@@ -144,6 +144,101 @@ function selectionButtons(html) {
       };
     })
     .filter((button) => "aria-pressed" in button);
+}
+
+// Exercise the production component's event handlers with isolated hook state.
+// This is not a browser substitute: native focus, layout, and dialog behavior
+// remain part of browser QA, while these tests check actual state transitions.
+function componentHarness(name, props = {}) {
+  const slots = [];
+  const pendingEffects = new Set();
+  let cursor = 0;
+  const reactHooks = {
+    useState(initial) {
+      const index = cursor++;
+      if (!slots[index]) slots[index] = { value: typeof initial === "function" ? initial() : initial };
+      return [slots[index].value, (next) => {
+        slots[index].value = typeof next === "function" ? next(slots[index].value) : next;
+      }];
+    },
+    useId() {
+      const index = cursor++;
+      return `test-${name}-${index}`;
+    },
+    useRef(initial) {
+      const index = cursor++;
+      if (!slots[index]) slots[index] = { current: initial };
+      return slots[index];
+    },
+    useEffect(callback, dependencies) {
+      const index = cursor++;
+      const previous = slots[index];
+      const changed = !previous || !dependencies || dependencies.length !== previous.dependencies?.length
+        || dependencies.some((value, position) => !Object.is(value, previous.dependencies[position]));
+      if (changed) {
+        slots[index] = { dependencies, callback, cleanup: previous?.cleanup };
+        pendingEffects.add(index);
+      }
+    },
+  };
+  const component = loadSourceModule(
+    fileURLToPath(new URL(`../src/components/${name}.tsx`, import.meta.url)),
+    { modules: new Map(), reactHooks },
+  )[name];
+  return {
+    render() { cursor = 0; return component(props); },
+    flushEffects() {
+      for (const index of pendingEffects) {
+        slots[index].cleanup?.();
+        slots[index].cleanup = slots[index].callback();
+      }
+      pendingEffects.clear();
+    },
+    dispose() {
+      for (const slot of slots) slot?.cleanup?.();
+      pendingEffects.clear();
+    },
+  };
+}
+
+function treeNodes(node) {
+  if (Array.isArray(node)) return node.flatMap(treeNodes);
+  if (!node || typeof node !== "object" || !node.props) return [];
+  return [node, ...treeNodes(node.props.children)];
+}
+
+function treeText(node) {
+  if (Array.isArray(node)) return node.map(treeText).join(" ").replace(/\s+/g, " ").trim();
+  if (typeof node === "string" || typeof node === "number") return String(node);
+  return node?.props ? treeText(node.props.children) : "";
+}
+
+function withBrowser(address, callback) {
+  const originalWindow = Object.getOwnPropertyDescriptor(globalThis, "window");
+  const listeners = new Map();
+  const browser = {
+    location: new URL(address),
+    history: {
+      state: { retainedState: "keep me" },
+      pushState(state, _unused, address) {
+        this.state = state;
+        browser.location = new URL(address, browser.location);
+      },
+    },
+    addEventListener(type, listener) {
+      if (!listeners.has(type)) listeners.set(type, new Set());
+      listeners.get(type).add(listener);
+    },
+    removeEventListener(type, listener) { listeners.get(type)?.delete(listener); },
+    emit(type) { for (const listener of listeners.get(type) ?? []) listener(); },
+    listenerCount() { return [...listeners.values()].reduce((count, entries) => count + entries.size, 0); },
+  };
+  Object.defineProperty(globalThis, "window", { configurable: true, value: browser });
+  try { return callback(browser); }
+  finally {
+    if (originalWindow) Object.defineProperty(globalThis, "window", originalWindow);
+    else delete globalThis.window;
+  }
 }
 
 function assertProjectPreview(html, project) {
@@ -237,21 +332,6 @@ function assertExplicitProjectLinks(html, project) {
   }
 }
 
-function assertSelectedProject(html, project) {
-  const buttons = selectionButtons(html);
-  assert.equal(buttons.length, featuredProjects.length);
-  const selected = buttons.filter((button) => button["aria-pressed"] === "true");
-  assert.equal(selected.length, 1, "the preview must expose exactly one selected project");
-  assert.ok(selected[0].label.includes(project.title));
-  assert.ok(buttons.every((button) => button.type === "button"));
-
-  assertProjectPreview(html, project);
-  assertExplicitProjectLinks(html, project);
-  assert.ok(elements(html, "a").some((link) =>
-    link.href === `/projects/#${project.slug}` && link.text === "Read case study",
-  ), "the selected project should link to its corresponding full case study");
-}
-
 test("screenshot previews render accessible closed dialogs without browser globals or a public demo", () => {
   for (const project of featuredProjects) {
     assertProjectPreview(renderAt(ProjectPreview, { project }), project);
@@ -275,85 +355,80 @@ test("repeated previews of the same project have independent dialog labels", () 
   assert.equal(ids.length, new Set(ids).size, "multiple preview instances must never duplicate DOM ids");
 });
 
-test("the isolated legacy workbench retains a useful server-rendered default", () => {
-  assertSelectedProject(renderAt(HeroWorkbench), featuredProjects[0]);
-});
-
-test("the isolated legacy workbench still resolves its matching project, image, and entry", () => {
-  for (const project of featuredProjects) {
-    const address = `https://zhzhg-dev.github.io/?ref=profile&workbench=${project.slug}#top`;
-    assertSelectedProject(renderAt(HeroWorkbench, {}, address), project);
-  }
-});
-
-test("the isolated legacy workbench safely handles missing, empty, and unknown preview values", () => {
-  for (const query of ["", "?workbench=", "?workbench=does-not-exist", "?workbench=constructor"]) {
-    const html = renderAt(HeroWorkbench, {}, `https://zhzhg-dev.github.io/${query}`);
-    assertSelectedProject(html, featuredProjects[0]);
-  }
-});
-
 test("Folio's working preview links to source rather than inventing a public demo", () => {
   const folio = featuredProjects.find((project) => project.slug === "folio");
   assert.ok(folio?.sourceUrl);
   assert.equal(folio.liveUrl, undefined);
-  const html = renderAt(HeroWorkbench, {}, "https://zhzhg-dev.github.io/?workbench=folio");
-  assertSelectedProject(html, folio);
-  assert.doesNotMatch(html, />\s*(?:Open |View |Try )?Live demo\s*(?:<|$)/i);
+  const html = renderAt(App, { page: "projects" });
+  const article = elements(html, "article").find((item) => item.id === folio.slug);
+  assert.ok(article);
+  assertProjectPreview(article.markup, folio);
+  assertExplicitProjectLinks(article.markup, folio);
+  assert.doesNotMatch(article.markup, />\s*(?:Open |View |Try )?(?:Live )?demo\s*(?:<|$)/i);
 });
 
-test("the personal signature has an accessible server-rendered default without browser globals", () => {
-  const html = renderAt(SignatureField);
+test("the text-only introduction has three accessible narrative controls without browser globals", () => {
+  const html = renderAt(PersonalHome);
   const modes = selectionButtons(html);
-  assert.deepEqual(modes.map((button) => button.label), ["Think", "Build", "Explain"]);
+  assert.deepEqual(modes.map((button) => button.label), ["I build.", "I think.", "I explain."]);
   assert.ok(modes.every((button) => button.type === "button"));
   assert.deepEqual(modes.filter((button) => button["aria-pressed"] === "true")
-    .map((button) => button.label), ["Think"]);
-  const groups = [...html.matchAll(/<[a-z][^>]*>/g)].map(([tag]) => attributes(tag));
-  assert.ok(groups.some((group) => group.role === "group" && group["aria-label"] === "Ways I work"));
-  const svg = html.match(/<svg\b[^>]*>/)?.[0];
-  assert.ok(svg, "the two-dimensional signature must be present before browser effects run");
-  assert.equal(attributes(svg).viewbox, "0 0 620 520");
-  assert.equal(attributes(svg)["aria-hidden"], "true");
-  const paths = [...html.matchAll(/<path\b[^>]*>/g)].map(([tag]) => attributes(tag))
-    .filter((path) => "data-signature-line" in path);
-  assert.equal(paths.length, 48, "the initial interference field should contain its complete line drawing");
-  for (const path of paths) {
-    assert.ok("data-signature-line" in path);
-    assert.match(path.d, /^M[\d.+-]/);
-    assert.match(path.d, /\bZ\s*$/, "each server-rendered line should already form a closed curve");
-    assert.doesNotMatch(path.d, /NaN|Infinity|undefined/);
-    assert.equal(path["vector-effect"], "non-scaling-stroke");
+    .map((button) => button.label), ["I build."]);
+  const nodes = [...html.matchAll(/<[a-z][^>]*>/g)].map(([tag]) => attributes(tag));
+  assert.ok(nodes.some((node) => node.role === "group" && node["aria-label"] === "Ways I work"));
+  const regions = nodes.filter((node) => node.role === "region" && node["aria-label"] === "Personal perspective");
+  assert.equal(regions.length, 1);
+  const panel = regions[0];
+  assert.ok(panel.id);
+  assert.equal(panel["aria-live"], "polite");
+  assert.equal(panel["aria-atomic"], "true");
+  assert.ok(modes.every((button) => button["aria-controls"] === panel.id));
+  assert.doesNotMatch(html, /<(?:svg|canvas|img|video|iframe)\b/i,
+    "Home's personal introduction must remain typographic, without a decorative graphic");
+  assert.equal(elements(html, "h1").length, 1);
+  assert.match(elements(html, "h1")[0].text, /^Grant Zhang\.?$/);
+});
+
+test("the personal narrative buttons switch real text and preserve one selected state", (t) => {
+  const harness = componentHarness("PersonalHome");
+  t.after(() => harness.dispose());
+  const narratives = new Set();
+  for (const label of ["I build.", "I think.", "I explain.", "I build."]) {
+    const before = treeNodes(harness.render());
+    const button = before.find((node) => node.type === "button" && treeText(node) === label);
+    assert.ok(button);
+    assert.equal(button.props.type, "button");
+    assert.equal(typeof button.props.onClick, "function");
+    button.props.onClick();
+    const nodes = treeNodes(harness.render());
+    const selected = nodes.filter((node) => node.type === "button" && node.props["aria-pressed"] === true);
+    assert.deepEqual(selected.map(treeText), [label]);
+    const panel = nodes.find((node) => node.props.id === selected[0].props["aria-controls"]);
+    assert.ok(panel);
+    const narrative = treeText(panel);
+    assert.ok(narrative.length > 40, "every mode needs a real personal explanation");
+    assert.doesNotMatch(narrative, /Tencent|腾讯|Incoming|seeking|looking for (?:a|an) (?:role|internship)/i);
+    narratives.add(narrative);
   }
-  assert.doesNotMatch(html, /<canvas\b|<filter\b|<meshgradient\b/i);
-  assert.ok(elements(html, "figcaption").some((caption) => caption.text.trim()),
-    "the decorative line drawing needs an accompanying text explanation");
-  const stage = elements(html, "button").find((button) =>
-    button.type === "button" && button["aria-label"] === "Change signature, currently Think");
-  assert.ok(stage, "the signature must offer a native button for keyboard and touch activation");
-  assert.ok(stage["aria-describedby"]);
-  assert.equal(elements(html, "p").filter((paragraph) =>
-    paragraph.id === stage["aria-describedby"] && paragraph.text.trim()).length, 1);
+  assert.equal(narratives.size, 3, "the three controls must expose distinct personal narratives");
 });
 
 test("Home introduces Grant and personal interests without project screenshots, selectors, or case lists", () => {
   const home = renderAt(App, { page: "home" });
   const text = plainText(home);
-  const hero = sectionByClass(home, "personal-hero");
-  const intro = plainText(sectionByClass(home, "personal-intro"));
-  const focus = sectionByClass(home, "personal-focus");
-  assert.ok(elements(hero, "h1").some((heading) => /Grant Zhang/.test(heading.text)));
-  assert.match(intro, /mathematical/i);
-  assert.match(intro, /Master of Information Technology/);
-  assert.match(intro, /Graduate Teaching Assistant/);
+  assert.equal(elements(home, "h1").length, 1);
+  assert.match(elements(home, "h1")[0].text, /^Grant Zhang\.?$/);
+  assert.match(text, /mathematics|mathematical/i);
+  assert.match(text, /Master of Information Technology/);
+  assert.match(text, /Graduate Teaching Assistant/);
   assert.match(text, /University of Auckland/);
   assert.match(text, /Auckland/);
-  assert.match(text, /AI products/i);
+  assert.match(text, /AI product/i);
   assert.match(text, /Game AI/i);
-  assert.deepEqual(selectionButtons(focus).map((button) => button.label),
-    ["AI products", "Game AI", "Making it clear"]);
-  assert.equal(selectionButtons(focus).filter((button) => button["aria-pressed"] === "true").length, 1);
-  assert.ok(selectionButtons(focus).every((button) => button.type === "button"));
+  assert.deepEqual(selectionButtons(home).map((button) => button.label),
+    ["I build.", "I think.", "I explain."]);
+  assert.equal(selectionButtons(home).filter((button) => button["aria-pressed"] === "true").length, 1);
+  assert.ok(selectionButtons(home).every((button) => button.type === "button"));
 
   for (const project of allProjects) {
     assert.ok(!text.includes(project.title), `Home should not contain the ${project.title} case`);
@@ -362,19 +437,16 @@ test("Home introduces Grant and personal interests without project screenshots, 
   }
   const classes = [...home.matchAll(/<[a-z][^>]*>/g)]
     .flatMap(([tag]) => attributes(tag).class?.split(/\s+/) ?? []);
-  for (const obsoleteClass of ["selected-work", "project-showcase", "project-selector", "project-preview"]) {
+  for (const obsoleteClass of ["selected-work", "project-showcase", "project-selector", "project-preview", "signature-field", "personal-hero__art"]) {
     assert.ok(!classes.includes(obsoleteClass), "the home page must not reintroduce the project gallery");
   }
   assert.equal(elements(home, "dialog").length, 0);
+  assert.doesNotMatch(renderAt(PersonalHome), /<(?:svg|canvas|img|video|iframe)\b/i);
+  for (const address of ["/experience/", "/projects/"]) {
+    assert.ok(elements(renderAt(PersonalHome), "a").some((link) => link.href === address));
+  }
   assert.ok(elements(home, "a").some((link) => link.href === profileData.profile.linkedin));
   assert.ok(elements(home, "a").some((link) => link.href === profileData.profile.github));
-});
-
-test("legacy workbench query parameters do not turn Home back into a project gallery", () => {
-  const home = renderAt(App, { page: "home" }, "https://zhzhg-dev.github.io/?workbench=explainlab");
-  assert.doesNotMatch(plainText(home), /Folio|ExplainLab|NZ Electricity/);
-  assert.equal(elements(home, "dialog").length, 0);
-  assert.ok(elements(home, "h1").some((heading) => /Grant Zhang/.test(heading.text)));
 });
 
 test("Projects owns three detailed cases and four archive entries with real destinations and native previews", () => {
@@ -401,6 +473,87 @@ test("Projects owns three detailed cases and four archive entries with real dest
   const ids = [...projects.matchAll(/<[a-z][^>]*>/g)]
     .map(([tag]) => attributes(tag).id).filter(Boolean);
   assert.equal(ids.length, new Set(ids).size, "project cases and preview dialogs must not share DOM ids");
+});
+
+test("the featured project index uses native disclosures with only the first case open by default", () => {
+  const html = renderAt(FeaturedWork, { projects: featuredProjects, detailed: true });
+  const cases = disclosures(html).filter((item) => item.class?.split(/\s+/).includes("feature-case__disclosure"));
+  assert.equal(cases.length, featuredProjects.length);
+  assert.deepEqual(cases.filter((item) => "open" in item).map((item) => item.id),
+    [`${featuredProjects[0].slug}-case`]);
+  for (const project of featuredProjects) {
+    const article = elements(html, "article").find((item) => item.id === project.slug);
+    const disclosure = cases.find((item) => item.id === `${project.slug}-case`);
+    assert.ok(article && disclosure);
+    const summary = elements(disclosure.markup, "summary")[0];
+    assert.ok(summary?.text.includes(project.title));
+    assert.ok(summary.text.includes(project.status));
+    assert.doesNotMatch(summary.markup, /<(?:a|button|input|select|textarea|img)\b/,
+      "a case summary must remain one native click/keyboard target, not a nested set of actions");
+    assertProjectPreview(disclosure.markup, project);
+    assertExplicitProjectLinks(article.markup.replace(disclosure.markup, ""), project);
+  }
+});
+
+test("project hash links open the requested case and malformed links safely fall back", () => {
+  for (const project of featuredProjects) {
+    const html = renderAt(FeaturedWork, { projects: featuredProjects, detailed: true },
+      `https://zhzhg-dev.github.io/projects/?ref=profile#${project.slug}`);
+    assert.deepEqual(disclosures(html).filter((item) => item.id && "open" in item).map((item) => item.id),
+      [`${project.slug}-case`]);
+  }
+  for (const hash of ["", "#not-a-project", "#constructor", "#%E0%A4%A"]) {
+    const html = renderAt(FeaturedWork, { projects: featuredProjects, detailed: true },
+      `https://zhzhg-dev.github.io/projects/${hash}`);
+    assert.deepEqual(disclosures(html).filter((item) => item.id && "open" in item).map((item) => item.id),
+      [`${featuredProjects[0].slug}-case`]);
+  }
+});
+
+test("project disclosure clicks and history navigation preserve the URL and restore open or closed state", () => {
+  withBrowser("https://zhzhg-dev.github.io/projects/?ref=profile", (browser) => {
+    const harness = componentHarness("FeaturedWork", { projects: featuredProjects, detailed: true });
+    const openCases = () => treeNodes(harness.render())
+      .filter((node) => node.type === "details" && node.props.id && node.props.open)
+      .map((node) => node.props.id);
+    const clickCase = (project) => {
+      const summary = treeNodes(harness.render()).find((node) =>
+        node.type === "summary" && treeText(node).includes(project.title));
+      assert.ok(summary);
+      let prevented = false;
+      summary.props.onClick({ preventDefault() { prevented = true; } });
+      assert.ok(prevented, "the controlled disclosure must avoid a second native toggle");
+    };
+    try {
+      assert.deepEqual(openCases(), [`${featuredProjects[0].slug}-case`]);
+      harness.flushEffects();
+      assert.equal(browser.listenerCount(), 2);
+      clickCase(featuredProjects[1]);
+      assert.deepEqual(openCases(), [`${featuredProjects[1].slug}-case`]);
+      assert.equal(browser.location.pathname, "/projects/");
+      assert.equal(browser.location.search, "?ref=profile");
+      assert.equal(browser.location.hash, `#${featuredProjects[1].slug}`);
+      assert.equal(browser.history.state.retainedState, "keep me");
+      assert.equal(browser.history.state.portfolioProject, featuredProjects[1].slug);
+
+      clickCase(featuredProjects[1]);
+      assert.deepEqual(openCases(), []);
+      assert.equal(browser.location.hash, "");
+      assert.equal(browser.history.state.portfolioProject, "");
+      browser.emit("popstate");
+      assert.deepEqual(openCases(), [], "history must preserve an intentionally collapsed index");
+
+      browser.location.hash = featuredProjects[2].slug;
+      browser.emit("hashchange");
+      assert.deepEqual(openCases(), [`${featuredProjects[2].slug}-case`]);
+      browser.location.hash = featuredProjects[0].slug;
+      browser.emit("popstate");
+      assert.deepEqual(openCases(), [`${featuredProjects[0].slug}-case`]);
+    } finally {
+      harness.dispose();
+    }
+    assert.equal(browser.listenerCount(), 0, "unmount must remove both history listeners");
+  });
 });
 
 test("Experience contains work, education, community, and skills instead of project cases", () => {
