@@ -63,7 +63,10 @@ test("About introduces Grant and owns personal background without turning into a
     assert.ok(!text.includes(project.description), `${project.title} complete case stays on Projects`);
   }
   assert.doesNotMatch(html, /studio-projects__grid|studio-project-card__cover/);
-  assert.equal(elements(html, "dialog").length, 0);
+  const whiteboards = elements(html, "dialog");
+  assert.equal(whiteboards.length, 1, "About has its own closed whiteboard experiment, not a project-case catalogue");
+  assert.match(whiteboards[0].markup, /Close whiteboard experiment/);
+  assert.doesNotMatch(whiteboards[0].markup.slice(0, whiteboards[0].markup.indexOf(">") + 1), /\sopen(?:\s|=|>)/);
   assert.doesNotMatch(html, /<canvas\b|<iframe\b|<video\b/);
 });
 

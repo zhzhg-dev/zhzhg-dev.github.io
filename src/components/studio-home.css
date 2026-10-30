@@ -65,6 +65,7 @@
 .studio-hotspot__label { position: absolute; left: 46px; white-space: nowrap; padding: 8px 12px; border-radius: 24px; background: #fffaf2; color: var(--studio-ink); font-size: 12px; font-weight: 500; box-shadow: 0 3px 16px #30251616; opacity: 0; transform: translateX(-4px); transition: opacity .2s, transform .2s; pointer-events: none; }
 .studio-hotspot:hover .studio-hotspot__dot, .studio-hotspot[aria-pressed="true"] .studio-hotspot__dot { background: var(--studio-blue); color: #fff; }
 .studio-hotspot:hover .studio-hotspot__label, .studio-hotspot:focus-visible .studio-hotspot__label, .studio-hotspot[aria-pressed="true"] .studio-hotspot__label { opacity: 1; transform: none; }
+.studio-hotspot--think .studio-hotspot__label { opacity: 1; transform: none; }
 
 .studio-note { position: absolute; z-index: 4; left: 8.5%; bottom: 34px; width: min(350px, 31%); padding: 25px 26px; border-radius: 18px; background: #fffcf7; box-shadow: 0 8px 38px #6544251c; }
 .studio-note[hidden] { display: none; }

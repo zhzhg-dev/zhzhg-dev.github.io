@@ -3,7 +3,7 @@ import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const repository = fileURLToPath(new URL("../", import.meta.url));
-const output = resolve(repository, "../studio-home-preview-20261030");
+const output = resolve(repository, "../studio-home-preview-20261031");
 let html = await readFile(resolve(repository, "dist/index.html"), "utf8");
 const scriptTag = html.match(/<script\b[^>]*src="([^\"]+\.js)"[^>]*><\/script>/)?.[0];
 const scriptPath = scriptTag?.match(/src="([^\"]+)"/)?.[1];

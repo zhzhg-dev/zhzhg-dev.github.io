@@ -1,4 +1,5 @@
 import { useId, useRef, useState, type PointerEvent } from "react";
+import { WhiteboardExperiment } from "./WhiteboardExperiment";
 import "./studio-home.css";
 
 type StudioSpot = "build" | "think" | "home";
@@ -12,9 +13,12 @@ const spots: { id: StudioSpot; label: string; title: string; description: string
 export function StudioHome() {
   const titleId = useId();
   const noteId = useId();
+  const whiteboardId = useId();
   const [selected, setSelected] = useState<StudioSpot | null>(null);
+  const [whiteboardOpen, setWhiteboardOpen] = useState(false);
   const artRef = useRef<HTMLDivElement>(null);
   const selectedButtonRef = useRef<HTMLButtonElement | null>(null);
+  const whiteboardTriggerRef = useRef<HTMLButtonElement | null>(null);
   const spot = spots.find(item => item.id === selected);
 
   function moveScene(event: PointerEvent<HTMLDivElement>) {
@@ -51,8 +55,8 @@ export function StudioHome() {
             <img className="studio-scene__art" src="/studio/grant-daylight-studio-v1.png" width="1448" height="1086" fetchPriority="high" decoding="async" alt="An illustrated AI workspace: a developer at a curved desk, a wide screen and mathematical idea board, with Auckland’s skyline through an arched window." />
           </picture>
           <div className="studio-hotspots" role="group" aria-label="Explore my illustrated workspace">
-            {spots.map(item => <button key={item.id} className={`studio-hotspot studio-hotspot--${item.id}`} type="button" aria-label={item.label} aria-pressed={selected === item.id} aria-expanded={selected === item.id} aria-controls={noteId} onClick={event => { selectedButtonRef.current = event.currentTarget; setSelected(current => current === item.id ? null : item.id); }}>
-              <span className="studio-hotspot__dot" aria-hidden="true">+</span><span className="studio-hotspot__label">{item.label}</span>
+            {spots.map(item => <button key={item.id} className={`studio-hotspot studio-hotspot--${item.id}`} type="button" aria-label={item.id === "think" ? "Try the whiteboard" : item.label} aria-haspopup={item.id === "think" ? "dialog" : undefined} aria-pressed={item.id === "think" ? whiteboardOpen : selected === item.id} aria-expanded={item.id === "think" ? whiteboardOpen : selected === item.id} aria-controls={item.id === "think" ? whiteboardId : noteId} onClick={event => { if (item.id === "think") { whiteboardTriggerRef.current = event.currentTarget; setSelected(null); resetScene(); setWhiteboardOpen(true); return; } selectedButtonRef.current = event.currentTarget; setSelected(current => current === item.id ? null : item.id); }}>
+              <span className="studio-hotspot__dot" aria-hidden="true">+</span><span className="studio-hotspot__label">{item.id === "think" ? "Try the whiteboard" : item.label}</span>
             </button>)}
           </div>
         </div>
@@ -66,6 +70,8 @@ export function StudioHome() {
       <p className="studio-touch-hint">Tap the + marks to look around.</p>
       <a className="studio-scroll" href="#studio-about" aria-label="A little more about Grant"><span className="studio-scroll__mouse" aria-hidden="true"><span /></span><span>A little more about me</span></a>
     </section>
+
+    <WhiteboardExperiment id={whiteboardId} open={whiteboardOpen} onClose={() => setWhiteboardOpen(false)} returnFocusRef={whiteboardTriggerRef} />
 
     <section className="studio-about" id="studio-about" aria-labelledby="studio-about-title">
       <div className="studio-about__title"><p>Behind the screen</p><h2 id="studio-about-title">From models<br />to useful things.</h2></div>

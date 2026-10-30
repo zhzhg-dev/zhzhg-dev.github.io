@@ -161,11 +161,10 @@ test("the studio illustration is a local transparent PNG with the declared intri
   assert.ok(asset.length < 3 * 1024 * 1024, "the single illustrated scene stays under 3 MiB");
 });
 
-test("all three workspace buttons reveal distinct real content and close or Escape restores trigger focus", () => {
+test("the screen and window workspace notes preserve their real content and close or Escape restores trigger focus", () => {
   const render = studioHarness();
   const targets = [
     ["At the screen", "From an idea to something useful.", "/projects/"],
-    ["On the board", "A little mathematical curiosity.", "/#education-title"],
     ["Out the window", "Auckland, New Zealand.", "/#studio-about"],
   ];
   const initial = nodes(render());
