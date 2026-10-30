@@ -60,6 +60,7 @@ function ContactPage() {
       <a className="studio-contact-option studio-contact-option--linkedin" href={profile.linkedin} target="_blank" rel="noreferrer"><span>A conversation</span><h2>LinkedIn</h2><p>The best place to say hello.</p><span className="studio-contact-option__arrow" aria-hidden="true">↗</span></a>
       <a className="studio-contact-option studio-contact-option--github" href={profile.github} target="_blank" rel="noreferrer"><span>Code & experiments</span><h2>GitHub</h2><p>Explore the work behind the scenes.</p><span className="studio-contact-option__arrow" aria-hidden="true">↗</span></a>
     </div>
+    <section className="studio-conversations" aria-labelledby="conversation-title"><h2 id="conversation-title">A few good starting points.</h2><ul><li>Making AI research tools more useful—and easier to question.</li><li>Comparing approaches to game AI, simulation, or model evaluation.</li><li>Exchanging notes on a project, a technical decision, or teaching.</li></ul></section>
     <div className="studio-contact-note"><p>Based in Auckland, New Zealand.</p><p>I’m curious about AI products, game AI, and tools that make difficult things a little clearer.</p></div>
   </section>;
 }

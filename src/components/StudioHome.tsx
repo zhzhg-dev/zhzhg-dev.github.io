@@ -46,7 +46,10 @@ export function StudioHome() {
 
       <div className="studio-scene" onPointerMove={moveScene} onPointerLeave={resetScene}>
         <div className="studio-scene__movement" ref={artRef}>
-          <img className="studio-scene__art" src="/studio/grant-daylight-studio-v1.png" width="1448" height="1086" fetchPriority="high" decoding="async" alt="An illustrated AI workspace: a developer at a curved desk, a wide screen and mathematical idea board, with Auckland’s skyline through an arched window." />
+          <picture className="studio-scene__picture">
+            <source type="image/webp" srcSet="/studio/grant-daylight-studio-480.webp 480w, /studio/grant-daylight-studio-768.webp 768w, /studio/grant-daylight-studio-1200.webp 1200w, /studio/grant-daylight-studio-1448.webp 1448w" sizes="(max-width: 760px) 100vw, (max-width: 1050px) 84vw, (min-width: 1908px) 1450px, 76vw" />
+            <img className="studio-scene__art" src="/studio/grant-daylight-studio-v1.png" width="1448" height="1086" fetchPriority="high" decoding="async" alt="An illustrated AI workspace: a developer at a curved desk, a wide screen and mathematical idea board, with Auckland’s skyline through an arched window." />
+          </picture>
           <div className="studio-hotspots" role="group" aria-label="Explore my illustrated workspace">
             {spots.map(item => <button key={item.id} className={`studio-hotspot studio-hotspot--${item.id}`} type="button" aria-label={item.label} aria-pressed={selected === item.id} aria-expanded={selected === item.id} aria-controls={noteId} onClick={event => { selectedButtonRef.current = event.currentTarget; setSelected(current => current === item.id ? null : item.id); }}>
               <span className="studio-hotspot__dot" aria-hidden="true">+</span><span className="studio-hotspot__label">{item.label}</span>
@@ -60,12 +63,24 @@ export function StudioHome() {
       </aside>
 
       <p className="studio-location">Based in Auckland,<br />New Zealand.</p>
+      <p className="studio-touch-hint">Tap the + marks to look around.</p>
       <a className="studio-scroll" href="#studio-about" aria-label="A little more about Grant"><span className="studio-scroll__mouse" aria-hidden="true"><span /></span><span>A little more about me</span></a>
     </section>
 
     <section className="studio-about" id="studio-about" aria-labelledby="studio-about-title">
-      <div className="studio-about__title"><p>Behind the screen</p><h2 id="studio-about-title">Curious by nature.<br />Practical by choice.</h2></div>
-      <div className="studio-about__copy"><p>I’m Grant, a Master of Information Technology student and Graduate Teaching Assistant at the University of Auckland.</p><p>Mathematics taught me to ask why. Building software lets me find out what happens next. These days, that means exploring AI product experiences, game AI, simulation, and model evaluation—and helping students work through their first computing problems.</p><p>I’m interested in tools that make something difficult a little clearer. There’s usually a prototype, a notebook, and a few good questions involved.</p></div>
+      <div className="studio-about__title"><p>Behind the screen</p><h2 id="studio-about-title">From models<br />to useful things.</h2></div>
+      <div className="studio-about__copy"><p>I’m Grant, a Master of Information Technology student and Graduate Teaching Assistant at the University of Auckland.</p><p>My background is in mathematics and computational science. I like the moment when a model leaves the notebook and becomes something a person can question, use, and improve.</p><p>AI product experiences, game AI, simulation, and model evaluation are where I explore that connection. Teaching keeps the other half of the question close: can someone else understand what I built?</p></div>
+    </section>
+
+    <section className="studio-story" aria-label="How I think and work">
+      <article><h3>Start with the assumptions.</h3><p>My undergraduate work explored rumour propagation through heterogeneous cellular automata. It left me interested in how a small set of rules can shape a larger system—and what those rules leave out.</p></article>
+      <article><h3>Build something people can inspect.</h3><p>In Folio, that means keeping the original evidence close to a conclusion. In ExplainLab, it means replaying two strategies on the same workload. I want the reasoning to remain visible, not disappear behind an answer.</p><a href="/projects/">See those ideas in practice<span aria-hidden="true">↗</span></a></article>
+      <article><h3>Explain it clearly.</h3><p>Supporting COMPSCI 111 labs and Open Lab sessions means working through problems with people who are new to computing. It is a useful reminder to ask a better question, slow down, and make the next step clear.</p></article>
+    </section>
+
+    <section className="studio-now" aria-labelledby="studio-now-title">
+      <div className="studio-now__intro"><p>On my desk</p><h2 id="studio-now-title">Questions I’m exploring.</h2></div>
+      <div className="studio-now__items"><article><h3>AI tools people can inspect</h3><p>Research workflows, local AI, and keeping evidence attached as ideas turn into writing.</p><a href="/projects/#folio">Folio<span aria-hidden="true">↗</span></a></article><article><h3>Game AI & simulation</h3><p>Learning from demonstrations, testing model assumptions, and making system behaviour easier to understand.</p><a href="/projects/#learn-to-race">Learn-to-Race<span aria-hidden="true">↗</span></a></article></div>
     </section>
 
     <nav className="studio-next" aria-label="Explore my background and work"><a href="#work-title"><span>My background</span><p>Teaching, education, and the things I’m learning.</p><span className="studio-next__arrow" aria-hidden="true">↗</span></a><a href="/projects/"><span>Things I’ve made</span><p>Ideas turned into tools and experiments.</p><span className="studio-next__arrow" aria-hidden="true">↗</span></a></nav>

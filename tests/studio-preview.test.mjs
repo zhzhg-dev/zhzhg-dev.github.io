@@ -137,7 +137,7 @@ test("the illustrated introduction preserves current personal facts and one mean
   const text = plainText(html);
   assert.match(text, /Grant\s+Zhang\s*\./);
   for (const fact of ["Master of Information Technology", "Graduate Teaching Assistant", "University of Auckland", "Mathematics", "AI product"]) {
-    assert.ok(text.includes(fact), `preserve ${fact}`);
+    assert.ok(text.toLowerCase().includes(fact.toLowerCase()), `preserve ${fact}`);
   }
   assert.doesNotMatch(text, /Tencent|腾讯|Incoming|Open to internship|seeking|looking for (?:a|an) (?:role|internship)/i);
   assert.doesNotMatch(text, /David Heckhoff|Dennis Snellenberg|production-ready|award-winning/i);
