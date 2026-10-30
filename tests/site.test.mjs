@@ -42,12 +42,13 @@ test("projects retain real cover assets and verified public destinations", () =>
     "https://zhzhg-dev.github.io/svelte-study-planner/", "https://github.com/zhzhg-dev/svelte-study-planner",
     "https://nz-electricity-forecasting.streamlit.app/", "https://github.com/zhzhg-dev/nz-electricity-forecasting",
     "https://github.com/zhzhg-dev/folio", "https://zhzhg-dev.github.io/explainlab/", "https://github.com/zhzhg-dev/explainlab",
+    "https://github.com/TipperChristopher/Group-4-COMPSCI760",
   ]) assert.ok(dataSource.includes(expected));
-  for (const cover of ["autonomous-racing.webp", "course-review.webp", "study-planner.webp", "rumour-simulation.webp", "nz-electricity-forecast.png", "folio.png", "explainlab-landscape.jpg"]) assert.ok(dataSource.includes(cover));
+  for (const cover of ["l2r-training-diversity.png", "course-review.webp", "study-planner.webp", "rumour-simulation.webp", "nz-electricity-forecast.png", "folio.png", "explainlab-landscape.jpg"]) assert.ok(dataSource.includes(cover));
 });
 
 test("public profile and publication claims stay accurate", () => {
-  assert.match(dataSource, /Research in progress/);
+  assert.match(dataSource, /Research milestone complete/);
   assert.match(dataSource, /Undergraduate thesis/);
   assert.match(dataSource, /https:\/\/www\.linkedin\.com\/in\/grant-zhang-zahz\//);
   assert.match(dataSource, /game AI/i);
@@ -75,7 +76,7 @@ test("GitHub Pages builds, checks and deploys with official actions", () => {
 test("production includes every required local image, font and license", async () => {
   for (const asset of [
     "favicon.svg", "og.png", "robots.txt", "sitemap.xml", ".nojekyll",
-    "projects/autonomous-racing.webp", "projects/course-review.webp", "projects/study-planner.webp", "projects/rumour-simulation.webp",
+    "projects/autonomous-racing.webp", "projects/l2r-training-diversity.png", "projects/course-review.webp", "projects/study-planner.webp", "projects/rumour-simulation.webp",
     "projects/nz-electricity-forecast.png", "projects/folio.png", "projects/explainlab-landscape.jpg",
     "studio/grant-daylight-studio-v1.png", "fonts/Onest-variable.ttf", "fonts/OFL.txt",
     "fonts/bricolage/BricolageGrotesque-variable.ttf", "fonts/bricolage/OFL.txt",

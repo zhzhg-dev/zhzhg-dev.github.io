@@ -27,9 +27,11 @@ export type Project = {
   technologies: string[];
   cover: string;
   coverAlt: string;
+  coverCaption?: string;
   coverWidth?: number;
   coverHeight?: number;
   coverPosition?: "top" | "center";
+  coverFit?: "cover" | "contain";
   liveUrl?: string;
   sourceUrl?: string;
   featured?: boolean;
@@ -54,7 +56,7 @@ export const profile = {
   canonicalUrl: "https://zhzhg-dev.github.io/",
   about: [
     "I’m a Master of Information Technology student and Graduate Teaching Assistant at the University of Auckland, with a foundation in mathematics and computational science. I enjoy turning an unclear problem into a useful product: understand the need, define the requirements, build a prototype, and evaluate what works.",
-    "My recent projects include Folio, a research workspace with traceable evidence and optional on-device AI; ExplainLab, an interactive systems simulator; and machine-learning forecasts for New Zealand electricity demand. I’m especially interested in AI product experiences, model evaluation, and how intelligent systems can support games and creative work.",
+    "My recent projects include Folio, a research workspace with traceable evidence and optional on-device AI; ExplainLab, an interactive systems simulator; electricity-demand forecasting; and L2R, a completed research milestone comparing PPO and SAC on unfamiliar racing tracks. I’m especially interested in AI product experiences, model evaluation, and how intelligent systems can support games and creative work.",
     "Teaching keeps my work grounded in the person using it. I value clear explanations, testable assumptions, and thoughtful iteration as much as the technology itself.",
   ],
 };
@@ -270,23 +272,65 @@ export const projects: Project[] = [
   },
   {
     slug: "learn-to-race",
-    title: "Learn-to-Race Autonomous Racing",
+    title: "L2R Autonomous Racing",
     eyebrow: "Reinforcement learning · Group research",
-    status: "Research in progress",
+    status: "Research milestone complete",
     description:
-      "Exploring demonstrations from a Model Predictive Control expert to warm-start a Soft Actor-Critic agent through imitation learning, with the goal of improving sample efficiency and reducing early-stage training instability.",
+      "Training-Track Diversity for Zero-Shot Autonomous Racing: Comparing PPO and SAC. A five-person University of Auckland COMPSCI 760 research project in Semester Two 2026, with experiments, the final report and presentation complete. The team conducted 48 training runs across four training-pool sizes, three random seeds and two configurations, targeting approximately 2 million environment steps per run. All evaluation took place in F1TENTH simulation, including tests on real-circuit maps; there was no physical vehicle deployment.",
+    shortDescription:
+      "Can a racing agent handle tracks it has never trained on? Our team compared PPO and SAC to study how training-track diversity affects zero-shot generalisation.",
+    cardSummary: "Training on more tracks. Testing on unfamiliar ones.",
+    caseStudy: {
+      problem:
+        "A fast lap on a familiar track does not tell us how a racing policy will behave elsewhere. Our five-person COMPSCI 760 team investigated whether training on more varied tracks helps PPO and SAC drive unfamiliar tracks without further training.",
+      contribution:
+        "I executed 10 SAC training runs—4 in Grid A and 6 in Grid B—totalling approximately 20 million environment steps. I checked my Windows setup, recorded training progress and handed results to the team. I also authored Section II (Related Work) of the final report and helped organise the presentation narrative and slide content. The full 48-run study, training framework and overall findings are team results, not my individual output.",
+      decisions: [
+        {
+          title: "Compare diversity under a shared target budget",
+          body: "The team compared PPO and SAC with training pools of 1, 5, 20 and 100 tracks, using three random seeds and two configurations. Each run targeted about 2 million environment steps, so greater track variety was not simply a larger target interaction budget.",
+        },
+        {
+          title: "Evaluate beyond the training tracks",
+          body: "The study used 10 validation tracks for tuning and checkpoint selection, then tested on 20 unseen synthetic tracks and 23 real-circuit maps in simulation. Reporting both configurations and seed variation mattered more than choosing one impressive replay.",
+        },
+      ],
+      evidence: [
+        {
+          title: "A measured gain, with the metric kept explicit",
+          body: "In the team’s Grid A results, SAC’s mean fractional-lap progress on real-circuit maps increased from 0.11 to 0.68 as the training pool expanded from 1 to 100 tracks. This is progress around a lap in simulation, not a full-lap success rate or evidence of physical driving.",
+        },
+        {
+          title: "No universal algorithm winner",
+          body: "Algorithm rankings changed between Grid A and Grid B. The findings did not consistently show that SAC benefited more from diversity than PPO. Reactive-control baselines also remained competitive, so the research conclusion is configuration-dependent rather than a claim that one learned policy always wins.",
+        },
+        {
+          title: "The limits of the comparison remain visible",
+          body: "Three seeds per condition, unequal tuning effort and configuration changes involving multiple factors limit broad conclusions. Test-track geometry also informed an early track-width diagnosis; a fresh development set would make future evaluation cleaner.",
+        },
+      ],
+      next:
+        "With the report and presentation complete, a future extension would use more seeds, fresh development and test-track pools, and one-factor-at-a-time configuration checks. Physical vehicle trials remain outside this completed simulation milestone.",
+    },
     technologies: [
       "Python",
-      "Soft Actor-Critic",
-      "Imitation learning",
-      "MPC",
-      "Simulation",
+      "F1TENTH Gym",
+      "Gymnasium",
+      "Stable-Baselines3",
+      "PPO",
+      "SAC",
+      "NumPy / pandas",
+      "Matplotlib",
     ],
-    cover: "/projects/autonomous-racing.webp",
+    cover: "/projects/l2r-training-diversity.png",
     coverAlt:
-      "Abstract autonomous racing simulation with cyan and amber control trajectories",
-    coverWidth: 1280,
-    coverHeight: 720,
+      "Selected F1TENTH simulation replay on Oschersleben comparing Grid A SAC trained on 1 versus 100 tracks",
+    coverCaption:
+      "Selected team replay on Oschersleben: Grid A SAC, seed 1, trained on 1 versus 100 tracks. This is simulation, not physical driving; one replay is not an aggregate success rate. Source: COMPSCI 760 Group 4 repository.",
+    coverWidth: 1600,
+    coverHeight: 746,
+    coverFit: "contain",
+    sourceUrl: "https://github.com/TipperChristopher/Group-4-COMPSCI760",
   },
   {
     slug: "course-review-system",

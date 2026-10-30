@@ -9,7 +9,7 @@ const compositions: Record<string, { name: string; line: string }> = {
 
 export function ProjectCover({ project, index }: { project: Project; index: number }) {
   const composition = compositions[project.slug];
-  if (!composition) return <img src={project.cover} alt={project.coverAlt} width={project.coverWidth ?? 1280} height={project.coverHeight ?? 720} loading={index < 3 ? "eager" : "lazy"} decoding="async" style={{ objectPosition: project.coverPosition ?? "center" }} />;
+  if (!composition) return <img src={project.cover} alt={project.coverAlt} width={project.coverWidth ?? 1280} height={project.coverHeight ?? 720} loading={index < 3 ? "eager" : "lazy"} decoding="async" style={{ objectPosition: project.coverPosition ?? "center", objectFit: project.coverFit ?? "cover" }} />;
   return <span className={`project-cover project-cover--${project.slug}`} aria-hidden="true">
     <span className="project-cover__identity"><span className="project-cover__name">{composition.name}</span><span className="project-cover__line">{composition.line}</span></span>
     <span className="project-cover__frame"><img src={project.cover} alt={project.coverAlt} width={project.coverWidth ?? 1280} height={project.coverHeight ?? 720} loading={index < 3 ? "eager" : "lazy"} decoding="async" /></span>

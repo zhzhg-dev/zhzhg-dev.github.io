@@ -184,8 +184,9 @@ test("valid case hashes render the matching full evidence and malformed hashes l
   }
 });
 
-test("the three featured cases expose complete, bounded evidence while other projects retain their original summaries", () => {
-  assert.deepEqual(projects.filter(project => project.caseStudy).map(project => project.slug), ["folio", "explainlab", "nz-electricity-forecasting"]);
+test("four structured cases expose complete, bounded evidence while three editorial covers and compact fallbacks stay distinct", () => {
+  assert.deepEqual(projects.filter(project => project.caseStudy).map(project => project.slug), ["folio", "explainlab", "nz-electricity-forecasting", "learn-to-race"]);
+  assert.deepEqual(projects.filter(project => project.featured).map(project => project.slug), ["folio", "explainlab", "nz-electricity-forecasting"]);
   for (const project of projects) {
     const html = renderAt(StudioProjects, { projects }, `https://zhzhg-dev.github.io/projects/#${project.slug}`);
     const dialog = elements(html, "dialog")[0];
