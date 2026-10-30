@@ -134,6 +134,8 @@ test("all pages share the studio system while independent page responsibilities 
 
 test("the illustrated introduction preserves current personal facts and one meaningful hero image", () => {
   const html = renderToStaticMarkup(createElement(StudioHome));
+  const hero = html.match(/<section\b[^>]*id="top"[^>]*>[\s\S]*?<\/section>/)?.[0];
+  assert.ok(hero, "the studio hero remains a distinct introduction above the personal display");
   const text = plainText(html);
   assert.match(text, /Grant\s+Zhang\s*\./);
   for (const fact of ["Master of Information Technology", "Graduate Teaching Assistant", "University of Auckland", "Mathematics", "AI product"]) {
@@ -141,13 +143,14 @@ test("the illustrated introduction preserves current personal facts and one mean
   }
   assert.doesNotMatch(text, /Tencent|腾讯|Incoming|Open to internship|seeking|looking for (?:a|an) (?:role|internship)/i);
   assert.doesNotMatch(text, /David Heckhoff|Dennis Snellenberg|production-ready|award-winning/i);
-  assert.equal((html.match(/<img\b/g) || []).length, 1);
-  assert.match(html, /src="\/studio\/grant-daylight-studio-v1\.png"/);
-  assert.match(html, /width="1448"/);
-  assert.match(html, /height="1086"/);
-  assert.match(html, /fetchPriority="high"|fetchpriority="high"/);
-  assert.match(html, /alt="[^\"]*(?:workspace|studio)[^\"]*"/i);
-  assert.doesNotMatch(html, /loading="lazy"|<canvas\b|<iframe\b|<video\b/);
+  assert.equal((hero.match(/<img\b/g) || []).length, 1);
+  assert.match(hero, /src="\/studio\/grant-daylight-studio-v1\.png"/);
+  assert.match(hero, /width="1448"/);
+  assert.match(hero, /height="1086"/);
+  assert.match(hero, /fetchPriority="high"|fetchpriority="high"/);
+  assert.match(hero, /alt="[^\"]*(?:workspace|studio)[^\"]*"/i);
+  assert.doesNotMatch(hero, /loading="lazy"/);
+  assert.doesNotMatch(html, /<canvas\b|<iframe\b|<video\b/);
   assert.match(html, /<aside\b[^>]*aria-label="Workspace detail"[^>]*hidden=""/);
 });
 

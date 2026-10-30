@@ -1,5 +1,6 @@
 import { useId, useRef, useState, type PointerEvent } from "react";
 import { WhiteboardExperiment } from "./WhiteboardExperiment";
+import { StudioAbout } from "./StudioAbout";
 import "./studio-home.css";
 
 type StudioSpot = "build" | "think" | "home";
@@ -73,22 +74,6 @@ export function StudioHome() {
 
     <WhiteboardExperiment id={whiteboardId} open={whiteboardOpen} onClose={() => setWhiteboardOpen(false)} returnFocusRef={whiteboardTriggerRef} />
 
-    <section className="studio-about" id="studio-about" aria-labelledby="studio-about-title">
-      <div className="studio-about__title"><p>Behind the screen</p><h2 id="studio-about-title">From models<br />to useful things.</h2></div>
-      <div className="studio-about__copy"><p>I’m Grant, a Master of Information Technology student and Graduate Teaching Assistant at the University of Auckland.</p><p>My background is in mathematics and computational science. I like the moment when a model leaves the notebook and becomes something a person can question, use, and improve.</p><p>AI product experiences, game AI, simulation, and model evaluation are where I explore that connection. Teaching keeps the other half of the question close: can someone else understand what I built?</p></div>
-    </section>
-
-    <section className="studio-story" aria-label="How I think and work">
-      <article><h3>Start with the assumptions.</h3><p>My undergraduate work explored rumour propagation through heterogeneous cellular automata. It left me interested in how a small set of rules can shape a larger system—and what those rules leave out.</p></article>
-      <article><h3>Build something people can inspect.</h3><p>In Folio, that means keeping the original evidence close to a conclusion. In ExplainLab, it means replaying two strategies on the same workload. I want the reasoning to remain visible, not disappear behind an answer.</p><a href="/projects/">See those ideas in practice<span aria-hidden="true">↗</span></a></article>
-      <article><h3>Explain it clearly.</h3><p>Supporting COMPSCI 111 labs and Open Lab sessions means working through problems with people who are new to computing. It is a useful reminder to ask a better question, slow down, and make the next step clear.</p></article>
-    </section>
-
-    <section className="studio-now" aria-labelledby="studio-now-title">
-      <div className="studio-now__intro"><p>On my desk</p><h2 id="studio-now-title">Questions I’m exploring.</h2></div>
-      <div className="studio-now__items"><article><h3>AI tools people can inspect</h3><p>Research workflows, local AI, and keeping evidence attached as ideas turn into writing.</p><a href="/projects/#folio">Folio<span aria-hidden="true">↗</span></a></article><article><h3>Game AI & simulation</h3><p>L2R’s research milestone is complete: 10 SAC training runs, related-work writing, and a team study of driving unfamiliar tracks. The next questions are about robust evaluation and what models learn from varied environments.</p><a href="/projects/#learn-to-race">Explore L2R<span aria-hidden="true">↗</span></a></article></div>
-    </section>
-
-    <nav className="studio-next" aria-label="Explore my background and work"><a href="#work-title"><span>My background</span><p>Teaching, education, and the things I’m learning.</p><span className="studio-next__arrow" aria-hidden="true">↗</span></a><a href="/projects/"><span>Things I’ve made</span><p>Ideas turned into tools and experiments.</p><span className="studio-next__arrow" aria-hidden="true">↗</span></a></nav>
+    <StudioAbout />
   </div>;
 }

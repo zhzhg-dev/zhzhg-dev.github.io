@@ -62,8 +62,20 @@ export function attributes(tag) {
   return Object.fromEntries([...tag.matchAll(/([\w:-]+)="([^"]*)"/g)].map(([, key, value]) => [key.toLowerCase(), decodeText(value)]));
 }
 export function elements(html, tag) {
-  return [...html.matchAll(new RegExp(`<${tag}\\b[^>]*>[\\s\\S]*?<\\/${tag}>`, "g"))]
-    .map(([markup]) => ({ ...attributes(markup.slice(0, markup.indexOf(">") + 1)), markup, text: plainText(markup) }));
+  // Return both outer and nested elements. A non-greedy pair regex stops at
+  // the first inner closing tag and cannot faithfully inspect nested sections.
+  const stack = [], matched = [];
+  for (const token of html.matchAll(new RegExp(`<(/?)${tag}\\b[^>]*>`, "gi"))) {
+    if (!token[1]) {
+      if (!token[0].endsWith("/>")) stack.push({ start: token.index, opening: token[0] });
+      continue;
+    }
+    const opening = stack.pop();
+    if (!opening) continue;
+    const markup = html.slice(opening.start, token.index + token[0].length);
+    matched.push({ start: opening.start, value: { ...attributes(opening.opening), markup, text: plainText(markup) } });
+  }
+  return matched.sort((left, right) => left.start - right.start).map(item => item.value);
 }
 export function treeNodes(node) {
   if (Array.isArray(node)) return node.flatMap(treeNodes);

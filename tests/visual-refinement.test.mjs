@@ -13,10 +13,12 @@ function primaryNavigation(html) {
   return elements(html, "nav").find(nav => nav["aria-label"] === "Primary navigation");
 }
 
-function assertPersonalBackground(html) {
+function assertPersonalBackground(html, { complete = true } = {}) {
   const text = plainText(html);
   for (const role of data.experience) {
-    for (const fact of [role.role, role.organisation, role.period, role.summary, ...role.points]) assert.ok(text.includes(fact), `preserve ${fact}`);
+    const facts = [role.role, role.organisation, role.period, role.summary];
+    if (complete) facts.push(...role.points, ...role.tags);
+    for (const fact of facts) assert.ok(text.includes(fact), `preserve ${fact}`);
   }
   for (const item of data.education) {
     for (const fact of [item.degree, item.institution, item.period, item.detail]) assert.ok(text.includes(fact));
@@ -44,6 +46,13 @@ test("all routes expose the same three real tabs, exactly one active tab and one
     assert.match(html, /href="#main-content"/);
     assert.match(html, /id="main-content"/);
     assert.match(html, /id="top"/);
+    const ids = [...html.matchAll(/<[a-z][^>]*>/g)].map(([tag]) => attributes(tag).id).filter(Boolean);
+    assert.equal(ids.length, new Set(ids).size, `${page} has no duplicated section or control identifiers`);
+    for (const link of elements(html, "a")) {
+      const hash = link.href?.startsWith("#") ? link.href.slice(1)
+        : page === "home" && link.href?.startsWith("/#") ? link.href.slice(2) : null;
+      if (hash) assert.ok(ids.includes(decodeURIComponent(hash)), `${page} keeps the ${link.href} destination`);
+    }
     assert.doesNotMatch(html, /Tencent|腾讯|Incoming|Open to internship|internship and graduate opportunities|Compare with the current website/i);
     assert.equal(elements(html, "form").length, 0, "no nonfunctional contact form should be advertised");
   }
@@ -52,14 +61,24 @@ test("all routes expose the same three real tabs, exactly one active tab and one
 test("About introduces Grant and owns personal background without turning into a project catalogue", () => {
   const html = renderAt(App, { page: "home" });
   const text = plainText(html);
-  assertPersonalBackground(html);
+  assertPersonalBackground(html, { complete: false });
   for (const fact of ["Grant", "Zhang", "Master of Information Technology", "Graduate Teaching Assistant", "University of Auckland", "Auckland", "AI product", "Mathematics"]) assert.ok(text.includes(fact));
   assert.match(text, /game AI/i);
   const images = [...html.matchAll(/<img\b[^>]*>/g)].map(([tag]) => attributes(tag));
-  assert.equal(images.length, 1);
-  assert.equal(images[0].src, "/studio/grant-daylight-studio-v1.png");
+  const hero = elements(html, "section").find(section => section.id === "top");
+  assert.ok(hero);
+  const heroImages = [...hero.markup.matchAll(/<img\b[^>]*>/g)].map(([tag]) => attributes(tag));
+  assert.equal(heroImages.length, 1);
+  assert.equal(heroImages[0].src, "/studio/grant-daylight-studio-v1.png");
+  const contextualImages = images.filter(image => image.src !== heroImages[0].src);
+  assert.equal(contextualImages.length, 1, "one quiet supporting illustration is not a second project gallery");
+  assert.equal(contextualImages[0].src, "/studio/study-notebook-v1.webp");
+  assert.equal(contextualImages[0].loading, "lazy");
+  assert.equal(Number(contextualImages[0].width), 760);
+  assert.equal(Number(contextualImages[0].height), 507);
+  assert.equal(contextualImages[0].alt, "", "the still life does not pretend to be personal documentary evidence");
   for (const project of projects) {
-    assert.ok(!images.some(image => image.src === project.cover), "project thumbnails belong on Projects");
+    assert.ok(!images.some(image => image.src === project.cover), "the full project-cover gallery belongs on Projects");
     assert.ok(!text.includes(project.description), `${project.title} complete case stays on Projects`);
   }
   assert.doesNotMatch(html, /studio-projects__grid|studio-project-card__cover/);
@@ -77,19 +96,19 @@ test("the compatible Experience address preserves the complete background and se
   assert.equal(elements(html, "dialog").length, 0);
 });
 
-test("About adds a personal working story and current interests without inventing employment or another navigation tab", () => {
+test("About keeps concise personal context and current interests without inventing employment or another navigation tab", () => {
   const html = renderAt(App, { page: "home" });
-  const story = elements(html, "section").find(section => section["aria-label"] === "How I think and work");
+  const introduction = elements(html, "section").find(section => section.id === "studio-about");
   const now = elements(html, "section").find(section => section["aria-labelledby"] === "studio-now-title");
-  assert.ok(story && now);
-  assert.equal(elements(story.markup, "article").length, 3);
-  for (const fact of ["cellular automata", "Folio", "ExplainLab", "COMPSCI 111", "Open Lab"]) assert.ok(story.text.includes(fact));
+  assert.ok(introduction && now);
+  const personalText = plainText(html).toLowerCase();
+  for (const fact of ["cellular automata", "Folio", "ExplainLab", "COMPSCI 111", "Open Lab"]) assert.ok(personalText.includes(fact.toLowerCase()));
   assert.match(now.text, /AI tools people can inspect/);
   assert.match(now.text, /Game AI & simulation/);
   assert.ok(elements(now.markup, "a").some(link => link.href === "/projects/#folio"));
   assert.ok(elements(now.markup, "a").some(link => link.href === "/projects/#learn-to-race"));
   assert.equal(elements(primaryNavigation(html).markup, "a").length, 3);
-  assert.doesNotMatch(story.markup + now.markup, /<img\b|<dialog\b|<canvas\b|Tencent|腾讯|Incoming|seeking a role/i);
+  assert.doesNotMatch(introduction.markup + now.markup, /<dialog\b|<canvas\b|Tencent|腾讯|Incoming|seeking a role/i);
 });
 
 test("Contact has actual professional destinations and no invented address, form or project catalogue", () => {

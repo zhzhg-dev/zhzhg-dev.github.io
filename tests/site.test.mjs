@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { access, readFile } from "node:fs/promises";
+import { access, readFile, readdir } from "node:fs/promises";
 import test from "node:test";
 
 const pages = await Promise.all(["", "experience/", "projects/", "contact/"].map(async path => ({
@@ -9,6 +9,9 @@ const pages = await Promise.all(["", "experience/", "projects/", "contact/"].map
 const appSource = await readFile(new URL("../src/App.tsx", import.meta.url), "utf8");
 const homeSource = await readFile(new URL("../src/components/StudioHome.tsx", import.meta.url), "utf8");
 const projectSource = await readFile(new URL("../src/components/StudioProjects.tsx", import.meta.url), "utf8");
+const componentSources = (await Promise.all((await readdir(new URL("../src/components/", import.meta.url)))
+  .filter(name => name.endsWith(".tsx"))
+  .map(name => readFile(new URL(`../src/components/${name}`, import.meta.url), "utf8")))).join("\n");
 const dataSource = await readFile(new URL("../src/data/profile.ts", import.meta.url), "utf8");
 const workflow = await readFile(new URL("../.github/workflows/deploy.yml", import.meta.url), "utf8");
 
@@ -54,7 +57,7 @@ test("public profile and publication claims stay accurate", () => {
   assert.match(dataSource, /game AI/i);
   assert.match(dataSource, /built on a dataset of 52,608/);
   assert.doesNotMatch(dataSource, /improved performance|production-ready AI|@gmail\.com/);
-  assert.doesNotMatch(dataSource + appSource + homeSource + projectSource,
+  assert.doesNotMatch(dataSource + appSource + homeSource + projectSource + componentSources,
     /Tencent|腾讯|Incoming|Open to internship|internship and graduate opportunities/i);
   const folio = dataSource.slice(dataSource.indexOf('slug: "folio"'), dataSource.indexOf('slug: "explainlab"'));
   assert.match(folio, /Working preview/);

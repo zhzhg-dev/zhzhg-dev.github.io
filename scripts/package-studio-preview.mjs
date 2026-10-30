@@ -3,7 +3,7 @@ import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const repository = fileURLToPath(new URL("../", import.meta.url));
-const output = resolve(repository, "../studio-home-preview-20261031");
+const output = resolve(repository, "../studio-home-refined-20261031");
 let html = await readFile(resolve(repository, "dist/index.html"), "utf8");
 const scriptTag = html.match(/<script\b[^>]*src="([^\"]+\.js)"[^>]*><\/script>/)?.[0];
 const scriptPath = scriptTag?.match(/src="([^\"]+)"/)?.[1];
@@ -17,12 +17,15 @@ let stylesheet = await readFile(resolve(repository, `dist/${stylePath.replace(/^
 // embeds its Home assets; outgoing page links continue to the published site.
 for (const [path, type] of [
   ["grant-daylight-studio-v1.png", "image/png"],
+  ["study-notebook-v1.webp", "image/webp"],
   ...[480, 768, 1200, 1448].map(width => [`grant-daylight-studio-${width}.webp`, "image/webp"]),
 ]) {
   const data = await readFile(resolve(repository, `public/studio/${path}`));
   javascript = javascript.replaceAll(`/studio/${path}`, `data:${type};base64,${data.toString("base64")}`);
 }
-for (const path of ["/#education-title", "/#studio-about", "/experience/", "/projects/", "/projects/#folio", "/projects/#learn-to-race", "/contact/"]) {
+const researchPostcard = await readFile(resolve(repository, "public/projects/l2r-training-diversity.png"));
+javascript = javascript.replaceAll("/projects/l2r-training-diversity.png", `data:image/png;base64,${researchPostcard.toString("base64")}`);
+for (const path of ["/#education-title", "/#studio-about", "/experience/", "/experience/#work-title", "/projects/", "/projects/#folio", "/projects/#learn-to-race", "/contact/"]) {
   for (const quote of ['"', "'", "`"]) javascript = javascript.replaceAll(`${quote}${path}${quote}`, `${quote}https://zhzhg-dev.github.io${path}${quote}`);
 }
 for (const quote of ['"', "'", "`"]) javascript = javascript.replaceAll(`${quote}/${quote}`, `${quote}https://zhzhg-dev.github.io/${quote}`);
@@ -41,6 +44,7 @@ html = html.replace(scriptTag, () => `<script type="module">${javascript.replace
 html = html.replace("</head>", `<!-- Self-contained local design preview. Illustration: AI-generated for this project.\nEmbedded font licenses:\n${licenses.join("\n\n").replaceAll("-->", "—>")}\n-->\n</head>`);
 if (/(?:src|href)="\/(?:assets|fonts)\//.test(html)) throw new Error("An external build dependency remains in the standalone preview.");
 if (/\/studio\/grant-daylight-studio-[\w-]+\.(?:png|webp)/.test(javascript)) throw new Error("A studio image is missing from the standalone preview.");
+if (javascript.includes("/studio/study-notebook-v1.webp")) throw new Error("The study illustration is missing from the standalone preview.");
 if (javascript.includes("github.iohttps://")) throw new Error("An outgoing link was prefixed twice.");
 await mkdir(output, { recursive: true });
 const destination = resolve(output, "Grant-Zhang-Studio-Preview.html");

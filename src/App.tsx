@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 import { StudioHome } from "./components/StudioHome";
 import { StudioProjects } from "./components/StudioProjects";
-import { community, education, experience, navigation, profile, projects, skills } from "./data/profile";
+import { StudioBackground } from "./components/StudioBackground";
+import { navigation, profile, projects } from "./data/profile";
 
 export type PageName = "home" | "experience" | "projects" | "contact";
 
@@ -23,34 +24,8 @@ function Header({ page }: { page: PageName }) {
   </header>;
 }
 
-function ExperienceDetails() {
-  return <div className="studio-background">
-    <section className="resume-section section-shell" aria-labelledby="work-title">
-      <div className="resume-label"><h2 id="work-title">Work & teaching</h2></div>
-      <div className="resume-content">{experience.map((role, index) => <article className="resume-role" key={role.role}>
-        <div className="resume-role__meta"><p>{role.period}</p><p>{role.organisation}</p></div>
-        <h3>{role.role}</h3><p className="resume-role__summary">{role.summary}</p>
-        <details className="resume-details" open={index === 0}><summary>Responsibilities <span aria-hidden="true">+</span></summary><ul>{role.points.map(point => <li key={point}>{point}</li>)}</ul></details>
-        <ul className="inline-tags" aria-label={`${role.role} capabilities`}>{role.tags.map(tag => <li key={tag}>{tag}</li>)}</ul>
-      </article>)}</div>
-    </section>
-    <section className="resume-section section-shell" aria-labelledby="education-title">
-      <div className="resume-label"><h2 id="education-title">Education</h2></div>
-      <div className="resume-content">{education.map(item => <article className="education-entry" key={item.degree}><p className="entry-date">{item.period}</p><h3>{item.degree}</h3><p className="entry-institution">{item.institution}</p><p className="entry-note">{item.detail}</p></article>)}</div>
-    </section>
-    <section className="resume-section resume-community section-shell" aria-labelledby="community-title">
-      <div className="resume-label"><h2 id="community-title">Outside the classroom</h2></div>
-      <div className="resume-content"><p className="community-award">{community.distinction}</p><h3>{community.title}</h3><p className="community-copy">{community.description}</p></div>
-    </section>
-    <section className="resume-section section-shell" aria-labelledby="toolkit-title">
-      <div className="resume-label"><h2 id="toolkit-title">My toolkit</h2></div>
-      <div className="resume-content toolkit-list">{skills.map(group => <article key={group.category}><h3>{group.category}</h3><ul>{group.items.map(item => <li key={item}>{item}</li>)}</ul></article>)}</div>
-    </section>
-  </div>;
-}
-
 function ExperiencePage() {
-  return <><section className="studio-page-heading" id="top"><p>About</p><h1>Work & background.</h1><p>Teaching, a mathematical foundation, and the skills I use to build.</p></section><ExperienceDetails /></>;
+  return <><section className="studio-page-heading" id="top"><p>About</p><h1>Work & background.</h1><p>Teaching, a mathematical foundation, and the skills I use to build.</p></section><StudioBackground /></>;
 }
 
 function ContactPage() {
@@ -84,7 +59,7 @@ function App({ page }: { page: PageName }) {
     <a className="skip-link" href="#main-content">Skip to content</a>
     <Header page={page} />
     <main id="main-content" tabIndex={-1} className={`page-${page}`}>
-      {page === "home" ? <><StudioHome /><ExperienceDetails /></> : page === "experience" ? <ExperiencePage /> : page === "projects" ? <StudioProjects projects={projects} /> : <ContactPage />}
+      {page === "home" ? <><StudioHome /><StudioBackground compact /></> : page === "experience" ? <ExperiencePage /> : page === "projects" ? <StudioProjects projects={projects} /> : <ContactPage />}
       {page !== "contact" && <ContactPanel />}
     </main>
     <Footer />
