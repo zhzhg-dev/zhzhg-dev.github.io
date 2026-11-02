@@ -39,26 +39,26 @@ test("only About serves a responsive, high-priority WebP hero with one meaningfu
   assert.equal(pictures.length, 1);
   const source = attributes(pictures[0].markup.match(/<source\b[^>]*>/)?.[0] ?? "");
   assert.equal(source.type, "image/webp");
-  assert.deepEqual(source.srcset.split(",").map(candidate => candidate.trim()), widths.map(width => `/studio/grant-daylight-studio-${width}.webp ${width}w`));
+  assert.deepEqual(source.srcset.split(",").map(candidate => candidate.trim()), widths.map(width => `/studio/grant-cozy-studio-v2-${width}.webp ${width}w`));
   assert.ok(source.sizes, "responsive candidates need a layout-aware sizes hint");
   assert.match(source.sizes, /max-width:\s*760px/);
   assert.match(source.sizes, /vw/);
   const image = attributes(pictures[0].markup.match(/<img\b[^>]*>/)?.[0] ?? "");
-  assert.equal(image.src, "/studio/grant-daylight-studio-v1.png");
+  assert.equal(image.src, "/studio/grant-cozy-studio-v2.png");
   assert.equal(image.width, "1448");
   assert.equal(image.height, "1086");
   assert.equal(image.fetchpriority, "high");
   assert.notEqual(image.loading, "lazy");
   assert.match(image.alt, /studio|workspace/i);
   for (const page of ["projects", "experience", "contact"]) {
-    assert.doesNotMatch(renderAt(App, { page }), /grant-daylight-studio|studio-scene__art/);
+    assert.doesNotMatch(renderAt(App, { page }), /grant-(?:daylight|cozy)-studio|studio-scene__art/);
   }
 });
 
 test("all four responsive WebPs are real smaller images with the correct intrinsic dimensions in source and output", () => {
-  const original = file("public", "studio/grant-daylight-studio-v1.png");
+  const original = file("public", "studio/grant-cozy-studio-v2.png");
   for (const width of widths) {
-    const path = `studio/grant-daylight-studio-${width}.webp`;
+    const path = `studio/grant-cozy-studio-v2-${width}.webp`;
     const source = file("public", path);
     assert.deepEqual(webpDimensions(source), [width, width * 3 / 4]);
     const type = source.toString("ascii", 12, 16);

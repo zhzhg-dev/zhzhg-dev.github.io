@@ -81,7 +81,9 @@ test("production includes every required local image, font and license", async (
     "favicon.svg", "og.png", "robots.txt", "sitemap.xml", ".nojekyll",
     "projects/autonomous-racing.webp", "projects/l2r-training-diversity.png", "projects/course-review.webp", "projects/study-planner.webp", "projects/rumour-simulation.webp",
     "projects/nz-electricity-forecast.png", "projects/folio.png", "projects/explainlab-landscape.jpg",
-    "studio/grant-daylight-studio-v1.png", "fonts/Onest-variable.ttf", "fonts/OFL.txt",
+    "studio/grant-cozy-studio-v2.png",
+    ...[480, 768, 1200, 1448].map(width => `studio/grant-cozy-studio-v2-${width}.webp`),
+    "fonts/Onest-variable.ttf", "fonts/OFL.txt",
     "fonts/bricolage/BricolageGrotesque-variable.ttf", "fonts/bricolage/OFL.txt",
   ]) await access(new URL(`../dist/${asset}`, import.meta.url));
 });

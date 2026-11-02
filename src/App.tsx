@@ -3,6 +3,7 @@ import { StudioHome } from "./components/StudioHome";
 import { StudioProjects } from "./components/StudioProjects";
 import { StudioBackground } from "./components/StudioBackground";
 import { navigation, profile, projects } from "./data/profile";
+import "./components/cozy-studio.css";
 
 export type PageName = "home" | "experience" | "projects" | "contact";
 
@@ -20,7 +21,7 @@ function Header({ page }: { page: PageName }) {
     <nav className="site-nav" id="site-navigation" aria-label="Primary navigation">
       {navigation.map(item => <a key={item.page} href={item.href} aria-current={activePage === item.page ? "page" : undefined}><span>{item.label}</span></a>)}
     </nav>
-    <a className="studio-contact-link" href="/contact/">Get in touch</a>
+    <a className="studio-contact-link" href="/contact/">Say hello <span aria-hidden="true">↗</span></a>
   </header>;
 }
 
@@ -30,7 +31,7 @@ function ExperiencePage() {
 
 function ContactPage() {
   return <section className="studio-contact-page" id="top" aria-labelledby="contact-page-title">
-    <div className="studio-contact-page__intro"><p className="studio-page-label">Contact</p><h1 id="contact-page-title">Let’s talk.</h1><p>A question, a different perspective, or something worth building together.</p></div>
+    <div className="studio-contact-page__intro"><p className="studio-page-label">The door is open.</p><h1 id="contact-page-title">Say hello.</h1><p>A question, a different perspective, or something worth building together. I’d like to hear it.</p></div>
     <div className="studio-contact-options">
       <a className="studio-contact-option studio-contact-option--linkedin" href={profile.linkedin} target="_blank" rel="noreferrer"><span>A conversation</span><h2>LinkedIn</h2><p>The best place to say hello.</p><span className="studio-contact-option__arrow" aria-hidden="true">↗</span></a>
       <a className="studio-contact-option studio-contact-option--github" href={profile.github} target="_blank" rel="noreferrer"><span>Code & experiments</span><h2>GitHub</h2><p>Explore the work behind the scenes.</p><span className="studio-contact-option__arrow" aria-hidden="true">↗</span></a>
@@ -41,7 +42,7 @@ function ContactPage() {
 }
 
 function ContactPanel() {
-  return <section className="contact section-shell" aria-labelledby="contact-title"><div className="contact-intro"><p>A useful question. A new perspective.</p><h2 id="contact-title">Let’s compare notes.</h2></div><div className="contact-actions"><a href="/contact/">Get in touch<span aria-hidden="true">↗</span></a></div></section>;
+  return <section className="contact section-shell" aria-labelledby="contact-title"><div className="contact-intro"><p>There’s always room for a good conversation.</p><h2 id="contact-title">Let’s compare notes.</h2></div><div className="contact-actions"><a href="/contact/">Say hello<span aria-hidden="true">↗</span></a></div></section>;
 }
 
 function Footer() {

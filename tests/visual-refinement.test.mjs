@@ -69,14 +69,9 @@ test("About introduces Grant and owns personal background without turning into a
   assert.ok(hero);
   const heroImages = [...hero.markup.matchAll(/<img\b[^>]*>/g)].map(([tag]) => attributes(tag));
   assert.equal(heroImages.length, 1);
-  assert.equal(heroImages[0].src, "/studio/grant-daylight-studio-v1.png");
+  assert.equal(heroImages[0].src, "/studio/grant-cozy-studio-v2.png");
   const contextualImages = images.filter(image => image.src !== heroImages[0].src);
-  assert.equal(contextualImages.length, 1, "one quiet supporting illustration is not a second project gallery");
-  assert.equal(contextualImages[0].src, "/studio/study-notebook-v1.webp");
-  assert.equal(contextualImages[0].loading, "lazy");
-  assert.equal(Number(contextualImages[0].width), 760);
-  assert.equal(Number(contextualImages[0].height), 507);
-  assert.equal(contextualImages[0].alt, "", "the still life does not pretend to be personal documentary evidence");
+  assert.equal(contextualImages.length, 0, "the personal reading area does not repeat the hero with another decorative image");
   for (const project of projects) {
     assert.ok(!images.some(image => image.src === project.cover), "the full project-cover gallery belongs on Projects");
     assert.ok(!text.includes(project.description), `${project.title} complete case stays on Projects`);
@@ -113,7 +108,7 @@ test("About keeps concise personal context and current interests without inventi
 
 test("Contact has actual professional destinations and no invented address, form or project catalogue", () => {
   const html = renderAt(App, { page: "contact" });
-  assert.ok(plainText(html).includes("Let’s talk."));
+  assert.ok(plainText(html).includes("Say hello."));
   assert.match(plainText(html), /Auckland, New Zealand/);
   const links = elements(html, "a");
   for (const target of [profile.linkedin, profile.github]) {

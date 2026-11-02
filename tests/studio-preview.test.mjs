@@ -144,7 +144,7 @@ test("the illustrated introduction preserves current personal facts and one mean
   assert.doesNotMatch(text, /Tencent|腾讯|Incoming|Open to internship|seeking|looking for (?:a|an) (?:role|internship)/i);
   assert.doesNotMatch(text, /David Heckhoff|Dennis Snellenberg|production-ready|award-winning/i);
   assert.equal((hero.match(/<img\b/g) || []).length, 1);
-  assert.match(hero, /src="\/studio\/grant-daylight-studio-v1\.png"/);
+  assert.match(hero, /src="\/studio\/grant-cozy-studio-v2\.png"/);
   assert.match(hero, /width="1448"/);
   assert.match(hero, /height="1086"/);
   assert.match(hero, /fetchPriority="high"|fetchpriority="high"/);
@@ -155,13 +155,42 @@ test("the illustrated introduction preserves current personal facts and one mean
 });
 
 test("the studio illustration is a local transparent PNG with the declared intrinsic dimensions", () => {
-  const asset = readFileSync(resolve(repository, "public/studio/grant-daylight-studio-v1.png"));
+  const asset = readFileSync(resolve(repository, "public/studio/grant-cozy-studio-v2.png"));
   assert.deepEqual([...asset.subarray(0, 8)], [137, 80, 78, 71, 13, 10, 26, 10]);
   assert.equal(asset.toString("ascii", 12, 16), "IHDR");
   assert.equal(asset.readUInt32BE(16), 1448);
   assert.equal(asset.readUInt32BE(20), 1086);
   assert.equal(asset[25], 6, "RGBA preserves generated transparency instead of painting a rectangular background");
   assert.ok(asset.length < 3 * 1024 * 1024, "the single illustrated scene stays under 3 MiB");
+});
+
+test("studio colour choices are user-triggered, mutually exclusive and do not interrupt a workspace note", () => {
+  const render = studioHarness();
+  const colourChoices = current => current.filter(node => node.type === "button" && ["Daylight", "Golden hour"].includes(textOf(node)));
+  let current = nodes(render());
+  const group = current.find(node => node.props.role === "group" && node.props["aria-label"] === "Studio colours");
+  assert.ok(group);
+  assert.deepEqual(nodes(group).filter(node => node.type === "button").map(textOf), ["Daylight", "Golden hour"]);
+  assert.deepEqual(colourChoices(current).map(node => node.props["aria-pressed"]), [true, false]);
+  for (const choice of colourChoices(current)) assert.equal(choice.props.type, "button");
+  assert.equal(current.find(node => node.type === "section" && node.props.id === "top").props.className, "studio-hero");
+
+  current.find(node => node.type === "button" && node.props["aria-label"] === "At the screen").props.onClick({ currentTarget: { focus() {} } });
+  current = nodes(render());
+  colourChoices(current).find(node => textOf(node) === "Golden hour").props.onClick();
+  current = nodes(render());
+  assert.deepEqual(colourChoices(current).map(node => node.props["aria-pressed"]), [false, true]);
+  assert.match(current.find(node => node.type === "section" && node.props.id === "top").props.className, /\bstudio-hero--golden\b/);
+  const note = current.find(node => node.type === "aside" && node.props["aria-label"] === "Workspace detail");
+  assert.equal(note.props.hidden, false);
+  assert.ok(textOf(note).includes("From an idea to something useful."));
+  colourChoices(current).find(node => textOf(node) === "Daylight").props.onClick();
+  current = nodes(render());
+  assert.deepEqual(colourChoices(current).map(node => node.props["aria-pressed"]), [true, false]);
+  assert.equal(current.find(node => node.type === "section" && node.props.id === "top").props.className, "studio-hero");
+  assert.equal(current.find(node => node.type === "aside" && node.props["aria-label"] === "Workspace detail").props.hidden, false);
+  const source = readFileSync(resolve(repository, "src/components/StudioHome.tsx"), "utf8");
+  assert.doesNotMatch(source, /localStorage|sessionStorage|\bsetInterval\s*\(|\bfetch\s*\(/);
 });
 
 test("the screen and window workspace notes preserve their real content and close or Escape restores trigger focus", () => {
@@ -188,7 +217,7 @@ test("the screen and window workspace notes preserve their real content and clos
     assert.equal(aside.props.hidden, false);
     assert.ok(textOf(aside).includes(title));
     assert.ok(current.some(node => node.type === "a" && node.props.href === href));
-    const selected = current.filter(node => node.type === "button" && node.props["aria-pressed"]);
+    const selected = current.filter(node => node.type === "button" && node.props.className?.startsWith("studio-hotspot ") && node.props["aria-pressed"]);
     assert.deepEqual(selected.map(node => node.props["aria-label"]), [label]);
     assert.equal(selected[0].props["aria-expanded"], true);
     const close = current.find(node => node.type === "button" && node.props["aria-label"] === "Close workspace detail");

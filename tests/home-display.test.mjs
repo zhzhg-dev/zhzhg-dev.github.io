@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import test from "node:test";
-import { attributes, elements, loadSource, renderAt, repository } from "./support/source-harness.mjs";
+import { elements, loadSource, renderAt, repository } from "./support/source-harness.mjs";
 
 const { default: App } = loadSource(resolve(repository, "src/App.tsx"));
 const { StudioBackground } = loadSource(resolve(repository, "src/components/StudioBackground.tsx"));
@@ -12,21 +12,14 @@ function openingTag(markup) { return markup.slice(0, markup.indexOf(">") + 1); }
 function isOpen(markup) { return /\sopen(?:\s|=|>)/.test(openingTag(markup)); }
 function section(html, id) { return elements(html, "section").find(item => item["aria-labelledby"] === id); }
 
-test("the personal display keeps one lazy decorative still life rather than a project catalogue", () => {
+test("the personal display uses readable personal context without a second decorative image or project catalogue", () => {
   const html = renderAt(App, { page: "home" });
   const introduction = elements(html, "section").find(item => item.id === "studio-about");
   assert.ok(introduction);
-  const image = attributes(introduction.markup.match(/<img\b[^>]*>/)?.[0] ?? "");
-  assert.equal(image.src, "/studio/study-notebook-v1.webp");
-  assert.equal(image.loading, "lazy");
-  assert.equal(image.alt, "");
-  assert.equal(Number(image.width), 760);
-  assert.equal(Number(image.height), 507);
-  assert.match(introduction.markup, /aria-hidden="true"/);
-  const asset = readFileSync(resolve(repository, "public", image.src.replace(/^\//, "")));
-  assert.equal(asset.toString("ascii", 0, 4), "RIFF");
-  assert.equal(asset.toString("ascii", 8, 12), "WEBP");
-  assert.ok(asset.length < 200 * 1024);
+  assert.equal(elements(introduction.markup, "h2").length, 1);
+  assert.doesNotMatch(introduction.markup, /<img\b|study-notebook|<canvas\b|<iframe\b/);
+  for (const fact of ["Grant", "Master of Information Technology", "Graduate Teaching Assistant", "University of Auckland"]) assert.ok(introduction.text.includes(fact));
+  assert.match(introduction.text, /mathematics/i);
   for (const project of projects) assert.ok(!html.includes(`src="${project.cover}"`), "project evidence images stay on their case page");
   assert.doesNotMatch(html, /studio-projects__grid|studio-project-card__cover/);
   for (const page of ["experience", "contact"]) {

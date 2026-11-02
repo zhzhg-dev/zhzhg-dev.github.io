@@ -17,6 +17,7 @@ export function StudioHome() {
   const whiteboardId = useId();
   const [selected, setSelected] = useState<StudioSpot | null>(null);
   const [whiteboardOpen, setWhiteboardOpen] = useState(false);
+  const [goldenHour, setGoldenHour] = useState(false);
   const artRef = useRef<HTMLDivElement>(null);
   const selectedButtonRef = useRef<HTMLButtonElement | null>(null);
   const whiteboardTriggerRef = useRef<HTMLButtonElement | null>(null);
@@ -42,18 +43,20 @@ export function StudioHome() {
   }
 
   return <div className="studio-home">
-    <section className="studio-hero" id="top" aria-labelledby={titleId} onKeyDown={event => { if (event.key === "Escape" && selected) { event.preventDefault(); closeNote(); } }}>
+    <section className={`studio-hero${goldenHour ? " studio-hero--golden" : ""}`} id="top" aria-labelledby={titleId} onKeyDown={event => { if (event.key === "Escape" && selected) { event.preventDefault(); closeNote(); } }}>
       <div className="studio-intro">
+        <p className="studio-welcome">Hi, make yourself at home.</p>
         <h1 id={titleId} translate="no" aria-label="Grant Zhang">Grant<br />{" "}Zhang<span className="studio-name-stop">.</span></h1>
         <p className="studio-role">AI product builder</p>
         <p className="studio-intro__copy">A mathematical mind.<br />{" "}A curiosity for what’s possible.</p>
+        <a className="studio-intro__link" href="#studio-about">A little about me <span aria-hidden="true">↓</span></a>
       </div>
 
       <div className="studio-scene" onPointerMove={moveScene} onPointerLeave={resetScene}>
         <div className="studio-scene__movement" ref={artRef}>
           <picture className="studio-scene__picture">
-            <source type="image/webp" srcSet="/studio/grant-daylight-studio-480.webp 480w, /studio/grant-daylight-studio-768.webp 768w, /studio/grant-daylight-studio-1200.webp 1200w, /studio/grant-daylight-studio-1448.webp 1448w" sizes="(max-width: 760px) 100vw, (max-width: 1050px) 84vw, (min-width: 1908px) 1450px, 76vw" />
-            <img className="studio-scene__art" src="/studio/grant-daylight-studio-v1.png" width="1448" height="1086" fetchPriority="high" decoding="async" alt="An illustrated AI workspace: a developer at a curved desk, a wide screen and mathematical idea board, with Auckland’s skyline through an arched window." />
+            <source type="image/webp" srcSet="/studio/grant-cozy-studio-v2-480.webp 480w, /studio/grant-cozy-studio-v2-768.webp 768w, /studio/grant-cozy-studio-v2-1200.webp 1200w, /studio/grant-cozy-studio-v2-1448.webp 1448w" sizes="(max-width: 760px) 100vw, (max-width: 1050px) 65vw, (min-width: 1600px) 1050px, 68vw" />
+            <img className="studio-scene__art" src="/studio/grant-cozy-studio-v2.png" width="1448" height="1086" fetchPriority="high" decoding="async" alt="An illustrated cozy studio: a developer in a sage jumper at a wooden desk, a screen and mathematical whiteboard, with Auckland’s skyline through an arched window." />
           </picture>
           <div className="studio-hotspots" role="group" aria-label="Explore my illustrated workspace">
             {spots.map(item => <button key={item.id} className={`studio-hotspot studio-hotspot--${item.id}`} type="button" aria-label={item.id === "think" ? "Try the whiteboard" : item.label} aria-haspopup={item.id === "think" ? "dialog" : undefined} aria-pressed={item.id === "think" ? whiteboardOpen : selected === item.id} aria-expanded={item.id === "think" ? whiteboardOpen : selected === item.id} aria-controls={item.id === "think" ? whiteboardId : noteId} onClick={event => { if (item.id === "think") { whiteboardTriggerRef.current = event.currentTarget; setSelected(null); resetScene(); setWhiteboardOpen(true); return; } selectedButtonRef.current = event.currentTarget; setSelected(current => current === item.id ? null : item.id); }}>
@@ -63,11 +66,13 @@ export function StudioHome() {
         </div>
       </div>
 
+      <div className="studio-light-control" role="group" aria-label="Studio colours"><span aria-hidden="true">☀</span><button type="button" aria-pressed={!goldenHour} onClick={() => setGoldenHour(false)}>Daylight</button><button type="button" aria-pressed={goldenHour} onClick={() => setGoldenHour(true)}>Golden hour</button></div>
+
       <aside className="studio-note" id={noteId} aria-label="Workspace detail" aria-live="polite" hidden={!spot}>
         {spot && <><button className="studio-note__close" type="button" aria-label="Close workspace detail" onClick={closeNote}>×</button><h2>{spot.title}</h2><p>{spot.description}</p><a href={spot.href}>{spot.link}<span aria-hidden="true">↗</span></a></>}
       </aside>
 
-      <p className="studio-location">Based in Auckland,<br />New Zealand.</p>
+      <p className="studio-location"><span className="studio-location__dot" aria-hidden="true" /> Auckland, New Zealand</p>
       <p className="studio-touch-hint">Tap the + marks to look around.</p>
       <a className="studio-scroll" href="#studio-about" aria-label="A little more about Grant"><span className="studio-scroll__mouse" aria-hidden="true"><span /></span><span>A little more about me</span></a>
     </section>
