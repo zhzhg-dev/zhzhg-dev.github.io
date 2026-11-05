@@ -53,7 +53,13 @@ test("all routes expose the same three real tabs, exactly one active tab and one
         : page === "home" && link.href?.startsWith("/#") ? link.href.slice(2) : null;
       if (hash) assert.ok(ids.includes(decodeURIComponent(hash)), `${page} keeps the ${link.href} destination`);
     }
-    assert.doesNotMatch(html, /Tencent|腾讯|Incoming|Open to internship|internship and graduate opportunities|Compare with the current website/i);
+    assert.doesNotMatch(html, /Incoming|Open to internship|internship and graduate opportunities|Compare with the current website/i);
+    const work = elements(html, "section").find(section => section["aria-labelledby"] === "work-title");
+    if (page === "home" || page === "experience") {
+      assert.ok(work, `${page} shows the scheduled internship in its work history`);
+      assert.match(work.text, /Scheduled to start 16 Nov 2026 Tencent \/ LIGHTSPEED STUDIOS Game AI Product Management Intern/);
+      assert.doesNotMatch(html.replace(work.markup, ""), /Tencent|腾讯/i);
+    } else assert.doesNotMatch(html, /Tencent|腾讯/i);
     assert.equal(elements(html, "form").length, 0, "no nonfunctional contact form should be advertised");
   }
 });

@@ -6,7 +6,7 @@ import { elements, loadSource, renderAt, repository } from "./support/source-har
 
 const { default: App } = loadSource(resolve(repository, "src/App.tsx"));
 const { StudioBackground } = loadSource(resolve(repository, "src/components/StudioBackground.tsx"));
-const { experience, education, community, skills, projects } = loadSource(resolve(repository, "src/data/profile.ts"));
+const { experience, education, community, communityAwardUrl, skills, projects } = loadSource(resolve(repository, "src/data/profile.ts"));
 
 function openingTag(markup) { return markup.slice(0, markup.indexOf(">") + 1); }
 function isOpen(markup) { return /\sopen(?:\s|=|>)/.test(openingTag(markup)); }
@@ -38,8 +38,11 @@ test("compact Home records lead to the complete Experience record without repeat
   }
   const highlights = elements(work.markup, "ul")[0];
   assert.ok(highlights);
-  assert.deepEqual(elements(highlights.markup, "li").map(item => item.text), experience[0].points.slice(0, 2));
-  for (const point of [...experience[0].points.slice(2), ...experience[1].points]) assert.ok(!work.text.includes(point), "the complete duty list is not repeated on Home");
+  const current = experience.find(role => role.status === "current");
+  assert.equal(current?.role, "Graduate Teaching Assistant");
+  assert.deepEqual(elements(highlights.markup, "li").map(item => item.text), current.points.slice(0, 2));
+  const omittedPoints = experience.flatMap(role => role === current ? role.points.slice(2) : role.points);
+  for (const point of omittedPoints) assert.ok(!work.text.includes(point), "the complete duty list is not repeated on Home");
   assert.ok(elements(work.markup, "a").some(link => link.href === "/experience/#work-title"));
   const completeWork = section(renderAt(App, { page: "experience" }), "work-title");
   assert.ok(completeWork);
@@ -51,25 +54,34 @@ test("compact Home records lead to the complete Experience record without repeat
   }
 });
 
-test("the complete background retains native responsibility details and real education and community facts", () => {
+test("the complete background retains native responsibility details and real education and volunteering facts", () => {
   const html = renderAt(StudioBackground);
   const work = section(html, "work-title");
   assert.ok(work);
   const roles = elements(work.markup, "article");
-  for (const [index, role] of experience.entries()) {
+  for (const role of experience) {
     const entry = roles.find(item => item.text.includes(role.role));
     assert.ok(entry);
     const disclosures = elements(entry.markup, "details");
-    assert.equal(disclosures.length, 1);
-    assert.equal(isOpen(disclosures[0].markup), index === 0);
-    assert.match(elements(disclosures[0].markup, "summary")[0]?.text ?? "", /Responsibilities/);
+    assert.equal(disclosures.length, role.points.length ? 1 : 0);
+    if (role.points.length) {
+      assert.equal(isOpen(disclosures[0].markup), role.status === "current");
+      assert.match(elements(disclosures[0].markup, "summary")[0]?.text ?? "", /Responsibilities/);
+    }
   }
   const qualifications = section(html, "education-title");
   assert.ok(qualifications);
   for (const qualification of education) for (const fact of Object.values(qualification)) assert.ok(qualifications.text.includes(fact));
   const note = elements(html, "aside").find(item => item["aria-labelledby"] === "community-title");
   assert.ok(note);
+  assert.equal(elements(note.markup, "h2")[0]?.text, "Volunteering");
   for (const fact of Object.values(community)) assert.ok(note.text.includes(fact));
+  const awardLink = elements(note.markup, "a").find(link => /^Official award list(?:\s+↗)?$/.test(link.text));
+  assert.ok(awardLink);
+  assert.equal(awardLink.href, communityAwardUrl);
+  assert.match(awardLink.href, /^https:\/\/sxx\.youth\.cn\/[^#]+\.pdf#page=40$/i);
+  assert.equal(awardLink.target, "_blank");
+  assert.match(awardLink.rel, /\b(?:noopener|noreferrer)\b/);
 });
 
 test("all five toolkit groups are directly readable with no fabricated proficiency scores or persistence", () => {

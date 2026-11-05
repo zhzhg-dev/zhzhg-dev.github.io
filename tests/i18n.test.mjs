@@ -73,12 +73,12 @@ test("localized internal addresses retain route, query and project hash without 
 
 const pageCopy = {
   home: {
-    zh: ["嗨，欢迎来我的小工作室。", "AI 产品构建者", "用数学理解问题，", "用好奇心探索可能。", "最近在探索。", "工作与教学", "教育背景", "我的工具箱", "课堂之外", "研究生助教", "信息技术硕士"],
-    en: ["Hi, make yourself at home.", "AI product builder", "A mathematical mind.", "A curiosity for what’s possible.", "What I’m exploring.", "Work & teaching", "Education", "My toolkit", "Outside the classroom", "Graduate Teaching Assistant", "Master of Information Technology"],
+    zh: ["嗨，欢迎来我的小工作室。", "AI 产品构建者", "用数学理解问题，", "用好奇心探索可能。", "最近在探索。", "工作与教学", "教育背景", "我的工具箱", "志愿活动", "研究生助教", "信息技术硕士"],
+    en: ["Hi, make yourself at home.", "AI product builder", "A mathematical mind.", "A curiosity for what’s possible.", "What I’m exploring.", "Work & teaching", "Education", "My toolkit", "Volunteering", "Graduate Teaching Assistant", "Master of Information Technology"],
   },
   experience: {
-    zh: ["经历与来路。", "工作内容", "研究生助教", "雅思助教", "奥克兰大学", "西南民族大学", "教育背景", "产品与评估", "全国优秀团队"],
-    en: ["Work & background.", "Responsibilities", "Graduate Teaching Assistant", "IELTS Teaching Assistant", "University of Auckland", "Southwest Minzu University", "Education", "Product & evaluation"],
+    zh: ["经历与来路。", "工作内容", "研究生助教", "雅思助教", "奥克兰大学", "西南民族大学", "教育背景", "产品与评估", "国家级优秀团队"],
+    en: ["Work & background.", "Responsibilities", "Graduate Teaching Assistant", "IELTS Teaching Assistant", "University of Auckland", "Southwest Minzu University", "Education", "Product & evaluation", "National Outstanding Team"],
   },
   projects: {
     zh: ["认真做过的事", "项目与探索", "点开封面，看看每个项目背后的问题、选择与思考。", "Folio", "ExplainLab", "L2R Autonomous Racing", "在线体验", "源代码", "有个想法？"],
@@ -121,6 +121,58 @@ for (const page of Object.keys(pageCopy)) {
     });
   }
 }
+
+test("the Tencent internship is scheduled in both languages and only the teaching assistant is current", () => {
+  const expectedCopy = {
+    en: { employer: "Tencent / LIGHTSPEED STUDIOS", title: "Game AI Product Management Intern", start: "Scheduled to start 16 Nov 2026", location: "Auckland, New Zealand.", teaching: "Graduate Teaching Assistant", end: "Jul 2026 — 16 Nov 2026 (scheduled end)" },
+    zh: { employer: "腾讯光子工作室群", title: "游戏 AI 产品管理实习生", start: "计划于 2026 年 11 月 16 日入职", location: "新西兰奥克兰。", teaching: "研究生助教", end: "2026 年 7 月 — 2026 年 11 月 16 日（预计结束）" },
+  };
+  for (const [language, copy] of Object.entries(expectedCopy)) {
+    for (const page of ["home", "experience"]) {
+      const html = renderPage(page, language);
+      const work = elements(html, "section").find(section => section["aria-labelledby"] === "work-title");
+      assert.ok(work);
+      const records = elements(work.markup, "li").filter(item => item.class?.split(/\s+/).includes("background-work__entry"));
+      const scheduled = records.find(item => item.text.includes(copy.employer));
+      const current = records.filter(item => item.class.split(/\s+/).includes("background-work__entry--current"));
+      assert.ok(scheduled);
+      assert.equal(elements(scheduled.markup, "h3")[0]?.text, copy.title);
+      assert.equal(elements(scheduled.markup, "article")[0]?.text, `${copy.employer} ${copy.title} ${copy.location}`);
+      assert.ok(scheduled.text.includes(copy.start));
+      assert.doesNotMatch(scheduled.markup, /background-work__entry--current|<details\b|<ul\b/);
+      assert.equal(current.length, 1);
+      assert.equal(elements(current[0].markup, "h3")[0]?.text, copy.teaching);
+      assert.ok(current[0].text.includes(copy.end));
+      assert.match(current[0].text, /COMPSCI 111/);
+      if (page === "experience") assert.match(elements(current[0].markup, "details")[0]?.markup ?? "", /^<details\b[^>]*\sopen(?:=|\s|>)/);
+      assert.doesNotMatch(html.replace(work.markup, ""), /Tencent|腾讯/);
+    }
+  }
+});
+
+test("the bilingual volunteering card keeps the team recognition and links to the official award page", () => {
+  const copy = {
+    en: ["Volunteering", "Gesanghua Outreach Team", "School of Mathematics, Southwest Minzu University", "Summer 2022", "National Outstanding Team", "Hongyuan County", "Official award list"],
+    zh: ["志愿活动", "“格桑花”宣讲团", "西南民族大学数学学院", "2022 年暑期", "国家级优秀团队", "红原县", "查看全国优秀团队名单"],
+  };
+  for (const [language, [heading, ...facts]] of Object.entries(copy)) {
+    for (const page of ["home", "experience"]) {
+      const card = elements(renderPage(page, language), "aside").find(note => note["aria-labelledby"] === "community-title");
+      assert.ok(card);
+      assert.equal(elements(card.markup, "h2")[0]?.text, heading);
+      for (const fact of facts) assert.ok(card.text.includes(fact), `${language} volunteer card preserves ${fact}`);
+      if (language === "zh") {
+        assert.match(card.text, /科普入红原\s+奋斗向未来/);
+        for (const phrase of ["科普宣讲", "数学知识", "全程参与", "协调队员分工"]) assert.ok(card.text.includes(phrase));
+      } else for (const phrase of ["mathematics", "every programme activity", "coordinate"]) assert.ok(card.text.includes(phrase));
+      assert.doesNotMatch(card.text, /led the team|won an individual award|获个人奖项|带领团队/i);
+      const link = elements(card.markup, "a").find(item => item.text.replace(/\s*↗$/, "") === facts.at(-1));
+      assert.ok(link);
+      assert.equal(link.href, "https://sxx.youth.cn/zytz/hdgg/202301/W020230104379084972171.pdf#page=40");
+      assert.equal(link.target, "_blank");
+    }
+  }
+});
 
 test("project cases keep their English identities while translating full evidence and contribution details", () => {
   for (const [slug, title] of [["folio", "Folio"], ["explainlab", "ExplainLab"], ["nz-electricity-forecasting", "NZ Electricity Intelligence"], ["learn-to-race", "L2R Autonomous Racing"]]) {

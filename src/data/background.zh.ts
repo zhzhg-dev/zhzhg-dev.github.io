@@ -5,9 +5,19 @@ import type { Education, Experience } from "./profile";
 export const backgroundZh = {
   experience: [
     {
+      role: "游戏 AI 产品管理实习生",
+      organisation: "腾讯光子工作室群",
+      period: "计划于 2026 年 11 月 16 日入职",
+      summary: "新西兰奥克兰。",
+      status: "upcoming",
+      points: [],
+      tags: [],
+    },
+    {
       role: "研究生助教",
       organisation: "奥克兰大学 · 计算机科学学院",
-      period: "2026 年 7 月 — 至今",
+      period: "2026 年 7 月 — 2026 年 11 月 16 日（预计结束）",
+      status: "current",
       summary: "帮助学生在计算机入门学习中建立信心。",
       points: [
         "协助开展 COMPSCI 111 实验课与大学 Open Lab 开放实验室。",
@@ -52,8 +62,11 @@ export const backgroundZh = {
     { category: "开发工具", items: ["Git", "GitHub Actions", "Docker", "VS Code", "Postman"] },
   ],
   community: {
-    title: "全国“三下乡”社会实践团队",
-    distinction: "全国优秀团队",
-    description: "我协助指导老师规划行程、安排任务，并直接参与社会实践活动。这段经历锻炼了我的协调与沟通能力，也让我更具体地理解教育与技术资源获取上的差异。",
+    title: "“格桑花”宣讲团",
+    organisation: "西南民族大学数学学院",
+    period: "2022 年暑期",
+    distinction: "国家级优秀团队",
+    description: "在暑期“三下乡”社会实践中，我们赴四川红原县开展“科普入红原 奋斗向未来”活动，通过科普宣讲把数学知识带进高原牧区。",
+    contribution: "我全程参与各项活动，包括科普宣讲和现场志愿服务，并协助指导老师安排活动流程、协调队员分工。",
   },
 };

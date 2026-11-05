@@ -57,8 +57,15 @@ test("public profile and publication claims stay accurate", () => {
   assert.match(dataSource, /game AI/i);
   assert.match(dataSource, /built on a dataset of 52,608/);
   assert.doesNotMatch(dataSource, /improved performance|production-ready AI|@gmail\.com/);
-  assert.doesNotMatch(dataSource + appSource + homeSource + projectSource + componentSources,
+  const experienceStart = dataSource.indexOf("export const experience");
+  const experienceEnd = dataSource.indexOf("export const projects");
+  assert.ok(experienceStart >= 0 && experienceEnd > experienceStart);
+  const outsideExperience = dataSource.slice(0, experienceStart) + dataSource.slice(experienceEnd);
+  assert.doesNotMatch(outsideExperience + appSource + homeSource + projectSource + componentSources,
     /Tencent|腾讯|Incoming|Open to internship|internship and graduate opportunities/i);
+  const workHistory = dataSource.slice(experienceStart, experienceEnd);
+  assert.match(workHistory, /organisation: "Tencent \/ LIGHTSPEED STUDIOS",\s*period: "Scheduled to start 16 Nov 2026",\s*summary: "Auckland, New Zealand\.",\s*status: "upcoming",\s*points: \[\],\s*tags: \[\]/);
+  assert.equal([...workHistory.matchAll(/status: "current"/g)].length, 1);
   const folio = dataSource.slice(dataSource.indexOf('slug: "folio"'), dataSource.indexOf('slug: "explainlab"'));
   assert.match(folio, /Working preview/);
   assert.doesNotMatch(folio, /liveUrl:/);

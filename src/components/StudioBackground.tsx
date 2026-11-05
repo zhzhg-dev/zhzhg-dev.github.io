@@ -1,4 +1,4 @@
-import { community, education, experience, skills } from "../data/profile";
+import { community, communityAwardUrl, education, experience, skills } from "../data/profile";
 import { backgroundZh } from "../data/background.zh";
 import { useLanguage } from "../i18n";
 import "./studio-background.css";
@@ -11,12 +11,16 @@ export function StudioBackground({ compact = false }: { compact?: boolean }) {
     <section className="background-work" aria-labelledby="work-title">
       <header className="background-heading"><h2 id="work-title">{t("Work & teaching", "工作与教学")}</h2><p>{t("Learning goes both ways.", "教与学，从来都是双向的。")}</p></header>
       <ol className="background-work__list">
-        {background.experience.map((role, index) => <li className={"background-work__entry" + (index === 0 ? " background-work__entry--current" : "")} key={index}>
-          <p className="background-work__period">{role.period}</p>
-          <article className="background-role"><p className="background-role__organisation">{role.organisation}</p><h3>{role.role}</h3><p className="background-role__summary">{role.summary}</p>
-            {compact ? index === 0 && <ul className="background-role__highlights">{role.points.slice(0, 2).map(point => <li key={point}>{point}</li>)}</ul> : <><details className="background-role__details" open={index === 0}><summary>{t("Responsibilities", "工作内容")}<span aria-hidden="true">+</span></summary><ul>{role.points.map(point => <li key={point}>{point}</li>)}</ul></details><ul className="background-role__tags" aria-label={t(`${role.role} capabilities`, `${role.role}相关能力`)}>{role.tags.map(tag => <li key={tag}>{tag}</li>)}</ul></>}
-          </article>
-        </li>)}
+        {background.experience.map((role, index) => {
+          const current = role.status === "current";
+          return <li className={"background-work__entry" + (current ? " background-work__entry--current" : "")} key={index}>
+            <p className="background-work__period">{role.period}</p>
+            <article className="background-role"><p className="background-role__organisation">{role.organisation}</p><h3>{role.role}</h3><p className="background-role__summary">{role.summary}</p>
+              {role.points.length > 0 && (compact ? current && <ul className="background-role__highlights">{role.points.slice(0, 2).map(point => <li key={point}>{point}</li>)}</ul> : <details className="background-role__details" open={current}><summary>{t("Responsibilities", "工作内容")}<span aria-hidden="true">+</span></summary><ul>{role.points.map(point => <li key={point}>{point}</li>)}</ul></details>)}
+              {!compact && role.tags.length > 0 && <ul className="background-role__tags" aria-label={t(`${role.role} capabilities`, `${role.role}相关能力`)}>{role.tags.map(tag => <li key={tag}>{tag}</li>)}</ul>}
+            </article>
+          </li>;
+        })}
       </ol>
       {compact && <a className="background-work__more" href={href("/experience/#work-title")}>{t("Full background", "查看完整经历")}<span aria-hidden="true">↗</span></a>}
     </section>
@@ -34,8 +38,18 @@ export function StudioBackground({ compact = false }: { compact?: boolean }) {
     </section>
 
     <aside className="background-community" aria-labelledby="community-title">
-      <div><h2 id="community-title">{t("Outside the classroom", "课堂之外")}</h2><p className="background-community__award">{background.community.distinction}</p></div>
-      <div><h3>{background.community.title}</h3><p>{background.community.description}</p></div>
+      <div>
+        <h2 id="community-title">{t("Volunteering", "志愿活动")}</h2>
+        <p className="background-community__award">{background.community.distinction}</p>
+        <p className="background-community__period">{background.community.period}</p>
+      </div>
+      <div>
+        <h3>{background.community.title}</h3>
+        <p className="background-community__organisation">{background.community.organisation}</p>
+        <p>{background.community.description}</p>
+        <p>{background.community.contribution}</p>
+        <a className="background-community__source" href={communityAwardUrl} target="_blank" rel="noreferrer">{t("Official award list", "查看全国优秀团队名单")}<span aria-hidden="true">↗</span></a>
+      </div>
     </aside>
   </div>;
 }

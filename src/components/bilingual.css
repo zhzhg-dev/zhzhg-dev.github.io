@@ -1,9 +1,9 @@
 /* The same quiet studio, with breathing room for both writing systems. */
 @font-face {
-  font-family: "Studio WenKai";
-  src: url("/fonts/chinese/lxgw-wenkai-studio.woff2") format("woff2");
+  font-family: "Studio Rounded SC";
+  src: url("/fonts/chinese/resource-han-rounded-studio.woff2") format("woff2");
   font-style: normal;
-  font-weight: 400;
+  font-weight: 500;
   font-display: swap;
   unicode-range: U+2000-206F, U+2E80-2EFF, U+3000-303F, U+3400-4DBF, U+4E00-9FFF, U+F900-FAFF, U+FF00-FFEF;
 }
@@ -24,7 +24,7 @@
 .studio-site .studio-intro h1 { font-size: clamp(84px, 8.4vw, 136px); }
 .studio-site[data-language="zh"] {
   --font-cn-body: "Studio Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
-  --font-cn-display: "Studio WenKai", Onest, "Studio Sans SC", serif;
+  --font-cn-display: "Studio Rounded SC", Onest, var(--font-cn-body);
   font-family: Onest, var(--font-cn-body);
   font-weight: 400;
   letter-spacing: .01em;
@@ -32,7 +32,7 @@
 }
 .studio-site[data-language="zh"] :is(h1, h2):not([translate="no"]) {
   font-family: var(--font-cn-display);
-  font-weight: 400;
+  font-weight: 500;
   letter-spacing: .015em;
   line-height: 1.4;
 }

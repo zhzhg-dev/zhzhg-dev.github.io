@@ -3,6 +3,7 @@ export type Experience = {
   organisation: string;
   period: string;
   summary: string;
+  status?: "upcoming" | "current";
   points: string[];
   tags: string[];
 };
@@ -69,9 +70,19 @@ export const navigation = [
 
 export const experience: Experience[] = [
   {
+    role: "Game AI Product Management Intern",
+    organisation: "Tencent / LIGHTSPEED STUDIOS",
+    period: "Scheduled to start 16 Nov 2026",
+    summary: "Auckland, New Zealand.",
+    status: "upcoming",
+    points: [],
+    tags: [],
+  },
+  {
     role: "Graduate Teaching Assistant",
     organisation: "University of Auckland · School of Computer Science",
-    period: "Jul 2026 — Present",
+    period: "Jul 2026 — 16 Nov 2026 (scheduled end)",
+    status: "current",
     summary:
       "Supporting students as they build confidence with introductory computing.",
     points: [
@@ -454,9 +465,15 @@ export const education: Education[] = [
   },
 ];
 
+export const communityAwardUrl = "https://sxx.youth.cn/zytz/hdgg/202301/W020230104379084972171.pdf#page=40";
+
 export const community = {
-  title: "National ‘Three Rural Areas’ social-practice team",
-  distinction: "National Outstanding Team award",
+  title: "Gesanghua Outreach Team",
+  organisation: "School of Mathematics, Southwest Minzu University",
+  period: "Summer 2022",
+  distinction: "National Outstanding Team",
   description:
-    "I supported faculty advisers with itinerary planning and task scheduling while participating directly in community practice activities. The experience strengthened my coordination and communication, and gave me a clearer understanding of differences in access to education and technology.",
+    "As part of the Three Rural Areas summer programme, our team visited Hongyuan County, Sichuan, to share mathematics with highland pastoral communities through public science talks.",
+  contribution:
+    "I took part in every programme activity, including the science outreach sessions, and helped faculty advisers coordinate the schedule and team responsibilities.",
 };

@@ -18,7 +18,7 @@ from fontTools.varLib.instancer import instantiateVariableFont
 REPOSITORY = Path(__file__).resolve().parent.parent
 OUTPUT = REPOSITORY / "public" / "fonts" / "chinese"
 SOURCE_HASHES = {
-    "LXGWWenKai-Regular.ttf": "2d73eea94ad808999d90c0000c239a84a33b09d4bc6ab6c5b8bbf1eda8a7fc8b",
+    "ResourceHanRoundedCN-Medium.ttf": "b2ec1727fbc04b70255db6cb71be0eca3b7a7167ef11655059c5576cc920143f",
     "NotoSansSC-variable.ttf": "a3041811a78c361b1de50f953c805e0244951c21c5bd412f7232ef0d899af0da",
 }
 
@@ -73,6 +73,7 @@ def prepare(source, destination, codepoints, variable=False):
         "original_mapped_codepoints": len(original_map),
         "cjk_codepoints": len(cjk),
         "glyphs": verification["maxp"].numGlyphs,
+        "default_weight": verification["OS/2"].usWeightClass,
         "weight_range": [
             {"axis": axis.axisTag, "min": axis.minValue, "default": axis.defaultValue, "max": axis.maxValue}
             for axis in verification["fvar"].axes
@@ -83,13 +84,24 @@ def prepare(source, destination, codepoints, variable=False):
 def main():
     parser = ArgumentParser(description=__doc__)
     parser.add_argument("--sources", type=Path, required=True)
+    parser.add_argument("--face", choices=("all", "rounded", "sans"), default="all")
     args = parser.parse_args()
     points = site_codepoints()
     OUTPUT.mkdir(parents=True, exist_ok=True)
-    reports = [
-        prepare(args.sources / "LXGWWenKai-Regular.ttf", OUTPUT / "lxgw-wenkai-studio.woff2", points),
-        prepare(args.sources / "NotoSansSC-variable.ttf", OUTPUT / "noto-sans-sc-studio.woff2", points, variable=True),
-    ]
+    reports = []
+    if args.face in ("all", "rounded"):
+        reports.append(prepare(
+            args.sources / "ResourceHanRoundedCN-Medium.ttf",
+            OUTPUT / "resource-han-rounded-studio.woff2",
+            points,
+        ))
+    if args.face in ("all", "sans"):
+        reports.append(prepare(
+            args.sources / "NotoSansSC-variable.ttf",
+            OUTPUT / "noto-sans-sc-studio.woff2",
+            points,
+            variable=True,
+        ))
     print(json.dumps(reports, ensure_ascii=False, indent=2))
 
 

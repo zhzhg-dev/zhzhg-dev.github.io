@@ -6,7 +6,7 @@ import { attributes, repository } from "./support/source-harness.mjs";
 
 const css = readFileSync(resolve(repository, "src/components/bilingual.css"), "utf8");
 const chineseFonts = [
-  { file: "lxgw-wenkai-studio.woff2", family: "Studio WenKai", weight: "400" },
+  { file: "resource-han-rounded-studio.woff2", family: "Studio Rounded SC", weight: "500" },
   { file: "noto-sans-sc-studio.woff2", family: "Studio Sans SC", weight: "400 600" },
 ];
 const rules = [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map(([, selector, declarations]) => ({ selector: selector.trim(), declarations }));
@@ -22,13 +22,13 @@ test("both Chinese font subsets are actual compact WOFF2 assets copied exactly t
 });
 
 test("the self-hosted Chinese fonts retain their original open licenses and source attribution", () => {
-  for (const license of ["LXGW-OFL.txt", "NotoSansSC-OFL.txt"]) {
+  for (const license of ["ResourceHanRounded-OFL.txt", "NotoSansSC-OFL.txt"]) {
     const source = readFileSync(resolve(repository, "public/fonts/chinese", license));
     assert.match(source.toString("utf8"), /SIL OPEN FONT LICENSE/i);
     assert.deepEqual(readFileSync(resolve(repository, "dist/fonts/chinese", license)), source);
   }
   const attribution = readFileSync(resolve(repository, "public/fonts/chinese/README.md"), "utf8");
-  assert.match(attribution, /LXGW|WenKai/i);
+  assert.match(attribution, /Resource Han Rounded|ResourceHanRounded/i);
   assert.match(attribution, /Noto Sans SC|NotoSansSC/i);
   assert.match(attribution, /https:\/\/(?:github\.com|raw\.githubusercontent\.com)\//);
 });
@@ -57,14 +57,14 @@ test("Chinese display and body roles stay language-scoped with lighter weights a
   const display = rules.find(rule => rule.selector.includes('[data-language="zh"] :is(h1, h2):not([translate="no"])'));
   assert.ok(display);
   assert.match(display.declarations, /font-family:\s*var\(--font-cn-display\)/);
-  assert.match(display.declarations, /font-weight:\s*400\s*;/);
+  assert.match(display.declarations, /font-weight:\s*500\s*;/);
   assert.doesNotMatch(display.declarations, /letter-spacing:\s*-/);
   const smallerHeadings = rules.find(rule => rule.selector.includes('[data-language="zh"] :is(h3, h4)'));
   assert.ok(smallerHeadings);
   assert.match(smallerHeadings.declarations, /var\(--font-cn-body\)/);
   assert.match(smallerHeadings.declarations, /font-weight:\s*500\s*;/);
   assert.match(smallerHeadings.declarations, /letter-spacing:\s*0\s*;/);
-  for (const rule of rules.filter(rule => !rule.selector.endsWith("@font-face") && /font-family:[^;]*(?:Studio WenKai|Studio Sans SC|--font-cn-)/.test(rule.declarations))) {
+  for (const rule of rules.filter(rule => !rule.selector.endsWith("@font-face") && /font-family:[^;]*(?:Studio Rounded SC|Studio Sans SC|--font-cn-)/.test(rule.declarations))) {
     assert.ok(rule.selector.includes('[data-language="zh"]'), `${rule.selector} must not change English typography`);
   }
   const grant = rules.find(rule => rule.selector === '.studio-site[data-language="zh"] .studio-intro h1');
