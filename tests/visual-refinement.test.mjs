@@ -572,3 +572,13 @@ test("the case action stays visible without hovering or focusing a cover", () =>
   assert.ok(baseAction);
   assert.doesNotMatch(baseAction, /(?:opacity\s*:\s*0(?:\s*;|$)|visibility\s*:\s*hidden|display\s*:\s*none)/);
 });
+
+test("project-type stickers are anchored to the cover's upper corner without blocking interaction", () => {
+  const css = readFileSync(resolve(repository, "src/components/studio-projects.css"), "utf8");
+  const sticker = css.match(/^\.studio-project-card__type\s*\{([^}]+)\}/m)?.[1] ?? "";
+  assert.match(css, /\.studio-project-card__media\s*\{[^}]*position:\s*relative/);
+  assert.match(sticker, /position:\s*absolute/);
+  assert.match(sticker, /inset-block-start:\s*0/);
+  assert.match(sticker, /inset-inline-end:/);
+  assert.match(sticker, /pointer-events:\s*none/);
+});

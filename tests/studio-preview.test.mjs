@@ -199,12 +199,14 @@ test("the screen and window workspace notes preserve their real content and clos
   const render = studioHarness();
   const targets = [
     ["At the screen", "From an idea to something useful.", "/projects/"],
-    ["Out the window", "Auckland, New Zealand.", "/#studio-about"],
+    ["Auckland time", "Auckland, New Zealand.", "/#studio-about"],
   ];
+  const clockMounted = current => current.some(node => node.type?.name === "AucklandClock");
   const initial = nodes(render());
   const initialAside = initial.find(node => node.type === "aside");
   assert.equal(initialAside.props.hidden, true);
   assert.equal(initialAside.props["aria-live"], "polite");
+  assert.equal(clockMounted(initial), false);
   assert.ok(initial.some(node => node.props.role === "group" && node.props["aria-label"] === "Explore my illustrated workspace"));
   for (const [label, title, href] of targets) {
     let focused = 0;
@@ -218,6 +220,7 @@ test("the screen and window workspace notes preserve their real content and clos
     let aside = current.find(node => node.type === "aside");
     assert.equal(aside.props.hidden, false);
     assert.ok(textOf(aside).includes(title));
+    assert.equal(clockMounted(nodes(aside)), label === "Auckland time");
     assert.ok(current.some(node => node.type === "a" && node.props.href === href));
     const selected = current.filter(node => node.type === "button" && node.props.className?.startsWith("studio-hotspot ") && node.props["aria-pressed"]);
     assert.deepEqual(selected.map(node => node.props["aria-label"]), [label]);
@@ -226,6 +229,7 @@ test("the screen and window workspace notes preserve their real content and clos
     assert.equal(close.props.type, "button");
     close.props.onClick();
     assert.equal(nodes(render()).find(node => node.type === "aside").props.hidden, true);
+    assert.equal(clockMounted(nodes(render())), false);
     assert.equal(focused, 1);
 
     nodes(render()).find(node => node.type === "button" && node.props["aria-label"] === label).props.onClick({ currentTarget: trigger });
@@ -235,6 +239,7 @@ test("the screen and window workspace notes preserve their real content and clos
     section.props.onKeyDown({ key: "Escape", preventDefault() { prevented = true; } });
     assert.ok(prevented);
     assert.equal(nodes(render()).find(node => node.type === "aside").props.hidden, true);
+    assert.equal(clockMounted(nodes(render())), false);
     assert.equal(focused, 2);
   }
 

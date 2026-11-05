@@ -117,7 +117,7 @@ export const projects: Project[] = [
   {
     slug: "folio",
     title: "Folio",
-    classification: { type: "AI product", focus: "Research workflows" },
+    classification: { type: "AI product", focus: "Research evidence tracking" },
     status: "Working preview",
     description:
       "A research workspace for collecting passages, comparing options, and producing briefs with versioned citations. It combines bilingual passage retrieval, optional on-device AI, and explicit review workflows, with local storage and optional manual cloud backups.",
@@ -175,13 +175,13 @@ export const projects: Project[] = [
   {
     slug: "explainlab",
     title: "ExplainLab",
-    classification: { type: "Interactive lab", focus: "System reliability" },
+    classification: { type: "Systems simulation", focus: "Distributed systems reliability" },
     status: "Live systems lab",
     description:
       "An interactive lab that makes retry storms, cache stampedes, and queue overload visible. A deterministic simulation engine gives two strategies the same seeded workload, so users can change a policy, replay the outcome, and inspect the trade-offs. Reproducible scenario links and bilingual explanations make experiments easy to share and discuss.",
     shortDescription:
       "See when retries prevent recovery, why cache misses pile up, and what happens when a queue accepts too much work.",
-    cardSummary: "Test how retries, caches, and queues behave under load.",
+    cardSummary: "Compare retries, caches, and queues under the same load to see where systems break down.",
     caseStudy: {
       problem:
         "A retry, a larger queue, or another cache fetch can look helpful in isolation. It is harder to see how those choices interact under pressure—or whether two strategies received a fair comparison.",
@@ -233,7 +233,7 @@ export const projects: Project[] = [
   {
     slug: "nz-electricity-forecasting",
     title: "NZ Electricity Intelligence",
-    classification: { type: "Forecasting dashboard", focus: "Electricity demand" },
+    classification: { type: "Machine learning", focus: "Electricity demand forecasting" },
     status: "Live ML demo",
     description:
       "An end-to-end forecasting project built on a dataset of 52,608 New Zealand electricity-market periods. It predicts Upper North Island demand across four horizons, estimates wholesale price-spike risk, and presents uncertainty and explanations in a historical-data dashboard. The selected 1-hour model achieved 76.9% lower MAE than the previous-week baseline on the 2025 H2 holdout.",
@@ -290,13 +290,13 @@ export const projects: Project[] = [
   {
     slug: "learn-to-race",
     title: "L2R Autonomous Racing",
-    classification: { type: "Team course research", focus: "Reinforcement learning" },
+    classification: { type: "Reinforcement learning", focus: "Autonomous racing simulation" },
     status: "Research milestone complete",
     description:
       "Training-Track Diversity for Zero-Shot Autonomous Racing: Comparing PPO and SAC. A five-person University of Auckland COMPSCI 760 research project in Semester Two 2026, with experiments, the final report and presentation complete. The team conducted 48 training runs across four training-pool sizes, three random seeds and two configurations, targeting approximately 2 million environment steps per run. All evaluation took place in F1TENTH simulation, including tests on real-circuit maps; there was no physical vehicle deployment.",
     shortDescription:
       "Can a racing agent handle tracks it has never trained on? Our team compared PPO and SAC to study how training-track diversity affects zero-shot generalisation.",
-    cardSummary: "Compare PPO and SAC on unfamiliar racetracks in simulation.",
+    cardSummary: "Test whether varied training tracks help PPO and SAC drive on unfamiliar simulated racetracks.",
     caseStudy: {
       problem:
         "A fast lap on a familiar track does not tell us how a racing policy will behave elsewhere. Our five-person COMPSCI 760 team investigated whether training on more varied tracks helps PPO and SAC drive unfamiliar tracks without further training.",
@@ -352,7 +352,7 @@ export const projects: Project[] = [
   {
     slug: "course-review-system",
     title: "Course Review & Campus Platform",
-    classification: { type: "Full-stack team app", focus: "Campus information" },
+    classification: { type: "Full-stack development", focus: "Campus course information" },
     status: "Live demo",
     cardSummary: "Search and sort courses, and browse campus discussions.",
     description:
@@ -368,9 +368,9 @@ export const projects: Project[] = [
   {
     slug: "svelte-study-planner",
     title: "Svelte Study Planner",
-    classification: { type: "Browser tool", focus: "Study planning" },
+    classification: { type: "Front-end development", focus: "Study task management" },
     status: "Live demo",
-    cardSummary: "Organise study tasks and save progress in your browser.",
+    cardSummary: "Add and complete study tasks, with progress saved in your browser.",
     description:
       "A focused study-planning application for creating, filtering, and completing tasks with progress summaries and local browser persistence—responsive, fast, and backend-free.",
     technologies: ["SvelteKit", "JavaScript", "localStorage", "Responsive UI"],
@@ -384,9 +384,9 @@ export const projects: Project[] = [
   {
     slug: "rumour-propagation",
     title: "Rumour Propagation Simulation",
-    classification: { type: "Undergraduate thesis", focus: "Rumour spread" },
+    classification: { type: "Mathematical modelling", focus: "Rumour spread" },
     status: "Undergraduate thesis",
-    cardSummary: "Simulate how rumours spread using a cellular automaton.",
+    cardSummary: "Simulate how different sharing behaviours affect the spread of a rumour.",
     description:
       "A study of how rumours spread through heterogeneous cellular automata, connecting mathematical modelling with social and computational systems.",
     technologies: [

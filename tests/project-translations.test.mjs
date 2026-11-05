@@ -13,13 +13,13 @@ const { StudioProjects } = loadSource(resolve(repository, "src/components/Studio
 const hasChinese = value => /[\u3400-\u9fff]/u.test(value);
 const classificationText = project => `${project.classification.type} · ${project.classification.focus}`;
 const classifications = {
-  folio: { en: "AI product · Research workflows", zh: "AI 产品 · 研究工作流" },
-  explainlab: { en: "Interactive lab · System reliability", zh: "交互实验 · 系统可靠性" },
-  "nz-electricity-forecasting": { en: "Forecasting dashboard · Electricity demand", zh: "预测仪表盘 · 电力需求" },
-  "learn-to-race": { en: "Team course research · Reinforcement learning", zh: "团队课程研究 · 强化学习" },
-  "course-review-system": { en: "Full-stack team app · Campus information", zh: "团队全栈应用 · 校园信息" },
-  "svelte-study-planner": { en: "Browser tool · Study planning", zh: "浏览器工具 · 学习计划" },
-  "rumour-propagation": { en: "Undergraduate thesis · Rumour spread", zh: "本科论文 · 谣言传播" },
+  folio: { en: "AI product · Research evidence tracking", zh: "AI 产品 · 研究证据追溯" },
+  explainlab: { en: "Systems simulation · Distributed systems reliability", zh: "系统仿真 · 分布式系统可靠性" },
+  "nz-electricity-forecasting": { en: "Machine learning · Electricity demand forecasting", zh: "机器学习 · 电力需求预测" },
+  "learn-to-race": { en: "Reinforcement learning · Autonomous racing simulation", zh: "强化学习 · 自动赛车仿真" },
+  "course-review-system": { en: "Full-stack development · Campus course information", zh: "全栈开发 · 校园课程信息" },
+  "svelte-study-planner": { en: "Front-end development · Study task management", zh: "前端开发 · 学习任务管理" },
+  "rumour-propagation": { en: "Mathematical modelling · Rumour spread", zh: "数学建模 · 谣言传播" },
 };
 
 function assertClassification(markup, project, language) {
@@ -114,7 +114,7 @@ test("Chinese case copy keeps L2R team/personal simulation boundaries and other 
   assert.doesNotMatch(JSON.stringify(translated), /腾讯|Tencent|IEEE.*发表|获得最终成绩/);
 });
 
-test("the real language provider renders all seven cards with a classification, a distinct purpose and a clear detail action in both languages", () => {
+test("the real language provider renders each card with a single type sticker, a distinct purpose and a clear detail action in both languages", () => {
   for (const language of ["en", "zh"]) {
     const html = renderGallery(language);
     const data = localizeProjects(projects, language);
@@ -127,13 +127,20 @@ test("the real language provider renders all seven cards with a classification, 
     for (const project of data) {
       const card = cards.find(card => card.id === project.slug);
       assert.ok(card.text.includes(project.title));
-      const heading = elements(card.markup, project.slug === "folio" ? "h2" : "h3").find(item => item.id === card["aria-labelledby"]);
-      const classification = assertClassification(card.markup, project, language);
-      assert.ok(heading && card.markup.indexOf(classification.markup) > card.markup.indexOf(heading.markup));
+      const media = elements(card.markup, "div").find(item => item.class === "studio-project-card__media");
+      const stickers = elements(card.markup, "span").filter(item => item.class === "studio-project-card__type");
+      const [expectedType] = classifications[project.slug][language].split(" · ");
+      assert.deepEqual(stickers.map(item => item.text), [expectedType]);
+      assert.ok(media?.markup.includes(stickers[0].markup), "the sticker belongs to the cover");
+      assert.doesNotMatch(card.markup, /studio-project-classification/);
       assert.ok(elements(card.markup, "p").some(item => item.text === project.cardSummary), `${project.slug} has a concrete purpose before opening`);
       const trigger = elements(card.markup, "button")[0];
       assert.equal(trigger["aria-label"], language === "zh" ? `查看详情：${project.title}` : `View details: ${project.title}`);
       assert.equal(trigger["aria-haspopup"], "dialog");
+      assert.ok(stickers[0].id);
+      assert.equal(stickers[0]["aria-hidden"], "true", "the type is spoken once, through the button description");
+      assert.equal(trigger["aria-describedby"], stickers[0].id);
+      assert.ok(!trigger.markup.includes(stickers[0].markup), "the paper sticker is a sibling, not an interactive child");
       const detailAction = elements(trigger.markup, "span").find(item => item.class?.split(/\s+/).includes("studio-project-card__explore"));
       assert.equal(detailAction?.text.replace(/\s*[↗→]\s*$/, ""), language === "zh" ? "查看详情" : "View details");
       const image = attributes(trigger.markup.match(/<img\b[^>]*>/)[0]);

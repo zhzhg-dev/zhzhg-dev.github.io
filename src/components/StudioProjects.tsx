@@ -162,15 +162,19 @@ export function StudioProjects({ projects }: { projects: Project[] }) {
   }
 
   function renderCaseTrigger(project: Project, fullScreenshot = false) {
-    return <button className={`studio-project-card__cover${fullScreenshot ? " studio-project-card__cover--spotlight" : ""}`} type="button"
-      ref={element => { if (element) triggerRefs.current.set(project.slug, element); else triggerRefs.current.delete(project.slug); }}
-      aria-label={t(`View details: ${project.title}`, `查看详情：${project.title}`)}
-      aria-haspopup="dialog" aria-controls={dialogId} onClick={event => openCase(project, event)}>
-      {fullScreenshot
-        ? <img src={project.cover} alt={project.coverAlt} width={project.coverWidth ?? 1280} height={project.coverHeight ?? 720} loading="eager" fetchPriority="high" decoding="async" />
-        : <span className="studio-project-card__visual"><ProjectCover project={project} /></span>}
-      <span className="studio-project-card__explore" aria-hidden="true">{t("View details", "查看详情")}<span>→</span></span>
-    </button>;
+    const stickerId = `${project.slug}-project-type`;
+    return <div className="studio-project-card__media">
+      <button className={`studio-project-card__cover${fullScreenshot ? " studio-project-card__cover--spotlight" : ""}`} type="button"
+        ref={element => { if (element) triggerRefs.current.set(project.slug, element); else triggerRefs.current.delete(project.slug); }}
+        aria-label={t(`View details: ${project.title}`, `查看详情：${project.title}`)} aria-describedby={stickerId}
+        aria-haspopup="dialog" aria-controls={dialogId} onClick={event => openCase(project, event)}>
+        {fullScreenshot
+          ? <img src={project.cover} alt={project.coverAlt} width={project.coverWidth ?? 1280} height={project.coverHeight ?? 720} loading="eager" fetchPriority="high" decoding="async" />
+          : <span className="studio-project-card__visual"><ProjectCover project={project} /></span>}
+        <span className="studio-project-card__explore" aria-hidden="true">{t("View details", "查看详情")}<span>→</span></span>
+      </button>
+      <span className="studio-project-card__type" id={stickerId} aria-hidden="true">{project.classification.type}</span>
+    </div>;
   }
 
   return <section className="studio-projects" id="top" aria-labelledby="studio-projects-title">
@@ -180,7 +184,6 @@ export function StudioProjects({ projects }: { projects: Project[] }) {
       <div className="studio-spotlight__copy">
         <p className="studio-spotlight__eyebrow">{t("Featured case", "精选案例")}</p>
         <h2 id={`${spotlight.slug}-title`} translate="no">{spotlight.title}</h2>
-        <ProjectClassification project={spotlight} />
         <p className="studio-spotlight__summary">{spotlight.cardSummary}</p>
         {spotlight.decision && <p className="studio-spotlight__decision">{spotlight.decision}</p>}
         <div className="studio-spotlight__actions">
@@ -195,7 +198,6 @@ export function StudioProjects({ projects }: { projects: Project[] }) {
         {gallery.map(project => <article className={`studio-project-card studio-project-card--${project.slug}`} id={project.slug} key={project.slug} aria-labelledby={`${project.slug}-title`}>
           {renderCaseTrigger(project)}
           <h3 id={`${project.slug}-title`} translate="no">{project.title}</h3>
-          <ProjectClassification project={project} />
           <p className="studio-project-card__subtitle">{project.cardSummary}</p>
           <ProjectLinks project={project} />
         </article>)}

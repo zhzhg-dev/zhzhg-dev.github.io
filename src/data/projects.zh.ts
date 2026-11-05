@@ -7,7 +7,7 @@ type ProjectTranslation = Pick<Project, "classification" | "cardSummary" | "stat
 // are identities, not copy. Only the human-facing descriptions are translated.
 export const projectTranslations: Record<string, ProjectTranslation> = {
   folio: {
-    classification: { type: "AI 产品", focus: "研究工作流" },
+    classification: { type: "AI 产品", focus: "研究证据追溯" },
     status: "可用预览",
     description: "一个用于收集原文片段、比较方案并生成保留引用版本的研究简报的工作台。支持中英双语原文检索、可选的端侧 AI 和明确的审核流程，数据保存在本地，也可手动进行云端备份。",
     shortDescription: "把资料整理成可以回头核查的研究，同时保留每条发现背后的原文。",
@@ -31,11 +31,11 @@ export const projectTranslations: Record<string, ProjectTranslation> = {
     coverCaption: "Folio 的真实界面：在同一个工作台中比较方案，并查看关联的原始证据。",
   },
   explainlab: {
-    classification: { type: "交互实验", focus: "系统可靠性" },
+    classification: { type: "系统仿真", focus: "分布式系统可靠性" },
     status: "在线系统实验室",
     description: "一个把重试风暴、缓存击穿和队列过载变得可见的交互实验室。确定性仿真引擎为两种策略提供由同一随机种子生成的相同工作负载，用户可以调整策略、重放结果并观察取舍。可复现的场景链接与双语说明让实验便于分享和讨论。",
     shortDescription: "看看重试何时会阻碍恢复、缓存未命中为何不断堆积，以及队列接收过多任务后会发生什么。",
-    cardSummary: "观察重试、缓存和队列在高负载下如何影响系统。",
+    cardSummary: "在同一负载下比较重试、缓存和排队策略，看系统何时会失稳。",
     caseStudy: {
       problem: "一次重试、更长的队列或又一次缓存回源，单独看都可能有帮助。但它们在压力下如何相互影响，以及两种策略是否获得公平比较，并不容易看清。",
       contribution: "我关注如何把系统模型转化为学习体验：可复现的确定性仿真流程、能揭示因果关系的控件，以及始终说明模型假设的解释。",
@@ -54,7 +54,7 @@ export const projectTranslations: Record<string, ProjectTranslation> = {
     coverAlt: "ExplainLab 重试风暴实验，对比固定重试与带抖动的指数退避",
   },
   "nz-electricity-forecasting": {
-    classification: { type: "预测仪表盘", focus: "电力需求" },
+    classification: { type: "机器学习", focus: "电力需求预测" },
     status: "在线机器学习演示",
     description: "基于 52,608 个新西兰电力市场时段构建的端到端预测项目。对北岛北部地区的电力需求进行四种时间跨度的预测，估计批发电价尖峰风险，并在历史数据仪表盘中呈现不确定性与解释。选定的 1 小时模型在 2025 年下半年留出集上的平均绝对误差，比前一周同一时段基线低 76.9%。",
     shortDescription: "探索新西兰北岛北部的电力需求预测，在结果旁同时查看预测的不确定性与误差。",
@@ -77,11 +77,11 @@ export const projectTranslations: Record<string, ProjectTranslation> = {
     coverAlt: "NZ Electricity Intelligence 仪表盘，展示市场数据覆盖范围和需求预测指标",
   },
   "learn-to-race": {
-    classification: { type: "团队课程研究", focus: "强化学习" },
+    classification: { type: "强化学习", focus: "自动赛车仿真" },
     status: "研究阶段成果已完成",
     description: "训练赛道多样性对自动赛车零样本泛化的影响：PPO 与 SAC 的比较。奥克兰大学 2026 年第二学期 COMPSCI 760 五人研究项目，已完成实验、最终报告和展示。团队在四种训练赛道池规模、三个随机种子和两组配置下共开展 48 次训练，每次目标约 200 万环境步。全部评估均在 F1TENTH 仿真中进行，真实赛道地图测试也不涉及实体车辆部署。",
     shortDescription: "赛车智能体能否应对从未训练过的赛道？我们比较 PPO 与 SAC，研究训练赛道多样性如何影响零样本泛化。",
-    cardSummary: "在仿真中比较 PPO 和 SAC 在陌生赛道上的表现。",
+    cardSummary: "在仿真中比较 PPO 和 SAC，检验多样化训练能否改善陌生赛道表现。",
     caseStudy: {
       problem: "在熟悉赛道上跑得快，并不能说明赛车策略换到其他赛道会怎样。COMPSCI 760 五人团队研究了：更多样的训练赛道，能否帮助 PPO 和 SAC 在不继续训练的情况下驶过陌生赛道。",
       contribution: "我完成了 10 次 SAC 训练，其中 Grid A 4 次、Grid B 6 次，合计约 2,000 万环境步。我检查了本地 Windows 环境、记录训练进度并向团队交接结果；还撰写了最终报告第二节 Related Work，并参与组织展示叙事和幻灯片内容。完整的 48 次训练、训练框架与总体研究发现属于团队成果，不是我独立完成的工作。",
@@ -100,23 +100,23 @@ export const projectTranslations: Record<string, ProjectTranslation> = {
     coverCaption: "团队选定的 Oschersleben 回放：Grid A SAC，随机种子 1，分别用 1 条与 100 条赛道训练。这是仿真而非实体驾驶；一次回放不代表汇总成功率。来源：COMPSCI 760 Group 4 代码仓库。",
   },
   "course-review-system": {
-    classification: { type: "团队全栈应用", focus: "校园信息" },
+    classification: { type: "全栈开发", focus: "校园课程信息" },
     status: "在线演示",
     cardSummary: "搜索和排序课程，浏览校园讨论。",
     description: "一个使用 MERN 技术栈的大学课程信息与校园讨论平台。我的贡献集中在后端 API、MongoDB 集成、关键词搜索、课程排序、部署支持和地图链接。",
     coverAlt: "Course Review System 在线演示首页",
   },
   "svelte-study-planner": {
-    classification: { type: "浏览器工具", focus: "学习计划" },
+    classification: { type: "前端开发", focus: "学习任务管理" },
     status: "在线演示",
-    cardSummary: "整理学习任务，进度保存在本机浏览器。",
+    cardSummary: "添加和勾选学习任务，进度保存在本机浏览器。",
     description: "一个专注的学习计划工具，支持创建、筛选和完成任务，提供进度汇总与浏览器本地保存。适配不同屏幕，轻量且无需后端。",
     coverAlt: "Svelte Study Planner 在线演示仪表盘",
   },
   "rumour-propagation": {
-    classification: { type: "本科论文", focus: "谣言传播" },
+    classification: { type: "数学建模", focus: "谣言传播" },
     status: "本科毕业论文",
-    cardSummary: "用异质元胞自动机模拟谣言传播。",
+    cardSummary: "用仿真观察不同转发行为如何影响谣言扩散。",
     description: "研究谣言如何在异质元胞自动机中传播，将数学建模与社会、计算系统相连接。",
     coverAlt: "展示不均匀传播波的抽象元胞自动机网格",
     coverCaption: "项目主题插画，不是已部署产品的界面截图。",

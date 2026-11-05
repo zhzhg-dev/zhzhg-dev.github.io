@@ -18,7 +18,6 @@ body.studio-case-open { overflow: hidden; }
 .studio-spotlight__copy { min-width: 0; max-width: 43ch; }
 .studio-spotlight__eyebrow { color: #536c4d; font-size: 12px; font-weight: 650; }
 .studio-spotlight__copy h2 { margin: 10px 0 0; color: var(--studio-ink); font-family: var(--font-display); font-size: clamp(44px, 6vw, 81px); line-height: 1; letter-spacing: -.045em; font-weight: 700; }
-.studio-spotlight__copy .studio-project-classification { margin-top: 12px; }
 .studio-spotlight__summary { margin-top: 12px; color: var(--studio-ink); font-size: clamp(16px, 1.5vw, 20px); line-height: 1.45; }
 .studio-spotlight__decision { margin-top: 12px; color: #616658; font-size: 14px; line-height: 1.75; }
 .studio-spotlight__actions { display: flex; align-items: center; flex-wrap: wrap; gap: 0 16px; margin-top: 15px; border-top: 1px solid #dcd7c8; }
@@ -31,6 +30,28 @@ body.studio-case-open { overflow: hidden; }
 .studio-projects__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 28px; row-gap: 40px; }
 .studio-project-card { min-width: 0; }
 .studio-projects__grid > .studio-project-card { display: flex; flex-direction: column; }
+.studio-project-card__media { position: relative; min-width: 0; }
+.studio-project-card__type {
+  position: absolute;
+  z-index: 1;
+  inset-block-start: 0;
+  inset-inline-end: clamp(10px, 1.6vw, 20px);
+  max-width: calc(100% - 32px);
+  padding: 4px 9px;
+  border: 1px solid #514c3020;
+  border-radius: 2px 2px 4px 2px;
+  background: var(--project-type-paper, #fbf1d8);
+  color: #384433;
+  box-shadow: 1px 2px 0 #40352523;
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1.35;
+  text-wrap: balance;
+  transform: translateY(-20%) rotate(2deg);
+  pointer-events: none;
+}
+.studio-project-card:is(.studio-project-card--folio, .studio-project-card--learn-to-race, .studio-project-card--explainlab) { --project-type-paper: #eaf0df; }
+.studio-project-card:is(.studio-project-card--nz-electricity-forecasting, .studio-project-card--rumour-propagation) { --project-type-paper: #f7e7cd; }
 .studio-project-card__cover { position: relative; display: block; width: 100%; min-height: 44px; overflow: hidden; padding: 0; border: 0; border-radius: 18px; background: #fffaf2; text-align: left; isolation: isolate; }
 .studio-project-card__visual { display: block; aspect-ratio: 16 / 9; overflow: hidden; border-radius: 16px 16px 8px 8px; background: #e4dfd5; }
 .studio-project-card__cover > img, .studio-project-card__visual > img { width: 100%; height: 100%; max-width: none; object-fit: cover; }
