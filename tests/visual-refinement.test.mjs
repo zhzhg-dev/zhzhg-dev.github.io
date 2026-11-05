@@ -155,12 +155,12 @@ test("Projects leads with a single Folio spotlight and six gallery covers, with 
     assert.ok(card, `${project.title} retains its deep-link identifier`);
     const heading = elements(card.markup, spotlight ? "h2" : "h3").find(item => item.id === card["aria-labelledby"]);
     assert.equal(heading?.text, project.title);
-    if (!spotlight && project.cardSummary) assert.ok(card.text.includes(project.cardSummary), "the short card summary makes the project understandable before opening");
+    assert.ok(card.text.includes(project.cardSummary), "the short card summary makes the project understandable before opening");
     const buttons = elements(card.markup, "button");
     assert.equal(buttons.length, 1);
     const [button] = buttons;
     assert.equal(button.type, "button");
-    assert.equal(button["aria-label"], `Explore ${project.title} case study`);
+    assert.equal(button["aria-label"], `View details: ${project.title}`);
     assert.equal(button["aria-haspopup"], "dialog");
     assert.equal(button["aria-controls"], dialog.id);
     assert.doesNotMatch(button.markup, /<a\b/);
@@ -337,7 +337,7 @@ function mountGallery() {
       if (node.type === "dialog") node.props.ref.current = dialog;
       else if (node.type === "button" && node.props.className === "studio-case__close") node.props.ref.current = { focus() { focus.push("close"); } };
       else if (node.type === "button" && node.props["aria-haspopup"] === "dialog") {
-        const project = projects.find(project => node.props["aria-label"] === `Explore ${project.title} case study`);
+        const project = projects.find(project => node.props["aria-label"] === `View details: ${project.title}`);
         node.props.ref(triggers.get(project.slug));
       }
     }
@@ -345,7 +345,7 @@ function mountGallery() {
     return nodes;
   }
   function open(project) {
-    const button = render().find(node => node.type === "button" && node.props["aria-label"] === `Explore ${project.title} case study`);
+    const button = render().find(node => node.type === "button" && node.props["aria-label"] === `View details: ${project.title}`);
     button.props.onClick({ currentTarget: triggers.get(project.slug) });
     return render();
   }
@@ -564,4 +564,11 @@ test("project layout defines three, two and one column modes with reduced-motion
   assert.match(css, /@media\s*\(prefers-reduced-motion:\s*reduce\)/);
   assert.match(css, /:focus-visible/);
   assert.match(css, /min-height:\s*44px/);
+});
+
+test("the case action stays visible without hovering or focusing a cover", () => {
+  const css = readFileSync(resolve(repository, "src/components/studio-projects.css"), "utf8");
+  const baseAction = css.match(/^\.studio-project-card__explore\s*\{([^}]+)\}/m)?.[1];
+  assert.ok(baseAction);
+  assert.doesNotMatch(baseAction, /(?:opacity\s*:\s*0(?:\s*;|$)|visibility\s*:\s*hidden|display\s*:\s*none)/);
 });

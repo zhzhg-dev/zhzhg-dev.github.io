@@ -17,11 +17,11 @@ export type Experience = {
 export type Project = {
   slug: string;
   title: string;
-  eyebrow: string;
+  classification: { type: string; focus: string };
   status: string;
   description: string;
   shortDescription?: string;
-  cardSummary?: string;
+  cardSummary: string;
   caseStudy?: {
     problem: string;
     contribution: string;
@@ -117,13 +117,13 @@ export const projects: Project[] = [
   {
     slug: "folio",
     title: "Folio",
-    eyebrow: "AI-enabled research · Product development",
+    classification: { type: "AI product", focus: "Research workflows" },
     status: "Working preview",
     description:
       "A research workspace for collecting passages, comparing options, and producing briefs with versioned citations. It combines bilingual passage retrieval, optional on-device AI, and explicit review workflows, with local storage and optional manual cloud backups.",
     shortDescription:
       "Turn source material into research you can revisit, without losing the passages behind a finding.",
-    cardSummary: "Research you can trace back to the source.",
+    cardSummary: "Compare sources and write briefs you can trace back to the original passages.",
     caseStudy: {
       problem:
         "Research gets difficult to trust when a conclusion is separated from its original passage, or when a revised source silently changes what a document appears to support.",
@@ -175,13 +175,13 @@ export const projects: Project[] = [
   {
     slug: "explainlab",
     title: "ExplainLab",
-    eyebrow: "Interactive systems · Learning experience",
+    classification: { type: "Interactive lab", focus: "System reliability" },
     status: "Live systems lab",
     description:
       "An interactive lab that makes retry storms, cache stampedes, and queue overload visible. A deterministic simulation engine gives two strategies the same seeded workload, so users can change a policy, replay the outcome, and inspect the trade-offs. Reproducible scenario links and bilingual explanations make experiments easy to share and discuss.",
     shortDescription:
       "See when retries prevent recovery, why cache misses pile up, and what happens when a queue accepts too much work.",
-    cardSummary: "See why a recovery strategy can make things worse.",
+    cardSummary: "Test how retries, caches, and queues behave under load.",
     caseStudy: {
       problem:
         "A retry, a larger queue, or another cache fetch can look helpful in isolation. It is harder to see how those choices interact under pressure—or whether two strategies received a fair comparison.",
@@ -233,13 +233,13 @@ export const projects: Project[] = [
   {
     slug: "nz-electricity-forecasting",
     title: "NZ Electricity Intelligence",
-    eyebrow: "Machine learning · Energy analytics",
+    classification: { type: "Forecasting dashboard", focus: "Electricity demand" },
     status: "Live ML demo",
     description:
       "An end-to-end forecasting project built on a dataset of 52,608 New Zealand electricity-market periods. It predicts Upper North Island demand across four horizons, estimates wholesale price-spike risk, and presents uncertainty and explanations in a historical-data dashboard. The selected 1-hour model achieved 76.9% lower MAE than the previous-week baseline on the 2025 H2 holdout.",
     shortDescription:
       "Explore electricity-demand forecasts for New Zealand’s Upper North Island, with forecast uncertainty and errors visible beside the result.",
-    cardSummary: "Forecast demand—and show where the model struggles.",
+    cardSummary: "Explore historical forecasts and errors for electricity demand in the upper North Island.",
     caseStudy: {
       problem:
         "New Zealand electricity demand follows daily and weekly rhythms, but weather and changing consumption make those patterns imperfect. Rare price spikes also make a reassuring headline score easy to misread.",
@@ -290,13 +290,13 @@ export const projects: Project[] = [
   {
     slug: "learn-to-race",
     title: "L2R Autonomous Racing",
-    eyebrow: "Reinforcement learning · Group research",
+    classification: { type: "Team course research", focus: "Reinforcement learning" },
     status: "Research milestone complete",
     description:
       "Training-Track Diversity for Zero-Shot Autonomous Racing: Comparing PPO and SAC. A five-person University of Auckland COMPSCI 760 research project in Semester Two 2026, with experiments, the final report and presentation complete. The team conducted 48 training runs across four training-pool sizes, three random seeds and two configurations, targeting approximately 2 million environment steps per run. All evaluation took place in F1TENTH simulation, including tests on real-circuit maps; there was no physical vehicle deployment.",
     shortDescription:
       "Can a racing agent handle tracks it has never trained on? Our team compared PPO and SAC to study how training-track diversity affects zero-shot generalisation.",
-    cardSummary: "Training on more tracks. Testing on unfamiliar ones.",
+    cardSummary: "Compare PPO and SAC on unfamiliar racetracks in simulation.",
     caseStudy: {
       problem:
         "A fast lap on a familiar track does not tell us how a racing policy will behave elsewhere. Our five-person COMPSCI 760 team investigated whether training on more varied tracks helps PPO and SAC drive unfamiliar tracks without further training.",
@@ -352,9 +352,9 @@ export const projects: Project[] = [
   {
     slug: "course-review-system",
     title: "Course Review & Campus Platform",
-    eyebrow: "Full-stack team application",
+    classification: { type: "Full-stack team app", focus: "Campus information" },
     status: "Live demo",
-    cardSummary: "Browse course information and campus discussions.",
+    cardSummary: "Search and sort courses, and browse campus discussions.",
     description:
       "A MERN-platform for browsing university course information and campus discussions. My contribution focused on backend APIs, MongoDB integration, keyword search, course sorting, deployment support, and map links.",
     technologies: ["React", "Node.js", "Express", "MongoDB", "REST APIs"],
@@ -368,9 +368,9 @@ export const projects: Project[] = [
   {
     slug: "svelte-study-planner",
     title: "Svelte Study Planner",
-    eyebrow: "Browser-based application",
+    classification: { type: "Browser tool", focus: "Study planning" },
     status: "Live demo",
-    cardSummary: "Plan study tasks and see what’s left at a glance.",
+    cardSummary: "Organise study tasks and save progress in your browser.",
     description:
       "A focused study-planning application for creating, filtering, and completing tasks with progress summaries and local browser persistence—responsive, fast, and backend-free.",
     technologies: ["SvelteKit", "JavaScript", "localStorage", "Responsive UI"],
@@ -384,9 +384,9 @@ export const projects: Project[] = [
   {
     slug: "rumour-propagation",
     title: "Rumour Propagation Simulation",
-    eyebrow: "Undergraduate research project",
+    classification: { type: "Undergraduate thesis", focus: "Rumour spread" },
     status: "Undergraduate thesis",
-    cardSummary: "A cellular automata model of how rumours spread.",
+    cardSummary: "Simulate how rumours spread using a cellular automaton.",
     description:
       "A study of how rumours spread through heterogeneous cellular automata, connecting mathematical modelling with social and computational systems.",
     technologies: [

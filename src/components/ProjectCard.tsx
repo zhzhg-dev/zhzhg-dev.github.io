@@ -19,7 +19,7 @@ export function ProjectCard({ project, index, compact = false }: ProjectCardProp
       <div className="project-card__body">
         <header className="project-card__heading">
           <h2 id={`archive-${project.slug}-title`} translate="no">{project.title}</h2>
-          <p className="project-card__eyebrow">{project.eyebrow}</p>
+          <p className="project-card__eyebrow">{project.classification.type} · {project.classification.focus}</p>
           <p className="project-card__status">{project.status}</p>
         </header>
         <p className="project-card__description">{project.description}</p>

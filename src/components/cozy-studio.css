@@ -80,7 +80,7 @@
 .studio-site .studio-projects__heading > .studio-projects__label { transform: rotate(-3deg); background: #647954; border-radius: 4px; }
 .studio-site .studio-projects__heading h1 { font-weight: 750; letter-spacing: -.045em; }
 .studio-site .studio-project-card__cover { border: 7px solid #fffaf2; border-radius: 24px; box-shadow: 0 5px 0 #e3d8c4; }
-.studio-site .studio-project-card__subtitle { min-height: 0; color: #6b695c; }
+.studio-site .studio-project-card__subtitle { color: #6b695c; }
 .studio-site .studio-project-links { margin-top: 7px; }
 .studio-site .studio-case { background: #fffaf2; }
 .studio-site .studio-case__header { background: #fffaf2f5; }

@@ -11,6 +11,24 @@ const { localizeProjects, projectTranslations } = loadSource(resolve(repository,
 const { LanguageProvider } = loadSource(resolve(repository, "src/i18n.tsx"), undefined, cache);
 const { StudioProjects } = loadSource(resolve(repository, "src/components/StudioProjects.tsx"), undefined, cache);
 const hasChinese = value => /[\u3400-\u9fff]/u.test(value);
+const classificationText = project => `${project.classification.type} · ${project.classification.focus}`;
+const classifications = {
+  folio: { en: "AI product · Research workflows", zh: "AI 产品 · 研究工作流" },
+  explainlab: { en: "Interactive lab · System reliability", zh: "交互实验 · 系统可靠性" },
+  "nz-electricity-forecasting": { en: "Forecasting dashboard · Electricity demand", zh: "预测仪表盘 · 电力需求" },
+  "learn-to-race": { en: "Team course research · Reinforcement learning", zh: "团队课程研究 · 强化学习" },
+  "course-review-system": { en: "Full-stack team app · Campus information", zh: "团队全栈应用 · 校园信息" },
+  "svelte-study-planner": { en: "Browser tool · Study planning", zh: "浏览器工具 · 学习计划" },
+  "rumour-propagation": { en: "Undergraduate thesis · Rumour spread", zh: "本科论文 · 谣言传播" },
+};
+
+function assertClassification(markup, project, language) {
+  const labels = elements(markup, "p").filter(item => item.class?.split(/\s+/).includes("studio-project-classification"));
+  const expected = classifications[project.slug][language];
+  assert.equal(classificationText(project), expected, `${project.slug} keeps its actual project type and focus`);
+  assert.deepEqual(labels.map(label => label.text), [expected], `${project.slug} presents its classification exactly once`);
+  return labels[0];
+}
 
 function renderGallery(language, hash = "") {
   return withGlobals({ window: { location: new URL(`https://zhzhg-dev.github.io/projects/?lang=${language}${hash}`), history: { state: null } } },
@@ -29,7 +47,13 @@ test("all seven project translations preserve identities, public destinations an
       assert.equal(zh[key], project[key], `${project.slug} preserves ${key}`);
     }
     assert.deepEqual(zh.technologies, project.technologies);
-    for (const key of ["eyebrow", "status", "description", "coverAlt", "shortDescription", "cardSummary", "decisionTitle", "decision", "coverCaption"]) {
+    for (const key of ["type", "focus"]) {
+      assert.ok(project.classification[key].trim());
+      assert.ok(hasChinese(zh.classification[key]));
+      assert.notEqual(zh.classification[key], project.classification[key]);
+    }
+    assert.ok(project.cardSummary.trim());
+    for (const key of ["status", "description", "coverAlt", "shortDescription", "cardSummary", "decisionTitle", "decision", "coverCaption"]) {
       if (project[key] !== undefined) {
         assert.ok(hasChinese(zh[key]), `${project.slug}.${key} has a real Chinese translation`);
         assert.notEqual(zh[key], project[key]);
@@ -90,21 +114,28 @@ test("Chinese case copy keeps L2R team/personal simulation boundaries and other 
   assert.doesNotMatch(JSON.stringify(translated), /腾讯|Tencent|IEEE.*发表|获得最终成绩/);
 });
 
-test("the real language provider renders all seven cards, descriptive labels and project links in both languages", () => {
+test("the real language provider renders all seven cards with a classification, a distinct purpose and a clear detail action in both languages", () => {
   for (const language of ["en", "zh"]) {
     const html = renderGallery(language);
     const data = localizeProjects(projects, language);
     const cards = elements(html, "article");
     assert.equal(cards.length, 7);
+    assert.equal(new Set(data.map(classificationText)).size, 7);
+    assert.equal(new Set(data.map(project => project.cardSummary.trim())).size, 7);
     assert.equal(elements(html, "h1")[0].text, language === "zh" ? "项目与探索" : "Projects");
     assert.equal(elements(html, "h2").find(heading => heading.id === "project-gallery-title")?.text, language === "zh" ? "更多项目" : "More projects");
     for (const project of data) {
       const card = cards.find(card => card.id === project.slug);
       assert.ok(card.text.includes(project.title));
-      if (project.slug !== "folio") assert.ok(card.text.includes(project.cardSummary ?? project.shortDescription ?? project.eyebrow));
+      const heading = elements(card.markup, project.slug === "folio" ? "h2" : "h3").find(item => item.id === card["aria-labelledby"]);
+      const classification = assertClassification(card.markup, project, language);
+      assert.ok(heading && card.markup.indexOf(classification.markup) > card.markup.indexOf(heading.markup));
+      assert.ok(elements(card.markup, "p").some(item => item.text === project.cardSummary), `${project.slug} has a concrete purpose before opening`);
       const trigger = elements(card.markup, "button")[0];
-      assert.equal(trigger["aria-label"], language === "zh" ? `查看 ${project.title} 项目详情` : `Explore ${project.title} case study`);
+      assert.equal(trigger["aria-label"], language === "zh" ? `查看详情：${project.title}` : `View details: ${project.title}`);
       assert.equal(trigger["aria-haspopup"], "dialog");
+      const detailAction = elements(trigger.markup, "span").find(item => item.class?.split(/\s+/).includes("studio-project-card__explore"));
+      assert.equal(detailAction?.text.replace(/\s*[↗→]\s*$/, ""), language === "zh" ? "查看详情" : "View details");
       const image = attributes(trigger.markup.match(/<img\b[^>]*>/)[0]);
       assert.equal(image.alt, project.coverAlt);
       for (const target of [project.liveUrl, project.sourceUrl].filter(Boolean)) {
@@ -125,6 +156,9 @@ test("provider-rendered case deep links expose the complete translated case and 
     for (const project of localizeProjects(projects, language)) {
       const dialog = elements(renderGallery(language, `#${project.slug}`), "dialog")[0];
       assert.ok(dialog.text.includes(project.title));
+      const title = elements(dialog.markup, "h2").find(item => item.id === dialog["aria-labelledby"]);
+      const classification = assertClassification(dialog.markup, project, language);
+      assert.ok(title && dialog.markup.indexOf(classification.markup) > dialog.markup.indexOf(title.markup));
       assert.ok(dialog.text.includes(project.description));
       for (const technology of project.technologies) assert.ok(dialog.text.includes(technology));
       if (project.caseStudy) {
@@ -197,7 +231,7 @@ function switchingGallery(callback) {
 
 test("changing only language preserves open-case scroll/focus and still closes through the owned gallery history entry", () => {
   switchingGallery(({ browser, writes, focus, dialog, triggers, entries, render, setLanguage }) => {
-    const trigger = render().find(node => node.type === "button" && node.props["aria-label"] === "Explore Folio case study");
+    const trigger = render().find(node => node.type === "button" && node.props["aria-label"] === "View details: Folio");
     trigger.props.onClick({ currentTarget: triggers.get("folio") });
     render();
     assert.equal(dialog.open, true);

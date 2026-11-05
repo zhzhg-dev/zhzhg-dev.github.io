@@ -81,8 +81,8 @@ const pageCopy = {
     en: ["Work & background.", "Details & outcomes", "Graduate Teaching Assistant", "Multimedia Reporting & Editing Intern", "University of Auckland", "Southwest Minzu University", "Education", "National Outstanding Team"],
   },
   projects: {
-    zh: ["认真做过的事", "项目与探索", "点开封面，看看每个项目背后的问题、选择与思考。", "Folio", "更多项目", "ExplainLab", "L2R Autonomous Racing", "在线体验", "源代码", "打个招呼", "我的工具箱", "产品与评估"],
-    en: ["Selected", "Projects", "Open a cover to explore the thinking behind the work.", "Folio", "More projects", "ExplainLab", "L2R Autonomous Racing", "Live demo", "Source", "Say hello", "My toolkit", "Product & evaluation"],
+    zh: ["认真做过的事", "项目与探索", "从 AI 产品到系统实验与研究。", "Folio", "更多项目", "ExplainLab", "L2R Autonomous Racing", "查看详情", "在线体验", "源代码", "打个招呼", "我的工具箱", "产品与评估"],
+    en: ["Selected", "Projects", "AI products, systems experiments, and research.", "Folio", "More projects", "ExplainLab", "L2R Autonomous Racing", "View details", "Live demo", "Source", "Say hello", "My toolkit", "Product & evaluation"],
   },
   contact: {
     zh: ["随时欢迎。", "聊聊吧。", "从交流开始", "代码与实验", "我们可以聊这些。", "目前在新西兰奥克兰。", "LinkedIn", "GitHub"],

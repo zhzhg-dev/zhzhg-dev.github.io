@@ -42,6 +42,10 @@ function ProjectLinks({ project }: { project: Project }) {
   </div>;
 }
 
+function ProjectClassification({ project }: { project: Project }) {
+  return <p className="studio-project-classification"><span>{project.classification.type}</span>{" · "}{project.classification.focus}</p>;
+}
+
 export function StudioProjects({ projects }: { projects: Project[] }) {
   const { language, t } = useLanguage();
   const localizedProjects = useMemo(() => localizeProjects(projects, language), [projects, language]);
@@ -160,23 +164,24 @@ export function StudioProjects({ projects }: { projects: Project[] }) {
   function renderCaseTrigger(project: Project, fullScreenshot = false) {
     return <button className={`studio-project-card__cover${fullScreenshot ? " studio-project-card__cover--spotlight" : ""}`} type="button"
       ref={element => { if (element) triggerRefs.current.set(project.slug, element); else triggerRefs.current.delete(project.slug); }}
-      aria-label={t(`Explore ${project.title} case study`, `查看 ${project.title} 项目详情`)}
+      aria-label={t(`View details: ${project.title}`, `查看详情：${project.title}`)}
       aria-haspopup="dialog" aria-controls={dialogId} onClick={event => openCase(project, event)}>
       {fullScreenshot
         ? <img src={project.cover} alt={project.coverAlt} width={project.coverWidth ?? 1280} height={project.coverHeight ?? 720} loading="eager" fetchPriority="high" decoding="async" />
-        : <ProjectCover project={project} />}
-      <span className="studio-project-card__explore" aria-hidden="true">{fullScreenshot ? t("Read case study", "阅读案例") : t("Explore project", "了解这个项目")}<span>↗</span></span>
+        : <span className="studio-project-card__visual"><ProjectCover project={project} /></span>}
+      <span className="studio-project-card__explore" aria-hidden="true">{t("View details", "查看详情")}<span>→</span></span>
     </button>;
   }
 
   return <section className="studio-projects" id="top" aria-labelledby="studio-projects-title">
-    <header className="studio-projects__heading"><p className="studio-projects__label">{t("Selected", "认真做过的事")}</p><h1 id="studio-projects-title">{t("Projects", "项目与探索")}</h1><p className="studio-projects__hint">{t("Open a cover to explore the thinking behind the work.", "点开封面，看看每个项目背后的问题、选择与思考。")}</p></header>
+    <header className="studio-projects__heading"><p className="studio-projects__label">{t("Selected", "认真做过的事")}</p><h1 id="studio-projects-title">{t("Projects", "项目与探索")}</h1><p className="studio-projects__hint">{t("AI products, systems experiments, and research.", "从 AI 产品到系统实验与研究。")}</p></header>
     {spotlight && <article className="studio-project-card studio-project-card--folio studio-project-card--spotlight" id={spotlight.slug} aria-labelledby={`${spotlight.slug}-title`}>
       {renderCaseTrigger(spotlight, true)}
       <div className="studio-spotlight__copy">
         <p className="studio-spotlight__eyebrow">{t("Featured case", "精选案例")}</p>
         <h2 id={`${spotlight.slug}-title`} translate="no">{spotlight.title}</h2>
-        <p className="studio-spotlight__summary">{spotlight.cardSummary ?? spotlight.shortDescription ?? spotlight.eyebrow}</p>
+        <ProjectClassification project={spotlight} />
+        <p className="studio-spotlight__summary">{spotlight.cardSummary}</p>
         {spotlight.decision && <p className="studio-spotlight__decision">{spotlight.decision}</p>}
         <div className="studio-spotlight__actions">
           <p className="studio-spotlight__status">{spotlight.status}</p>
@@ -190,7 +195,8 @@ export function StudioProjects({ projects }: { projects: Project[] }) {
         {gallery.map(project => <article className={`studio-project-card studio-project-card--${project.slug}`} id={project.slug} key={project.slug} aria-labelledby={`${project.slug}-title`}>
           {renderCaseTrigger(project)}
           <h3 id={`${project.slug}-title`} translate="no">{project.title}</h3>
-          <p className="studio-project-card__subtitle">{project.cardSummary ?? project.shortDescription ?? project.eyebrow}</p>
+          <ProjectClassification project={project} />
+          <p className="studio-project-card__subtitle">{project.cardSummary}</p>
           <ProjectLinks project={project} />
         </article>)}
       </div>
@@ -201,7 +207,7 @@ export function StudioProjects({ projects }: { projects: Project[] }) {
       {selectedProject ? <>
         <div className="studio-case__intro">
           <h2 id={titleId} translate="no">{selectedProject.title}</h2>
-          <p className="studio-case__category">{selectedProject.eyebrow}</p>
+          <ProjectClassification project={selectedProject} />
           <p className="studio-case__summary" id={descriptionId}>{selectedProject.shortDescription ?? selectedProject.description}</p>
           {(selectedProject.liveUrl || selectedProject.sourceUrl) && <ProjectLinks project={selectedProject} />}
         </div>
