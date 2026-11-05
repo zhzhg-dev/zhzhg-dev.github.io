@@ -4,21 +4,21 @@ import { URL } from "node:url";
 const pages = [
   {
     path: "experience",
-    title: "经历与背景｜Grant",
+    title: "Experience | Grant",
     description:
-      "Grant 的教学经历、教育背景、社区实践与技术工具。",
+      "Grant’s teaching experience, education, community work, and technical toolkit.",
   },
   {
     path: "projects",
-    title: "项目｜Grant",
+    title: "Projects | Grant",
     description:
-      "探索 Folio、ExplainLab、L2R 与新西兰电力预测：从 AI 产品到仿真研究，看看我的思考、实现与验证。",
+      "Explore Folio, ExplainLab, L2R, electricity forecasting, and other AI, simulation, and software projects by Grant.",
   },
   {
     path: "contact",
-    title: "联系我｜Grant",
+    title: "Contact | Grant",
     description:
-      "通过 LinkedIn 和 GitHub 联系 Grant。聊聊 AI 产品、游戏 AI、教学，或一个值得一起尝试的想法。",
+      "Connect with Grant on LinkedIn and GitHub. Based in Auckland, exploring AI products, game AI, and useful software.",
   },
 ];
 

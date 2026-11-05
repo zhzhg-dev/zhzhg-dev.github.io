@@ -1,12 +1,10 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
 export type Language = "zh" | "en";
-export const LANGUAGE_STORAGE_KEY = "grant-studio-language";
 
-export function resolveLanguage(search: string, stored: string | null): Language {
+export function resolveLanguage(search: string): Language {
   const requested = new URLSearchParams(search).get("lang");
-  if (requested === "zh" || requested === "en") return requested;
-  return stored === "en" ? "en" : "zh";
+  return requested === "zh" ? "zh" : "en";
 }
 
 export function localizedHref(path: string, language: Language): string {
@@ -17,10 +15,8 @@ export function localizedHref(path: string, language: Language): string {
 }
 
 function initialLanguage(): Language {
-  if (typeof window === "undefined") return "zh";
-  let stored: string | null = null;
-  try { stored = window.localStorage.getItem(LANGUAGE_STORAGE_KEY); } catch { /* Storage is optional. */ }
-  return resolveLanguage(window.location.search, stored);
+  if (typeof window === "undefined") return "en";
+  return resolveLanguage(window.location.search);
 }
 
 type LanguageValue = {
@@ -31,7 +27,8 @@ type LanguageValue = {
 };
 
 // Isolated components keep their original English rendering. The actual site
-// always mounts the provider, whose first-visit language is Chinese.
+// always mounts the provider, whose entry language is English unless the URL
+// explicitly carries the Chinese selection from the language switch.
 export const LanguageContext = createContext<LanguageValue>({
   language: "en", t: english => english, href: path => path, setLanguage: () => {},
 });
@@ -46,7 +43,6 @@ export function LanguageProvider({ children, initialLanguage: suppliedLanguage }
   const [language, setValue] = useState<Language>(() => suppliedLanguage ?? initialLanguage());
   const setLanguage = useCallback((next: Language) => {
     setValue(next);
-    try { window.localStorage.setItem(LANGUAGE_STORAGE_KEY, next); } catch { /* Query links work without storage. */ }
     syncAddress(next);
   }, []);
   const t = useCallback((english: string, chinese: string) => language === "zh" ? chinese : english, [language]);

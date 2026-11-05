@@ -46,12 +46,20 @@ function stateHooks(contextValue) {
   };
 }
 
-test("language choice defaults to Chinese and a valid URL choice takes priority over saved language", () => {
-  for (const [search, stored, expected] of [
-    ["", null, "zh"], ["", "zh", "zh"], ["", "en", "en"], ["", "fr", "zh"],
-    ["?lang=en", "zh", "en"], ["?lang=zh", "en", "zh"],
-    ["?v=172d7ef&lang=en", null, "en"], ["?lang=fr", "en", "en"], ["?lang=EN", null, "zh"],
-  ]) assert.equal(resolveLanguage(search, stored), expected, `${search} / ${stored}`);
+test("a fresh entrance defaults to English and only an explicit Chinese URL selects Chinese", () => {
+  for (const [search, expected] of [
+    ["", "en"], ["?v=release", "en"], ["?lang=en", "en"], ["?lang=zh", "zh"],
+    ["?v=172d7ef&lang=en", "en"], ["?v=release&lang=zh", "zh"],
+    ["?lang=fr", "en"], ["?lang=EN", "en"], ["?lang=ZH", "en"], ["?lang=", "en"],
+  ]) assert.equal(resolveLanguage(search), expected, search || "bare entrance");
+});
+
+test("the actual provider renders its no-browser default in English rather than Chinese", () => {
+  const html = withGlobals({ window: undefined }, () => renderToStaticMarkup(createElement(LanguageProvider, null, createElement(App, { page: "home" }))));
+  const header = elements(html, "header").find(element => element.class === "site-header");
+  assert.deepEqual(elements(elements(header.markup, "nav")[0].markup, "a").map(link => link.text), ["About", "Projects", "Contact"]);
+  assert.match(plainText(html), /Hi, make yourself at home\./);
+  assert.equal(elements(header.markup, "button").find(button => button["aria-label"] === "Switch to English")["aria-pressed"], "true");
 });
 
 test("localized internal addresses retain route, query and project hash without modifying external or same-page links", () => {
@@ -176,12 +184,13 @@ test("switching the whiteboard language preserves curve selection, edited data a
   assert.ok(nodes.some(node => node.props.className === "whiteboard-lab__check-dot"));
 });
 
-test("language initialization and switching remain functional when browser storage is denied", () => {
+test("English-first initialization and explicit switching do not access browser storage or lose project history", () => {
   let address = new URL("https://zhzhg-dev.github.io/projects/?v=release#folio");
   const historyState = { studioProject: "folio", grantPortfolioCase: { owner: "existing-owner", slug: "folio", base: "/projects/?v=release" } };
+  let storageAccesses = 0;
   const browser = {
     get location() { return address; },
-    localStorage: { getItem() { throw new Error("Storage blocked"); }, setItem() { throw new Error("Storage blocked"); } },
+    get localStorage() { storageAccesses++; throw new Error("Storage blocked"); },
     history: { state: historyState, replaceState(state, _title, url) { assert.equal(state, historyState); address = new URL(url, address); } },
   };
   withGlobals({ window: browser }, () => {
@@ -189,15 +198,47 @@ test("language initialization and switching remain functional when browser stora
     const { LanguageProvider: Provider } = loadSource(resolve(repository, "src/i18n.tsx"), state.hooks);
     const render = () => { state.restart(); return Provider({ children: null }); };
     let rendered = render();
-    assert.equal(rendered.props.value.language, "zh");
-    assert.doesNotThrow(() => rendered.props.value.setLanguage("en"));
-    rendered = render();
     assert.equal(rendered.props.value.language, "en");
-    assert.equal(rendered.props.value.t("Hello", "你好"), "Hello");
+    assert.doesNotThrow(() => rendered.props.value.setLanguage("zh"));
+    rendered = render();
+    assert.equal(rendered.props.value.language, "zh");
+    assert.equal(rendered.props.value.t("Hello", "你好"), "你好");
     assert.equal(address.pathname, "/projects/");
     assert.equal(address.searchParams.get("v"), "release");
-    assert.equal(address.searchParams.get("lang"), "en");
+    assert.equal(address.searchParams.get("lang"), "zh");
     assert.equal(address.hash, "#folio");
-    assert.equal(rendered.props.value.href("/contact/"), "/contact/?lang=en");
+    assert.equal(rendered.props.value.href("/contact/"), "/contact/?lang=zh");
+    assert.equal(storageAccesses, 0, "the entrance and switch must work without reading or writing storage");
+  });
+});
+
+test("a legacy saved Chinese preference cannot override a fresh English entrance, while explicit Chinese survives links and refresh", () => {
+  let address = new URL("https://zhzhg-dev.github.io/");
+  let storageReads = 0, storageWrites = 0;
+  const browser = {
+    get location() { return address; },
+    localStorage: { getItem() { storageReads++; return "zh"; }, setItem() { storageWrites++; } },
+    history: { state: { unrelated: "retained" }, replaceState(state, _title, url) { this.state = state; address = new URL(url, address); } },
+  };
+  withGlobals({ window: browser }, () => {
+    const mount = () => {
+      const state = stateHooks();
+      const { LanguageProvider: Provider } = loadSource(resolve(repository, "src/i18n.tsx"), state.hooks);
+      const render = () => { state.restart(); return Provider({ children: null }).props.value; };
+      return { render };
+    };
+    const entrance = mount();
+    assert.equal(entrance.render().language, "en");
+    entrance.render().setLanguage("zh");
+    assert.equal(entrance.render().language, "zh");
+    assert.equal(address.searchParams.get("lang"), "zh");
+    assert.equal(mount().render().language, "zh", "refresh keeps the explicit language in the current URL");
+    address = new URL(entrance.render().href("/projects/#folio"), address);
+    assert.equal(mount().render().language, "zh", "an internal page link carries Chinese without a saved preference");
+    assert.equal(address.hash, "#folio");
+    address = new URL("https://zhzhg-dev.github.io/?v=release");
+    assert.equal(mount().render().language, "en", "a new plain entrance is English even after a previous Chinese visit");
+    assert.equal(storageReads, 0);
+    assert.equal(storageWrites, 0);
   });
 });

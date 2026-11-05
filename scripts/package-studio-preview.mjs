@@ -30,11 +30,11 @@ for (const path of ["/#education-title", "/#studio-about", "/experience/", "/exp
 for (const quote of ['"', "'", "`"]) javascript = javascript.replaceAll(`${quote}/${quote}`, `${quote}https://zhzhg-dev.github.io/${quote}`);
 javascript = javascript.replace(/\/\/# sourceMappingURL=.*$/gm, "");
 
-for (const font of ["Onest-latin-variable.woff2", "bricolage/BricolageGrotesque-latin-variable.woff2", "Onest-variable.ttf", "bricolage/BricolageGrotesque-variable.ttf"]) {
+for (const font of ["Onest-latin-variable.woff2", "bricolage/BricolageGrotesque-latin-variable.woff2", "Onest-variable.ttf", "bricolage/BricolageGrotesque-variable.ttf", "chinese/lxgw-wenkai-studio.woff2", "chinese/noto-sans-sc-studio.woff2"]) {
   const data = await readFile(resolve(repository, `public/fonts/${font}`));
   stylesheet = stylesheet.replaceAll(`/fonts/${font}`, `data:font/${font.endsWith("woff2") ? "woff2" : "ttf"};base64,${data.toString("base64")}`);
 }
-const licenses = await Promise.all(["OFL.txt", "bricolage/OFL.txt"].map(path => readFile(resolve(repository, `public/fonts/${path}`), "utf8")));
+const licenses = await Promise.all(["OFL.txt", "bricolage/OFL.txt", "chinese/LXGW-OFL.txt", "chinese/NotoSansSC-OFL.txt"].map(path => readFile(resolve(repository, `public/fonts/${path}`), "utf8")));
 const favicon = await readFile(resolve(repository, "public/favicon.svg"));
 html = html.replaceAll("/favicon.svg", `data:image/svg+xml;base64,${favicon.toString("base64")}`);
 html = html.replace(/<link\b[^>]*rel="preload"[^>]*>/g, "");
