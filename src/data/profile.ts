@@ -4,8 +4,14 @@ export type Experience = {
   period: string;
   summary: string;
   status?: "upcoming" | "current";
-  points: string[];
-  tags: string[];
+  scope?: string;
+  story?: {
+    situation: string;
+    task: string;
+    action: string;
+    result: string;
+    evidenceNote?: string;
+  };
 };
 
 export type Project = {
@@ -42,7 +48,9 @@ export type Education = {
   degree: string;
   institution: string;
   period: string;
-  detail: string;
+  detail?: string;
+  courseGroups: { label: string; courses: string[] }[];
+  honours?: string[];
 };
 
 export const profile = {
@@ -75,36 +83,33 @@ export const experience: Experience[] = [
     period: "Scheduled to start 16 Nov 2026",
     summary: "Auckland, New Zealand.",
     status: "upcoming",
-    points: [],
-    tags: [],
+    scope: "The role focuses on exploring generative AI and agents for games, evaluating their capabilities, and translating use cases into product requirements.",
   },
   {
     role: "Graduate Teaching Assistant",
     organisation: "University of Auckland · School of Computer Science",
     period: "Jul 2026 — 16 Nov 2026 (scheduled end)",
     status: "current",
-    summary:
-      "Supporting students as they build confidence with introductory computing.",
-    points: [
-      "Support COMPSCI 111 laboratory classes and university Open Lab sessions.",
-      "Help students understand introductory programming, debugging, development tools, file systems, and common technical issues.",
-      "Support approximately 30 students across two COMPSCI 111 class groups.",
-      "Adapt patient, practical explanations to different levels of experience.",
-    ],
-    tags: ["Technical communication", "Debugging", "Teaching"],
+    summary: "Support approximately 30 students across two weekly COMPSCI 111 labs, plus drop-in Open Lab sessions.",
+    story: {
+      situation: "Students in introductory computing labs arrived with different levels of programming experience.",
+      task: "Help students understand lab and assignment instructions, get their tools working, and troubleshoot independently.",
+      action: "Walked students through web basics, file systems and introductory programming in lab. In Open Lab, broke down assignment instructions, helped set up software and traced errors with students step by step.",
+      result: "Provided hands-on support to about 30 students across two weekly COMPSCI 111 lab groups, in addition to drop-in Open Lab support.",
+    },
   },
   {
-    role: "IELTS Teaching Assistant",
-    organisation: "Luoyang New Oriental International Education",
-    period: "Jun 2025 — Aug 2025",
-    summary:
-      "Helping teaching teams keep eight classes organised and students supported.",
-    points: [
-      "Supported IELTS teachers across eight classes during one teaching term.",
-      "Prepared teaching activities, communicated with students, and helped maintain an organised learning environment.",
-      "Worked closely with course teachers to keep day-to-day delivery dependable.",
-    ],
-    tags: ["Communication", "Coordination", "Student support"],
+    role: "Multimedia Reporting & Editing Intern",
+    organisation: "Luoyang Radio and Television Station · Multimedia Centre",
+    period: "Jan 2024 — Mar 2024",
+    summary: "Spent three months supporting Luoyang TV’s local news bulletin and digital reporting, including a credited short video about Erlitou’s turquoise dragon artefact.",
+    story: {
+      situation: "The Multimedia Centre produced both Luoyang TV’s local news bulletin and short stories for digital platforms.",
+      task: "Support reporters and producers with reporting and editing for TV and digital stories, preparing material for broadcast deadlines.",
+      action: "Assisted with interviews, scripts, voice-over and audio/video editing. Checked footage selection, running time, audio quality and delivery files with the production team.",
+      result: "Contributed to Luoyang TV’s local news bulletin and received an intern credit on the Erlitou video. The Luoyang Rongmei WeChat Channels post showed 235 likes, 155 shares and 5 comments when captured.",
+      evidenceNote: "Source: Luoyang Rongmei on WeChat Channels. The counts describe this post at the time of capture, not my individual performance.",
+    },
   },
 ];
 
@@ -454,7 +459,11 @@ export const education: Education[] = [
     degree: "Master of Information Technology",
     institution: "University of Auckland",
     period: "2026 — Present",
-    detail: "Current cumulative GPA: 6.0 / 9.0",
+    courseGroups: [
+      { label: "Machine learning & data", courses: ["Foundations of Machine Learning", "Advanced Topics in Machine Learning", "Health Data Analytics"] },
+      { label: "Software & databases", courses: ["Creating Maintainable Software", "Software Tools and Techniques", "Advanced Topics in Database Systems"] },
+      { label: "Modelling & consultancy", courses: ["System Dynamics and Complex Modelling", "IT Consultancy"] },
+    ],
   },
   {
     degree: "Bachelor of Science in Information and Computational Science",
@@ -462,6 +471,11 @@ export const education: Education[] = [
     period: "2020 — 2024",
     detail:
       "2nd in cohort by comprehensive assessment · Thesis: Rumor Propagation Model Based on Heterogeneous Cellular Automata",
+    courseGroups: [
+      { label: "Computing", courses: ["Data Structures and Algorithms", "Object-Oriented Programming"] },
+      { label: "Mathematics", courses: ["Mathematical Analysis", "Advanced Algebra", "Probability Theory"] },
+    ],
+    honours: ["Outstanding Graduate", "Outstanding Student", "Sichuan Province Grade A Certificate for University Students’ Comprehensive Quality"],
   },
 ];
 

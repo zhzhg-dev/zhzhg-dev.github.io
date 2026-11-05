@@ -1,30 +1,40 @@
 import { useEffect, useRef } from "react";
-import { community, education, experience, skills } from "../data/profile";
+import { community, education, experience } from "../data/profile";
 import { backgroundZh } from "../data/background.zh";
 import { useLanguage } from "../i18n";
 import "./studio-background.css";
 
 export function StudioBackground({ compact = false }: { compact?: boolean }) {
   const { language, t, href } = useLanguage();
-  const background = language === "zh" ? backgroundZh : { community, education, experience, skills };
-  const communityCard = useRef<HTMLElement>(null);
+  const background = language === "zh" ? backgroundZh : { community, education, experience };
+  const backgroundRoot = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    if (window.location.hash === "#community-title") {
-      communityCard.current?.scrollIntoView({ behavior: "instant", block: "start" });
+    const target = window.location.hash.slice(1);
+    if (["work-title", "education-title", "community-title"].includes(target)) {
+      backgroundRoot.current?.querySelector(`[aria-labelledby="${target}"]`)?.scrollIntoView({ behavior: "instant", block: "start" });
     }
   }, []);
-  return <div className={"studio-background" + (compact ? " studio-background--compact" : "")}>
+  return <div ref={backgroundRoot} className={"studio-background" + (compact ? " studio-background--compact" : "")}>
     <div className="background-journey">
     <section className="background-work" aria-labelledby="work-title">
-      <header className="background-heading"><h2 id="work-title">{t("Work & teaching", "工作与教学")}</h2><p>{t("Learning goes both ways.", "教与学，从来都是双向的。")}</p></header>
+      <header className="background-heading"><h2 id="work-title">{t("Work & teaching", "工作与教学")}</h2></header>
       <ol className="background-work__list">
-        {background.experience.map((role, index) => {
+        {background.experience.map(role => {
           const current = role.status === "current";
-          return <li className={"background-work__entry" + (current ? " background-work__entry--current" : "")} key={index}>
+          const story = role.story;
+          return <li className={"background-work__entry" + (current ? " background-work__entry--current" : "")} key={role.role}>
             <p className="background-work__period">{role.period}</p>
             <article className="background-role"><p className="background-role__organisation">{role.organisation}</p><h3>{role.role}</h3><p className="background-role__summary">{role.summary}</p>
-              {role.points.length > 0 && (compact ? current && <ul className="background-role__highlights">{role.points.slice(0, 2).map(point => <li key={point}>{point}</li>)}</ul> : <details className="background-role__details" open={current}><summary>{t("Responsibilities", "工作内容")}<span aria-hidden="true">+</span></summary><ul>{role.points.map(point => <li key={point}>{point}</li>)}</ul></details>)}
-              {!compact && role.tags.length > 0 && <ul className="background-role__tags" aria-label={t(`${role.role} capabilities`, `${role.role}相关能力`)}>{role.tags.map(tag => <li key={tag}>{tag}</li>)}</ul>}
+              {!compact && role.scope && <p className="background-role__scope">{role.scope}</p>}
+              {!compact && story && <details className="background-role__details" open>
+                <summary>{t("Details & outcomes", "工作与成果")}<span aria-hidden="true">+</span></summary>
+                <dl className="background-role__story">
+                  <div><dt>{t("Context", "背景")}</dt><dd>{story.situation}</dd></div>
+                  <div><dt>{t("Task", "任务")}</dt><dd>{story.task}</dd></div>
+                  <div><dt>{t("What I did", "我的行动")}</dt><dd>{story.action}</dd></div>
+                  <div className="background-role__result"><dt>{t("Outcome", "成果")}</dt><dd>{story.result}{story.evidenceNote && <small>{story.evidenceNote}</small>}</dd></div>
+                </dl>
+              </details>}
             </article>
           </li>;
         })}
@@ -34,17 +44,25 @@ export function StudioBackground({ compact = false }: { compact?: boolean }) {
 
     <section className="background-education" aria-labelledby="education-title">
       <h2 id="education-title">{t("Education", "教育背景")}</h2>
-      <p className="background-education__intro">{t("The foundations I’m building on.", "支撑我继续探索的基础。")}</p>
-      <div className="background-education__list">{background.education.map((item, index) => <article key={index}><p className="background-education__period">{item.period}</p><h3>{item.degree}</h3><p className="background-education__institution">{item.institution}</p><p className="background-education__detail">{item.detail}</p></article>)}</div>
+      <div className="background-education__list">{background.education.map(item => <article key={item.degree}>
+        <p className="background-education__period">{item.period}</p>
+        <h3>{item.degree}</h3>
+        <p className="background-education__institution">{item.institution}</p>
+        {item.detail && <p className="background-education__detail">{item.detail}</p>}
+        {item.courseGroups.map(group => <div className="background-education__group" key={group.label}>
+          <h4>{group.label}</h4>
+          <ul>{group.courses.map(course => <li key={course}>{course}</li>)}</ul>
+        </div>)}
+        {item.honours && <div className="background-education__group">
+          <h4>{t("Honours", "荣誉")}</h4>
+          <ul>{item.honours.map(honour => <li key={honour}>{honour}</li>)}</ul>
+        </div>}
+      </article>)}</div>
+      {compact && <a className="background-education__more" href={href("/experience/#education-title")}>{t("Courses & honours", "查看课程与荣誉")}<span aria-hidden="true">↗</span></a>}
     </section>
     </div>
 
-    <section className="background-toolkit" aria-labelledby="toolkit-title">
-      <header className="background-heading"><h2 id="toolkit-title">{t("My toolkit", "我的工具箱")}</h2><p>{t("For turning a question into something you can try.", "把一个问题，变成可以动手试的东西。")}</p></header>
-      <div className="background-toolkit__list">{background.skills.map((group, index) => <article key={index}><h3>{group.category}</h3><ul>{group.items.map(item => <li key={item}>{item}</li>)}</ul></article>)}</div>
-    </section>
-
-    <aside ref={communityCard} className="background-community" aria-labelledby="community-title">
+    <aside className="background-community" aria-labelledby="community-title">
       <div className="background-community__intro">
         <p className="background-community__label">{t("Volunteering", "志愿活动")}</p>
         <h2 id="community-title">{background.community.distinction}</h2>

@@ -27,7 +27,7 @@ test("the personal display uses readable personal context without a second decor
   }
 });
 
-test("compact Home records lead to the complete Experience record without repeating the full duties", () => {
+test("compact Home records lead to the complete Experience record without repeating the STAR details", () => {
   const html = renderAt(App, { page: "home" });
   const work = section(html, "work-title");
   assert.ok(work);
@@ -36,13 +36,13 @@ test("compact Home records lead to the complete Experience record without repeat
   for (const role of experience) {
     for (const fact of [role.role, role.organisation, role.period, role.summary]) assert.ok(work.text.includes(fact));
   }
-  const highlights = elements(work.markup, "ul")[0];
-  assert.ok(highlights);
-  const current = experience.find(role => role.status === "current");
-  assert.equal(current?.role, "Graduate Teaching Assistant");
-  assert.deepEqual(elements(highlights.markup, "li").map(item => item.text), current.points.slice(0, 2));
-  const omittedPoints = experience.flatMap(role => role === current ? role.points.slice(2) : role.points);
-  for (const point of omittedPoints) assert.ok(!work.text.includes(point), "the complete duty list is not repeated on Home");
+  assert.equal(elements(work.markup, "dl").length, 0);
+  assert.doesNotMatch(work.text, /235 likes|155 shares|5 comments/);
+  for (const role of experience) {
+    for (const fact of [role.scope, role.story?.situation, role.story?.task, role.story?.action, role.story?.result].filter(Boolean)) {
+      assert.ok(!work.text.includes(fact), "full role details are not repeated on Home");
+    }
+  }
   assert.ok(elements(work.markup, "a").some(link => link.href === "/experience/#work-title"));
   const completeWork = section(renderAt(App, { page: "experience" }), "work-title");
   assert.ok(completeWork);
@@ -50,11 +50,11 @@ test("compact Home records lead to the complete Experience record without repeat
     const entry = elements(completeWork.markup, "article").find(item => item.text.includes(role.role));
     assert.ok(entry);
     assert.ok(completeWork.text.includes(role.period));
-    for (const fact of [role.organisation, role.summary, ...role.points, ...role.tags]) assert.ok(entry.text.includes(fact));
+    for (const fact of [role.organisation, role.summary, role.scope, ...Object.values(role.story ?? {})].filter(Boolean)) assert.ok(entry.text.includes(fact));
   }
 });
 
-test("the complete background retains native responsibility details and real education and volunteering facts", () => {
+test("the complete background presents four STAR rows for completed or ongoing work, plus education and volunteering", () => {
   const html = renderAt(StudioBackground);
   const work = section(html, "work-title");
   assert.ok(work);
@@ -63,15 +63,32 @@ test("the complete background retains native responsibility details and real edu
     const entry = roles.find(item => item.text.includes(role.role));
     assert.ok(entry);
     const disclosures = elements(entry.markup, "details");
-    assert.equal(disclosures.length, role.points.length ? 1 : 0);
-    if (role.points.length) {
-      assert.equal(isOpen(disclosures[0].markup), role.status === "current");
-      assert.match(elements(disclosures[0].markup, "summary")[0]?.text ?? "", /Responsibilities/);
+    assert.equal(disclosures.length, role.story ? 1 : 0);
+    if (role.story) {
+      assert.equal(isOpen(disclosures[0].markup), true);
+      assert.match(elements(disclosures[0].markup, "summary")[0]?.text ?? "", /Details & outcomes/);
+      const [story] = elements(disclosures[0].markup, "dl");
+      assert.ok(story);
+      assert.deepEqual(elements(story.markup, "dt").map(item => item.text), ["Context", "Task", "What I did", "Outcome"]);
+      assert.deepEqual(elements(story.markup, "dd").map(item => item.text), [
+        role.story.situation, role.story.task, role.story.action, [role.story.result, role.story.evidenceNote].filter(Boolean).join(" "),
+      ]);
     }
   }
   const qualifications = section(html, "education-title");
   assert.ok(qualifications);
-  for (const qualification of education) for (const fact of Object.values(qualification)) assert.ok(qualifications.text.includes(fact));
+  const degrees = elements(qualifications.markup, "article");
+  assert.equal(degrees.length, education.length);
+  for (const [index, qualification] of education.entries()) {
+    const degree = degrees[index];
+    for (const fact of [qualification.degree, qualification.institution, qualification.period, qualification.detail].filter(Boolean)) {
+      assert.ok(degree.text.includes(fact), "degree preserves " + fact);
+    }
+    const groups = elements(degree.markup, "div").filter(group => group.class === "background-education__group");
+    const expected = [...qualification.courseGroups, ...(qualification.honours ? [{ label: "Honours", courses: qualification.honours }] : [])];
+    assert.deepEqual(groups.map(group => [elements(group.markup, "h4")[0]?.text, elements(group.markup, "li").map(item => item.text)]),
+      expected.map(group => [group.label, group.courses]));
+  }
   const note = elements(html, "aside").find(item => item["aria-labelledby"] === "community-title");
   assert.ok(note);
   assert.deepEqual(elements(note.markup, "h2").map(heading => heading.text), [community.distinction]);
@@ -94,21 +111,19 @@ test("the complete background retains native responsibility details and real edu
   }
 });
 
-test("all five toolkit groups are directly readable with no fabricated proficiency scores or persistence", () => {
-  for (const compact of [false, true]) {
-    const html = renderAt(StudioBackground, { compact });
-    const toolkit = section(html, "toolkit-title");
-    assert.ok(toolkit);
-    assert.equal(elements(toolkit.markup, "details").length, 0, "reading skills does not require opening drawers");
-    const groups = elements(toolkit.markup, "article");
-    assert.equal(groups.length, skills.length);
-    for (const group of skills) {
-      const entry = groups.find(item => elements(item.markup, "h3")[0]?.text === group.category);
-      assert.ok(entry);
-      assert.deepEqual(elements(entry.markup, "li").map(item => item.text), group.items);
-    }
-    assert.doesNotMatch(toolkit.markup, /<progress\b|role="(?:progressbar|slider)"|\b\d{1,3}%/);
+test("all five toolkit groups are directly readable on Projects with no fabricated proficiency scores or persistence", () => {
+  const html = renderAt(App, { page: "projects" });
+  const toolkit = section(html, "toolkit-title");
+  assert.ok(toolkit);
+  assert.equal(elements(toolkit.markup, "details").length, 0, "reading skills does not require opening drawers");
+  const groups = elements(toolkit.markup, "div").filter(group => group.class === "studio-toolkit__group");
+  assert.equal(groups.length, skills.length);
+  for (const group of skills) {
+    const entry = groups.find(item => elements(item.markup, "h3")[0]?.text === group.category);
+    assert.ok(entry);
+    assert.deepEqual(elements(entry.markup, "li").map(item => item.text), group.items);
   }
-  const source = readFileSync(resolve(repository, "src/components/StudioBackground.tsx"), "utf8");
+  assert.doesNotMatch(toolkit.markup, /<progress\b|role="(?:progressbar|slider)"|\b\d{1,3}%/);
+  const source = readFileSync(resolve(repository, "src/components/StudioToolkit.tsx"), "utf8");
   assert.doesNotMatch(source, /localStorage|sessionStorage|\bfetch\s*\(/);
 });

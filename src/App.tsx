@@ -12,7 +12,7 @@ export type PageName = "home" | "experience" | "projects" | "contact";
 
 const pageMeta = {
   home: { title: ["Grant | AI Product Builder", "Grant｜AI 产品与好奇心"], description: ["Grant: a mathematical mind, an AI builder, and a teacher. Based in Auckland, New Zealand.", "我是 Grant，在奥克兰学习、构建 AI 产品，也参与计算机教学。从数学出发，探索 AI、仿真与有用的软件。"], url: profile.canonicalUrl },
-  experience: { title: ["Experience | Grant", "经历与背景｜Grant"], description: ["Grant’s teaching experience, education, community work, and technical toolkit.", "Grant 的教学经历、教育背景、社区实践与技术工具。"], url: `${profile.canonicalUrl}experience/` },
+  experience: { title: ["Experience | Grant", "经历与背景｜Grant"], description: ["Grant’s work in teaching and multimedia reporting, selected coursework, honours, and volunteering.", "Grant 的教学与融媒采编经历、所修课程、荣誉与志愿活动。"], url: `${profile.canonicalUrl}experience/` },
   projects: { title: ["Projects | Grant", "项目｜Grant"], description: ["Explore Folio, ExplainLab, electricity forecasting, and other AI, simulation, and software projects by Grant.", "探索 Folio、ExplainLab、L2R 与新西兰电力预测：从 AI 产品到仿真研究，看看我的思考、实现与验证。"], url: `${profile.canonicalUrl}projects/` },
   contact: { title: ["Contact | Grant", "联系我｜Grant"], description: ["Connect with Grant on LinkedIn and GitHub. Based in Auckland, exploring AI products, game AI, and useful software.", "通过 LinkedIn 和 GitHub 联系 Grant。聊聊 AI 产品、游戏 AI、教学，或一个值得一起尝试的想法。"], url: `${profile.canonicalUrl}contact/` },
 };
@@ -35,7 +35,7 @@ function Header({ page }: { page: PageName }) {
 
 function ExperiencePage() {
   const { t } = useLanguage();
-  return <><section className="studio-page-heading" id="top"><p>{t("About", "关于我")}</p><h1>{t("Work & background.", "经历与来路。")}</h1><p>{t("Teaching, a mathematical foundation, and the skills I use to build.", "教学的经历、数学的底子，以及把想法做出来的工具。")}</p></section><StudioBackground /></>;
+  return <><section className="studio-page-heading" id="top"><p>{t("About", "关于我")}</p><h1>{t("Work & background.", "经历与来路。")}</h1><p>{t("From a local newsroom to computing labs and graduate study.", "从地方新闻采编，到计算机教学与研究生学习。")}</p></section><StudioBackground /></>;
 }
 
 function ContactPage() {

@@ -17,11 +17,11 @@ function assertPersonalBackground(html, { complete = true } = {}) {
   const text = plainText(html);
   for (const role of data.experience) {
     const facts = [role.role, role.organisation, role.period, role.summary];
-    if (complete) facts.push(...role.points, ...role.tags);
+    if (complete) facts.push(...[role.scope, ...Object.values(role.story ?? {})].filter(Boolean));
     for (const fact of facts) assert.ok(text.includes(fact), `preserve ${fact}`);
   }
   for (const item of data.education) {
-    for (const fact of [item.degree, item.institution, item.period, item.detail]) assert.ok(text.includes(fact));
+    for (const fact of [item.degree, item.institution, item.period, item.detail, ...(item.honours ?? []), ...item.courseGroups.flatMap(group => [group.label, ...group.courses])].filter(Boolean)) assert.ok(text.includes(fact));
   }
   const { distinction, recognition, entries } = data.community;
   assert.ok(text.includes(distinction));
@@ -29,11 +29,8 @@ function assertPersonalBackground(html, { complete = true } = {}) {
   for (const entry of entries) {
     for (const fact of [entry.title, entry.organisation, entry.period, entry.description, entry.contribution].filter(Boolean)) assert.ok(text.includes(fact));
   }
-  for (const group of data.skills) {
-    assert.ok(text.includes(group.category));
-    for (const skill of group.items) assert.ok(text.includes(skill));
-  }
-  for (const id of ["work-title", "education-title", "community-title", "toolkit-title"]) assert.ok(html.includes(`id="${id}"`));
+  for (const id of ["work-title", "education-title", "community-title"]) assert.ok(html.includes(`id="${id}"`));
+  assert.doesNotMatch(html, /toolkit-title|studio-toolkit__group/);
 }
 
 test("all routes expose the same three real tabs, exactly one active tab and one primary heading", () => {

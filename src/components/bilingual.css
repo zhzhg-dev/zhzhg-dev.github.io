@@ -58,10 +58,8 @@
 .studio-site[data-language="zh"] .studio-now__items h3 + p { font-size: 14px; line-height: 1.95; }
 .studio-site[data-language="zh"] .background-role h3,
 .studio-site[data-language="zh"] .background-education h3 { font-size: 22px; }
-.studio-site[data-language="zh"] .background-toolkit h3 { font-size: 17px; }
 .studio-site[data-language="zh"] .background-community h3 { font-size: 19px; }
-.studio-site[data-language="zh"] .background-role__highlights li,
-.studio-site[data-language="zh"] .background-role__details li { font-size: 13px; line-height: 1.95; }
+.studio-site[data-language="zh"] .background-role__story dd { line-height: 1.95; }
 .studio-site[data-language="zh"] .background-education__detail { font-size: 13px; line-height: 1.95; }
 .studio-site[data-language="zh"] .studio-projects__heading h1,
 .studio-site[data-language="zh"] .studio-contact-page h1,

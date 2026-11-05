@@ -6,7 +6,7 @@ const pages = [
     path: "experience",
     title: "Experience | Grant",
     description:
-      "Grant’s teaching experience, education, community work, and technical toolkit.",
+      "Grant’s work in teaching and multimedia reporting, selected coursework, honours, and volunteering.",
   },
   {
     path: "projects",

@@ -19,7 +19,7 @@ original copyright and family metadata.
 - Original SHA-256: `b2ec1727fbc04b70255db6cb71be0eca3b7a7167ef11655059c5576cc920143f`
 - Upstream distributor licence: https://raw.githubusercontent.com/CyanoHao/Resource-Han-Rounded/be90fee7a031c1297da5a260ccfb91756088d51c/OFL-License.txt
 - Licence copied verbatim beside the font: `ResourceHanRounded-OFL.txt` (SIL OFL 1.1).
-- Delivery asset: `resource-han-rounded-studio.woff2`, 129,808 bytes.
+- Delivery asset: `resource-han-rounded-studio.woff2`, 133,824 bytes.
 - This is a web subset of Resource Han Rounded; it is not the original
   Source Han Sans font or an endorsement by the upstream authors.
 
@@ -32,14 +32,14 @@ original copyright and family metadata.
 - Original licence: https://raw.githubusercontent.com/google/fonts/bbda7253fc363238b05d97515ca71f8ae49c4fa9/ofl/notosanssc/OFL.txt
 - Licence copied verbatim beside the font: `NotoSansSC-OFL.txt` (SIL OFL 1.1).
 - Original SHA-256: `a3041811a78c361b1de50f953c805e0244951c21c5bd412f7232ef0d899af0da`
-- Delivery asset: `noto-sans-sc-studio.woff2`, 200,640 bytes, genuine variable
+- Delivery asset: `noto-sans-sc-studio.woff2`, 206,816 bytes, genuine variable
   `wght` range 400–600 (default 400). The unused weight extremes are removed.
 
 ## Subset scope and reproduction
 
 `scripts/prepare-chinese-fonts.py` uses FontTools to collect the Unicode
 characters in `src/**/*.ts`, `src/**/*.tsx` and `index.html`, plus printable
-ASCII. Both subsets cover all 898 collected codepoints, including 780 Chinese
+ASCII. Both subsets cover all 924 collected codepoints, including 802 Chinese
 ideographs. The WOFF2 outputs retain kerning/layout
 information and font licence metadata. Content beyond the subset can fall back
 to local system fonts; re-run the script after changing Chinese copy.

@@ -73,16 +73,16 @@ test("localized internal addresses retain route, query and project hash without 
 
 const pageCopy = {
   home: {
-    zh: ["嗨，欢迎来我的小工作室。", "AI 产品构建者", "用数学理解问题，", "用好奇心探索可能。", "最近在探索。", "工作与教学", "教育背景", "我的工具箱", "志愿活动", "研究生助教", "信息技术硕士"],
-    en: ["Hi, make yourself at home.", "AI product builder", "A mathematical mind.", "A curiosity for what’s possible.", "What I’m exploring.", "Work & teaching", "Education", "My toolkit", "Volunteering", "Graduate Teaching Assistant", "Master of Information Technology"],
+    zh: ["嗨，欢迎来我的小工作室。", "AI 产品构建者", "用数学理解问题，", "用好奇心探索可能。", "最近在探索。", "工作与教学", "教育背景", "志愿活动", "研究生助教", "信息技术硕士"],
+    en: ["Hi, make yourself at home.", "AI product builder", "A mathematical mind.", "A curiosity for what’s possible.", "What I’m exploring.", "Work & teaching", "Education", "Volunteering", "Graduate Teaching Assistant", "Master of Information Technology"],
   },
   experience: {
-    zh: ["经历与来路。", "工作内容", "研究生助教", "雅思助教", "奥克兰大学", "西南民族大学", "教育背景", "产品与评估", "国家级优秀团队"],
-    en: ["Work & background.", "Responsibilities", "Graduate Teaching Assistant", "IELTS Teaching Assistant", "University of Auckland", "Southwest Minzu University", "Education", "Product & evaluation", "National Outstanding Team"],
+    zh: ["经历与来路。", "工作与成果", "研究生助教", "融媒采编", "奥克兰大学", "西南民族大学", "教育背景", "国家级优秀团队"],
+    en: ["Work & background.", "Details & outcomes", "Graduate Teaching Assistant", "Multimedia Reporting & Editing Intern", "University of Auckland", "Southwest Minzu University", "Education", "National Outstanding Team"],
   },
   projects: {
-    zh: ["认真做过的事", "项目与探索", "点开封面，看看每个项目背后的问题、选择与思考。", "Folio", "ExplainLab", "L2R Autonomous Racing", "在线体验", "源代码", "有个想法？"],
-    en: ["Selected", "Projects", "Open a cover to explore the thinking behind the work.", "Folio", "ExplainLab", "L2R Autonomous Racing", "Live demo", "Source", "Have an idea?"],
+    zh: ["认真做过的事", "项目与探索", "点开封面，看看每个项目背后的问题、选择与思考。", "Folio", "ExplainLab", "L2R Autonomous Racing", "在线体验", "源代码", "有个想法？", "我的工具箱", "产品与评估"],
+    en: ["Selected", "Projects", "Open a cover to explore the thinking behind the work.", "Folio", "ExplainLab", "L2R Autonomous Racing", "Live demo", "Source", "Have an idea?", "My toolkit", "Product & evaluation"],
   },
   contact: {
     zh: ["随时欢迎。", "聊聊吧。", "从交流开始", "代码与实验", "我们可以聊这些。", "目前在新西兰奥克兰。", "LinkedIn", "GitHub"],
@@ -124,8 +124,8 @@ for (const page of Object.keys(pageCopy)) {
 
 test("the Tencent internship is scheduled in both languages and only the teaching assistant is current", () => {
   const expectedCopy = {
-    en: { employer: "Tencent / LIGHTSPEED STUDIOS", title: "Game AI Product Management Intern", start: "Scheduled to start 16 Nov 2026", location: "Auckland, New Zealand.", teaching: "Graduate Teaching Assistant", end: "Jul 2026 — 16 Nov 2026 (scheduled end)" },
-    zh: { employer: "腾讯光子工作室群", title: "游戏 AI 产品管理实习生", start: "计划于 2026 年 11 月 16 日入职", location: "新西兰奥克兰。", teaching: "研究生助教", end: "2026 年 7 月 — 2026 年 11 月 16 日（预计结束）" },
+    en: { employer: "Tencent / LIGHTSPEED STUDIOS", title: "Game AI Product Management Intern", start: "Scheduled to start 16 Nov 2026", location: "Auckland, New Zealand.", scope: /generative AI.*agents.*product requirements/i, teaching: "Graduate Teaching Assistant", end: "Jul 2026 — 16 Nov 2026 (scheduled end)" },
+    zh: { employer: "腾讯光子工作室群", title: "游戏 AI 产品管理实习生", start: "计划于 2026 年 11 月 16 日入职", location: "新西兰奥克兰。", scope: /生成式 AI.*智能体.*产品需求/, teaching: "研究生助教", end: "2026 年 7 月 — 2026 年 11 月 16 日（预计结束）" },
   };
   for (const [language, copy] of Object.entries(expectedCopy)) {
     for (const page of ["home", "experience"]) {
@@ -137,9 +137,11 @@ test("the Tencent internship is scheduled in both languages and only the teachin
       const current = records.filter(item => item.class.split(/\s+/).includes("background-work__entry--current"));
       assert.ok(scheduled);
       assert.equal(elements(scheduled.markup, "h3")[0]?.text, copy.title);
-      assert.equal(elements(scheduled.markup, "article")[0]?.text, `${copy.employer} ${copy.title} ${copy.location}`);
+      assert.ok(elements(scheduled.markup, "article")[0]?.text.startsWith([copy.employer, copy.title, copy.location].join(" ")));
       assert.ok(scheduled.text.includes(copy.start));
-      assert.doesNotMatch(scheduled.markup, /background-work__entry--current|<details\b|<ul\b/);
+      assert.doesNotMatch(scheduled.markup, /background-work__entry--current|<details\b|<dl\b|<ul\b/);
+      if (page === "experience") assert.match(scheduled.text, copy.scope);
+      else assert.doesNotMatch(scheduled.text, copy.scope);
       assert.equal(current.length, 1);
       assert.equal(elements(current[0].markup, "h3")[0]?.text, copy.teaching);
       assert.ok(current[0].text.includes(copy.end));
@@ -147,6 +149,113 @@ test("the Tencent internship is scheduled in both languages and only the teachin
       if (page === "experience") assert.match(elements(current[0].markup, "details")[0]?.markup ?? "", /^<details\b[^>]*\sopen(?:=|\s|>)/);
       assert.doesNotMatch(html.replace(work.markup, ""), /Tencent|腾讯/);
     }
+  }
+});
+
+test("the bilingual toolkit belongs only to Projects and follows the complete cover gallery", () => {
+  for (const [language, title] of [["en", "My toolkit"], ["zh", "我的工具箱"]]) {
+    const html = renderPage("projects", language);
+    const [toolkit] = elements(html, "section").filter(item => item["aria-labelledby"] === "toolkit-title");
+    const grid = elements(html, "div").find(item => item.class === "studio-projects__grid");
+    assert.ok(toolkit && grid);
+    assert.ok(html.indexOf(toolkit.markup) >= html.indexOf(grid.markup) + grid.markup.length);
+    assert.deepEqual(elements(html, "h2").filter(item => item.id === "toolkit-title").map(item => item.text), [title]);
+    assert.equal(elements(toolkit.markup, "div").filter(item => item.class === "studio-toolkit__group").length, 5);
+    for (const page of ["home", "experience", "contact"]) {
+      const other = renderPage(page, language);
+      assert.doesNotMatch(other, /toolkit-title|studio-toolkit__group/);
+      assert.ok(!plainText(other).includes(title));
+    }
+  }
+});
+
+test("only the detailed work history expands teaching and television into bilingual STAR stories", () => {
+  const copy = {
+    en: {
+      media: "Multimedia Reporting & Editing Intern",
+      teaching: "Graduate Teaching Assistant",
+      labels: ["Context", "Task", "What I did", "Outcome"],
+      channel: "Luoyang Rongmei",
+      mediaSummary: ["three months", "Luoyang TV’s local news bulletin"],
+      evidence: ["Luoyang TV’s local news bulletin", "Erlitou", "235 likes", "155 shares", "5 comments", "not my individual performance"],
+      teachingEvidence: ["about 30 students", "two weekly COMPSCI 111 lab groups", "Open Lab"],
+    },
+    zh: {
+      media: "融媒采编",
+      teaching: "研究生助教",
+      labels: ["背景", "任务", "我的行动", "成果"],
+      channel: "洛阳融媒",
+      mediaSummary: ["三个月", "洛阳电视台《新闻联播》"],
+      evidence: ["洛阳电视台《新闻联播》", "二里头绿松石龙形器", "235 次点赞", "155 次转发", "5 条评论", "不代表个人业绩"],
+      teachingEvidence: ["两组 COMPSCI 111 实验课", "约 30 名学生", "Open Lab"],
+    },
+  };
+  for (const [language, expected] of Object.entries(copy)) {
+    const getWork = page => elements(renderPage(page, language), "section").find(item => item["aria-labelledby"] === "work-title");
+    const compact = getWork("home"), full = getWork("experience");
+    for (const title of [expected.media, expected.teaching]) {
+      const homeRole = elements(compact.markup, "article").find(item => elements(item.markup, "h3")[0]?.text === title);
+      const detail = elements(full.markup, "article").find(item => elements(item.markup, "h3")[0]?.text === title);
+      assert.ok(homeRole && detail);
+      assert.doesNotMatch(homeRole.markup, /<details\b|<dl\b/);
+      const [story] = elements(detail.markup, "dl");
+      assert.ok(story);
+      assert.deepEqual(elements(story.markup, "dt").map(item => item.text), expected.labels);
+      const rows = elements(story.markup, "dd");
+      assert.equal(rows.length, 4);
+      assert.ok(rows.every(row => row.text.length > 0));
+      const outcome = rows[3].text;
+      for (const fact of title === expected.media ? [expected.channel, ...expected.evidence] : expected.teachingEvidence) {
+        assert.ok(outcome.includes(fact), language + " outcome includes " + fact);
+      }
+      if (title === expected.media) {
+        for (const fact of expected.mediaSummary) assert.ok(homeRole.text.includes(fact));
+        assert.equal(elements(detail.markup, "a").length, 0, "no unverified WeChat video link");
+      }
+    }
+    for (const html of [compact.markup, full.markup]) assert.doesNotMatch(plainText(html), /IELTS Teaching Assistant|雅思助教/);
+  }
+});
+
+test("bilingual education lists grouped coursework and undergraduate honours without displaying master's GPA", () => {
+  const copy = {
+    en: {
+      graduate: "Master of Information Technology",
+      bachelor: "Bachelor of Science in Information and Computational Science",
+      courses: ["Foundations of Machine Learning", "Advanced Topics in Database Systems", "System Dynamics and Complex Modelling"],
+      undergraduate: [["Computing", ["Data Structures and Algorithms", "Object-Oriented Programming"]], ["Mathematics", ["Mathematical Analysis", "Advanced Algebra", "Probability Theory"]]],
+      honours: /Outstanding Graduate.*Outstanding Student.*Sichuan Province Grade A Certificate/,
+    },
+    zh: {
+      graduate: "信息技术硕士",
+      bachelor: "信息与计算科学 · 理学学士",
+      courses: ["机器学习基础", "高级数据库系统专题", "系统动力学与复杂建模"],
+      undergraduate: [["计算机", ["数据结构与算法", "面向对象程序设计"]], ["数学", ["数学分析", "高等代数", "概率论"]]],
+      honours: /优秀毕业生.*优秀学生.*四川省大学生综合素质 A 级证书/,
+    },
+  };
+  for (const [language, expected] of Object.entries(copy)) {
+    const html = renderPage("experience", language);
+    const education = elements(html, "section").find(item => item["aria-labelledby"] === "education-title");
+    assert.ok(education);
+    const degrees = elements(education.markup, "article");
+    const graduate = degrees.find(item => elements(item.markup, "h3")[0]?.text === expected.graduate);
+    const bachelor = degrees.find(item => elements(item.markup, "h3")[0]?.text === expected.bachelor);
+    assert.ok(graduate && bachelor);
+    assert.doesNotMatch(graduate.text, /\bGPA\b|grade point average|绩点/i);
+    assert.ok(elements(graduate.markup, "h4").length >= 2);
+    const courses = elements(graduate.markup, "li").map(item => item.text);
+    for (const title of expected.courses) assert.ok(courses.includes(title));
+    const groups = elements(bachelor.markup, "div").filter(item => item.class === "background-education__group");
+    const honours = groups.find(item => elements(item.markup, "h4")[0]?.text === (language === "en" ? "Honours" : "荣誉"));
+    assert.ok(honours);
+    assert.equal(elements(honours.markup, "li").length, 3);
+    assert.match(honours.text, expected.honours);
+    const courseGroups = groups.filter(item => item !== honours);
+    assert.deepEqual(courseGroups.map(group => [
+      elements(group.markup, "h4")[0]?.text,
+      elements(group.markup, "li").map(item => item.text),
+    ]), expected.undergraduate, "selected undergraduate maths and computer science courses appear separately");
   }
 });
 

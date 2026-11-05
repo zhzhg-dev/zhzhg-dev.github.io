@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import { access, readFile, readdir } from "node:fs/promises";
+import { resolve } from "node:path";
 import test from "node:test";
+import { loadSource, repository } from "./support/source-harness.mjs";
 
 const pages = await Promise.all(["", "experience/", "projects/", "contact/"].map(async path => ({
   path: `/${path}`,
@@ -13,6 +15,7 @@ const componentSources = (await Promise.all((await readdir(new URL("../src/compo
   .filter(name => name.endsWith(".tsx"))
   .map(name => readFile(new URL(`../src/components/${name}`, import.meta.url), "utf8")))).join("\n");
 const dataSource = await readFile(new URL("../src/data/profile.ts", import.meta.url), "utf8");
+const { experience } = loadSource(resolve(repository, "src/data/profile.ts"));
 const workflow = await readFile(new URL("../.github/workflows/deploy.yml", import.meta.url), "utf8");
 
 test("production emits About, Projects and Contact plus the compatible Experience address", () => {
@@ -63,9 +66,14 @@ test("public profile and publication claims stay accurate", () => {
   const outsideExperience = dataSource.slice(0, experienceStart) + dataSource.slice(experienceEnd);
   assert.doesNotMatch(outsideExperience + appSource + homeSource + projectSource + componentSources,
     /Tencent|腾讯|Incoming|Open to internship|internship and graduate opportunities/i);
-  const workHistory = dataSource.slice(experienceStart, experienceEnd);
-  assert.match(workHistory, /organisation: "Tencent \/ LIGHTSPEED STUDIOS",\s*period: "Scheduled to start 16 Nov 2026",\s*summary: "Auckland, New Zealand\.",\s*status: "upcoming",\s*points: \[\],\s*tags: \[\]/);
-  assert.equal([...workHistory.matchAll(/status: "current"/g)].length, 1);
+  const internship = experience.find(role => role.organisation === "Tencent / LIGHTSPEED STUDIOS");
+  assert.ok(internship);
+  assert.equal(internship.period, "Scheduled to start 16 Nov 2026");
+  assert.equal(internship.summary, "Auckland, New Zealand.");
+  assert.equal(internship.status, "upcoming");
+  assert.match(internship.scope, /generative AI.*product requirements/);
+  assert.equal(internship.story, undefined, "future work has scope, not outcomes");
+  assert.deepEqual(experience.filter(role => role.status === "current").map(role => role.role), ["Graduate Teaching Assistant"]);
   const folio = dataSource.slice(dataSource.indexOf('slug: "folio"'), dataSource.indexOf('slug: "explainlab"'));
   assert.match(folio, /Working preview/);
   assert.doesNotMatch(folio, /liveUrl:/);

@@ -4,6 +4,7 @@ import { localizeProjects } from "../data/projects.zh";
 import { useLanguage } from "../i18n";
 import { LanguageSwitch } from "./LanguageSwitch";
 import { ProjectCover } from "./ProjectCover";
+import { StudioToolkit } from "./StudioToolkit";
 import "./studio-projects.css";
 
 function projectFromHash(projects: Project[]) {
@@ -168,6 +169,7 @@ export function StudioProjects({ projects }: { projects: Project[] }) {
       </article>)}
       <a className="studio-project-invite" href={href("/contact/")}><span className="studio-project-invite__image" aria-hidden="true">+</span><span className="studio-project-invite__title">{t("Have an idea?", "有个想法？")}</span><span className="studio-project-invite__copy">{t("Let’s compare notes.", "一起聊聊吧。")}</span></a>
     </div>
+    <StudioToolkit />
     <dialog className="studio-case" ref={dialogRef} id={dialogId} aria-labelledby={titleId} aria-describedby={selectedProject ? descriptionId : undefined} onCancel={event => { event.preventDefault(); closeCase(); }} onClose={() => { if (selectedSlug && !dialogRef.current?.open) closeCase(); }} onClick={closeOnBackdrop} onKeyDown={keepFocusInside}>
       <div className="studio-case__header"><p>{selectedProject?.status ?? t("Project details", "项目详情")}</p><div className="studio-dialog-actions"><LanguageSwitch /><button ref={closeRef} type="button" className="studio-case__close" onClick={closeCase}><span aria-hidden="true">×</span>{t("Close case study", "关闭项目详情")}</button></div></div>
       {selectedProject ? <>
