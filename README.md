@@ -1,8 +1,18 @@
-# Grant Zhang — Personal website
+# Grant — Personal website
 
 A personal website for Grant Zhang, a Master of Information Technology student and Graduate Teaching Assistant at the University of Auckland, with a mathematical background and an interest in practical AI products, simulation, and game AI.
 
 Production: [zhzhg-dev.github.io](https://zhzhg-dev.github.io/)
+
+## Chinese and English
+
+The first visit defaults to Chinese. The shared 中文 / EN switch is available in the header and inside the project and whiteboard dialogs. Grant is the displayed name in both languages; project identities and technical stacks stay in English. All navigation, background copy, seven project descriptions, four complete case studies, controls, accessible labels and image descriptions are localised—not only the menu labels.
+
+An explicit `?lang=zh` or `?lang=en` takes priority over the optional `grant-studio-language` localStorage preference. Selecting a language saves the choice when storage is available. Internal page links also carry the language query, so navigation works with blocked storage; project hashes and unrelated query parameters are retained. Language switching does not remount the interactive scene, reset whiteboard data, or close an open project case. Case history ownership ignores only the language parameter.
+
+`src/i18n.tsx` contains language selection, context and internal-link helpers. Component copy uses `t(english, chinese)`; the larger Chinese content overlays are `src/data/projects.zh.ts` and `src/data/background.zh.ts`, with original factual records retained in `profile.ts`. `bilingual.css` tunes Chinese type scale, line height and the mobile two-row header. Chinese glyphs use available PingFang SC / Microsoft YaHei / Noto Sans CJK SC system fonts; no remote font service or large CJK download is added. The static HTML and crawler/social metadata default to Chinese. Browser document language, title and description switch at runtime; the query variants do not advertise separate static-language SEO pages.
+
+Rollback baseline for this bilingual release: `172d7ef5b9ed3da04319cc388471ab37e8997b56`.
 
 ## Pages and navigation
 
@@ -82,6 +92,7 @@ npm run check
 `npm run test` builds before running tests. `npm run check` also includes linting. Automated checks cover:
 
 - All four static outputs, canonical URLs, browser metadata, local assets and font licenses.
+- Chinese and English rendering across all four routes, Grant-only displayed identity, complete project translations, language persistence without storage, and language changes preserving project/whiteboard state.
 - Responsive hero candidates and PNG fallback, real WebP dimensions and smaller file sizes, valid WOFF2 files and production preloads, and matching 1200×630 social-preview metadata.
 - Three real navigation tabs, the active-tab mapping, one primary heading, and skip links.
 - About’s personal facts and compact background, the complete compatible Experience record, Contact’s actual destinations, and the absence of unsupported employment or publication claims.

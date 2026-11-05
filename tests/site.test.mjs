@@ -19,14 +19,14 @@ test("production emits About, Projects and Contact plus the compatible Experienc
   for (const { path, html } of pages) {
     const page = path === "/" ? "home" : path.split("/")[1];
     assert.match(html, new RegExp(`data-page="${page}"`));
-    assert.match(html, /<title>[^<]*Grant Zhang[^<]*<\/title>/);
+    assert.match(html, /<title>[^<]*Grant[^<]*<\/title>/);
     if (page !== "home") {
-      const title = page[0].toUpperCase() + page.slice(1);
-      assert.match(html, new RegExp(`${title} \\| Grant Zhang`));
-      assert.match(html, new RegExp(`name="twitter:title" content="${title} \\| Grant Zhang"`));
+      const title = { experience: "经历与背景", projects: "项目", contact: "联系我" }[page];
+      assert.match(html, new RegExp(`${title}｜Grant`));
+      assert.match(html, new RegExp(`name="twitter:title" content="${title}｜Grant"`));
     }
   }
-  assert.match(pages.find(page => page.path === "/projects/").html, /property="og:description" content="Explore Folio, ExplainLab/);
+  assert.match(pages.find(page => page.path === "/projects/").html, /property="og:description" content="探索 Folio、ExplainLab/);
 });
 
 test("the three primary tabs use real standalone page addresses", () => {
@@ -66,7 +66,7 @@ test("public profile and publication claims stay accurate", () => {
 
 test("all page outputs retain canonical URLs and light browser metadata", () => {
   for (const { path, html } of pages) {
-    assert.match(html, /<html\b[^>]*\blang="en"/);
+    assert.match(html, /<html\b[^>]*\blang="zh-CN"/);
     assert.match(html, /name="color-scheme"\s+content="light"/);
     assert.equal(html.match(/<link\b[^>]*rel="canonical"[^>]*href="([^"]+)"/)?.[1], `https://zhzhg-dev.github.io${path}`);
   }

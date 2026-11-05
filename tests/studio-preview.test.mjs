@@ -83,6 +83,7 @@ function studioHarness() {
   const slots = [];
   let cursor = 0;
   const hooks = {
+    useContext(context) { return context._currentValue; },
     useId() { return `studio-test-${cursor++}`; },
     useState(initial) {
       const index = cursor++;
@@ -137,7 +138,8 @@ test("the illustrated introduction preserves current personal facts and one mean
   const hero = html.match(/<section\b[^>]*id="top"[^>]*>[\s\S]*?<\/section>/)?.[0];
   assert.ok(hero, "the studio hero remains a distinct introduction above the personal display");
   const text = plainText(html);
-  assert.match(text, /Grant\s+Zhang\s*\./);
+  assert.match(text, /Grant\s*\./);
+  assert.doesNotMatch(text, /Grant\s+Zhang/);
   for (const fact of ["Master of Information Technology", "Graduate Teaching Assistant", "University of Auckland", "Mathematics", "AI product"]) {
     assert.ok(text.toLowerCase().includes(fact.toLowerCase()), `preserve ${fact}`);
   }

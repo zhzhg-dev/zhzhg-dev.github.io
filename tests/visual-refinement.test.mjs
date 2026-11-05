@@ -62,7 +62,8 @@ test("About introduces Grant and owns personal background without turning into a
   const html = renderAt(App, { page: "home" });
   const text = plainText(html);
   assertPersonalBackground(html, { complete: false });
-  for (const fact of ["Grant", "Zhang", "Master of Information Technology", "Graduate Teaching Assistant", "University of Auckland", "Auckland", "AI product", "Mathematics"]) assert.ok(text.includes(fact));
+  for (const fact of ["Grant", "Master of Information Technology", "Graduate Teaching Assistant", "University of Auckland", "Auckland", "AI product", "Mathematics"]) assert.ok(text.includes(fact));
+  assert.doesNotMatch(text, /Grant\s+Zhang/);
   assert.match(text, /game AI/i);
   const images = [...html.matchAll(/<img\b[^>]*>/g)].map(([tag]) => attributes(tag));
   const hero = elements(html, "section").find(section => section.id === "top");

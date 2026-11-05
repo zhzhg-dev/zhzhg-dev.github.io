@@ -4,21 +4,21 @@ import { URL } from "node:url";
 const pages = [
   {
     path: "experience",
-    title: "Experience | Grant Zhang",
+    title: "经历与背景｜Grant",
     description:
-      "Grant Zhang's teaching experience, mathematics foundation, and toolkit for product prototyping, requirements analysis, and model evaluation.",
+      "Grant 的教学经历、教育背景、社区实践与技术工具。",
   },
   {
     path: "projects",
-    title: "Projects | Grant Zhang",
+    title: "项目｜Grant",
     description:
-      "Explore Folio, ExplainLab, electricity forecasting, and other AI, simulation, and software projects by Grant Zhang.",
+      "探索 Folio、ExplainLab、L2R 与新西兰电力预测：从 AI 产品到仿真研究，看看我的思考、实现与验证。",
   },
   {
     path: "contact",
-    title: "Contact | Grant Zhang",
+    title: "联系我｜Grant",
     description:
-      "Connect with Grant Zhang on LinkedIn and GitHub. Based in Auckland, exploring AI products, game AI, and useful software.",
+      "通过 LinkedIn 和 GitHub 联系 Grant。聊聊 AI 产品、游戏 AI、教学，或一个值得一起尝试的想法。",
   },
 ];
 

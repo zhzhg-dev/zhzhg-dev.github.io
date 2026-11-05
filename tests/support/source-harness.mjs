@@ -93,6 +93,7 @@ export function componentHarness(name, props = {}) {
   const pendingEffects = new Set();
   let cursor = 0;
   const hooks = {
+    useContext(context) { return context._currentValue; },
     useState(initial) {
       const index = cursor++;
       if (!slots[index]) slots[index] = { value: typeof initial === "function" ? initial() : initial };

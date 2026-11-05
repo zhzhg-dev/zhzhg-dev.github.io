@@ -45,7 +45,7 @@ export type Education = {
 };
 
 export const profile = {
-  name: "Grant Zhang",
+  name: "Grant",
   alternativeName: "Zhang Zihang",
   headline:
     "I turn ideas into practical AI-enabled products—connecting user needs, working prototypes, and evidence from evaluation.",

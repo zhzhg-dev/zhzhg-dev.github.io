@@ -114,8 +114,8 @@ test("all public page previews share the actual 1200×630 studio artwork and des
     assert.equal(value("og:image:width"), "1200");
     assert.equal(value("og:image:height"), "630");
     for (const key of ["og:image:alt", "twitter:image:alt"]) {
-      assert.match(value(key), /Grant Zhang/);
-      assert.match(value(key), /studio|workspace/i);
+      assert.match(value(key), /Grant/);
+      assert.match(value(key), /studio|workspace|工作室/i);
     }
   }
 });

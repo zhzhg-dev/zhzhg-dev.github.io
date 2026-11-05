@@ -34,12 +34,11 @@ const shareCard = resolve(repository, "public/og-studio.png");
 await sharp({ create: { width: 1200, height: 630, channels: 4, background: "#f7f0e5" } })
   .composite([
     { input: art, left: 400, top: 20 },
-    await textLayer("Grant", "Bricolage Grotesque Bold 104", displayFont, "#30372e", 76, 177),
-    await textLayer("Zhang.", "Bricolage Grotesque Bold 104", displayFont, "#30372e", 76, 281),
-    { input: badge, left: 83, top: 398 },
-    await textLayer("AI product builder", "Onest SemiBold 23", bodyFont, "#ffffff", 98, 410),
-    await textLayer("A mathematical mind.", "Onest 21", bodyFont, "#626753", 82, 478),
-    await textLayer("A builder’s curiosity.", "Onest 21", bodyFont, "#626753", 82, 510),
+    await textLayer("Grant.", "Bricolage Grotesque Bold 104", displayFont, "#30372e", 76, 223),
+    { input: badge, left: 83, top: 350 },
+    await textLayer("AI product builder", "Onest SemiBold 23", bodyFont, "#ffffff", 98, 362),
+    await textLayer("A mathematical mind.", "Onest 21", bodyFont, "#626753", 82, 430),
+    await textLayer("A builder’s curiosity.", "Onest 21", bodyFont, "#626753", 82, 462),
     await textLayer("Auckland, New Zealand", "Onest Medium 13", bodyFont, "#626753", 80, 62),
   ])
   .flatten({ background: "#f7f0e5" }).png({ compressionLevel: 9 }).toFile(shareCard);
