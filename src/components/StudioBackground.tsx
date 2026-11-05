@@ -17,7 +17,7 @@ export function StudioBackground({ compact = false }: { compact?: boolean }) {
   return <div ref={backgroundRoot} className={"studio-background" + (compact ? " studio-background--compact" : "")}>
     <div className="background-journey">
     <section className="background-work" aria-labelledby="work-title">
-      <header className="background-heading"><h2 id="work-title">{t("Work & teaching", "工作与教学")}</h2></header>
+      <header className="background-heading"><h2 id="work-title" tabIndex={-1}>{t("Work & teaching", "工作与教学")}</h2></header>
       <ol className="background-work__list">
         {background.experience.map(role => {
           const current = role.status === "current";
@@ -43,7 +43,7 @@ export function StudioBackground({ compact = false }: { compact?: boolean }) {
     </section>
 
     <section className="background-education" aria-labelledby="education-title">
-      <h2 id="education-title">{t("Education", "教育背景")}</h2>
+      <h2 id="education-title" tabIndex={-1}>{t("Education", "教育背景")}</h2>
       <div className="background-education__list">{background.education.map(item => <article key={item.degree}>
         <p className="background-education__period">{item.period}</p>
         <h3>{item.degree}</h3>
@@ -65,7 +65,7 @@ export function StudioBackground({ compact = false }: { compact?: boolean }) {
     <aside className="background-community" aria-labelledby="community-title">
       <div className="background-community__intro">
         <p className="background-community__label">{t("Volunteering", "志愿活动")}</p>
-        <h2 id="community-title">{background.community.distinction}</h2>
+        <h2 id="community-title" tabIndex={-1}>{background.community.distinction}</h2>
         <p className="background-community__recognition">{background.community.recognition}</p>
         <p className="background-community__overview">{background.community.overview}</p>
       </div>

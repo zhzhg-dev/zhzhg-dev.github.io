@@ -43,6 +43,13 @@ export function StudioHome() {
     selectedButtonRef.current?.focus();
   }
 
+  function openWhiteboard(trigger: HTMLButtonElement) {
+    whiteboardTriggerRef.current = trigger;
+    setSelected(null);
+    resetScene();
+    setWhiteboardOpen(true);
+  }
+
   return <div className="studio-home">
     <section className={`studio-hero${goldenHour ? " studio-hero--golden" : ""}`} id="top" aria-labelledby={titleId} onKeyDown={event => { if (event.key === "Escape" && selected) { event.preventDefault(); closeNote(); } }}>
       <div className="studio-intro">
@@ -50,7 +57,13 @@ export function StudioHome() {
         <h1 id={titleId} translate="no" lang="en" aria-label="Grant">Grant<span className="studio-name-stop">.</span></h1>
         <p className="studio-role">{t("AI product builder", "AI 产品构建者")}</p>
         <p className="studio-intro__copy">{t("A mathematical mind.", "用数学理解问题，")}<br />{" "}{t("A curiosity for what’s possible.", "用好奇心探索可能。")}</p>
-        <a className="studio-intro__link" href="#studio-about">{t("A little about me", "再认识我一点")} <span aria-hidden="true">↓</span></a>
+        <div className="studio-intro__actions">
+          <button className="studio-intro__experiment" type="button" aria-haspopup="dialog" aria-expanded={whiteboardOpen} aria-controls={whiteboardId} onClick={event => openWhiteboard(event.currentTarget)}>
+            <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false"><path d="M2.5 2.5v11h11M5 10c1.4 0 1.5-4 3.5-4 1.5 0 1.8 1.5 3 1.5 1 0 1.5-1.5 2-3"/></svg>
+            {t("Try the whiteboard", "试试白板实验")}
+          </button>
+          <a className="studio-intro__link" href="#studio-about">{t("About me", "关于我")} <span aria-hidden="true">↓</span></a>
+        </div>
       </div>
 
       <div className="studio-scene" onPointerMove={moveScene} onPointerLeave={resetScene}>
@@ -60,7 +73,7 @@ export function StudioHome() {
             <img className="studio-scene__art" src="/studio/grant-cozy-studio-v2.png" width="1448" height="1086" fetchPriority="high" decoding="async" alt={t("An illustrated cozy studio: a developer in a sage jumper at a wooden desk, a screen and mathematical whiteboard, with Auckland’s skyline through an arched window.", "温暖的小工作室插画：穿鼠尾草绿毛衣的开发者坐在木桌前，旁边是屏幕和数学白板，拱形窗外是奥克兰的天际线。")} />
           </picture>
           <div className="studio-hotspots" role="group" aria-label={t("Explore my illustrated workspace", "逛逛我的插画工作室")}>
-            {spots.map(item => <button key={item.id} className={`studio-hotspot studio-hotspot--${item.id}`} type="button" aria-label={item.id === "think" ? t("Try the whiteboard", "试试白板实验") : item.label} aria-haspopup={item.id === "think" ? "dialog" : undefined} aria-pressed={item.id === "think" ? whiteboardOpen : selected === item.id} aria-expanded={item.id === "think" ? whiteboardOpen : selected === item.id} aria-controls={item.id === "think" ? whiteboardId : noteId} onClick={event => { if (item.id === "think") { whiteboardTriggerRef.current = event.currentTarget; setSelected(null); resetScene(); setWhiteboardOpen(true); return; } selectedButtonRef.current = event.currentTarget; setSelected(current => current === item.id ? null : item.id); }}>
+            {spots.map(item => <button key={item.id} className={`studio-hotspot studio-hotspot--${item.id}`} type="button" aria-label={item.id === "think" ? t("Try the whiteboard", "试试白板实验") : item.label} aria-haspopup={item.id === "think" ? "dialog" : undefined} aria-pressed={item.id === "think" ? whiteboardOpen : selected === item.id} aria-expanded={item.id === "think" ? whiteboardOpen : selected === item.id} aria-controls={item.id === "think" ? whiteboardId : noteId} onClick={event => { if (item.id === "think") { openWhiteboard(event.currentTarget); return; } selectedButtonRef.current = event.currentTarget; setSelected(current => current === item.id ? null : item.id); }}>
               <span className="studio-hotspot__dot" aria-hidden="true">+</span><span className="studio-hotspot__label">{item.id === "think" ? t("Try the whiteboard", "试试白板实验") : item.label}</span>
             </button>)}
           </div>

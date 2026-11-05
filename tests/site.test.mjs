@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { access, readFile, readdir } from "node:fs/promises";
 import { resolve } from "node:path";
 import test from "node:test";
-import { loadSource, repository } from "./support/source-harness.mjs";
+import { attributes, elements, loadSource, renderAt, repository } from "./support/source-harness.mjs";
 
 const pages = await Promise.all(["", "experience/", "projects/", "contact/"].map(async path => ({
   path: `/${path}`,
@@ -16,6 +16,7 @@ const componentSources = (await Promise.all((await readdir(new URL("../src/compo
   .map(name => readFile(new URL(`../src/components/${name}`, import.meta.url), "utf8")))).join("\n");
 const dataSource = await readFile(new URL("../src/data/profile.ts", import.meta.url), "utf8");
 const { experience } = loadSource(resolve(repository, "src/data/profile.ts"));
+const { StudioHome } = loadSource(resolve(repository, "src/components/StudioHome.tsx"));
 const workflow = await readFile(new URL("../.github/workflows/deploy.yml", import.meta.url), "utf8");
 
 test("production emits About, Projects and Contact plus the compatible Experience address", () => {
@@ -84,6 +85,29 @@ test("all page outputs retain canonical URLs and light browser metadata", () => 
     assert.match(html, /<html\b[^>]*\blang="en"/);
     assert.match(html, /name="color-scheme"\s+content="light"/);
     assert.equal(html.match(/<link\b[^>]*rel="canonical"[^>]*href="([^"]+)"/)?.[1], `https://zhzhg-dev.github.io${path}`);
+  }
+});
+
+test("only About preloads the exact responsive hero candidate the browser will use", () => {
+  const picture = elements(renderAt(StudioHome), "picture")[0];
+  const source = attributes(picture.markup.match(/<source\b[^>]*>/)[0]);
+  for (const { path, html } of pages) {
+    const imagePreloads = [...html.matchAll(/<link\b[^>]*>/g)]
+      .map(([tag]) => attributes(tag))
+      .filter(link => link.rel === "preload" && link.as === "image");
+    const heroPreloads = imagePreloads.filter(link => `${link.imagesrcset ?? ""} ${link.href ?? ""}`.includes("grant-cozy-studio-v2"));
+    if (path !== "/") {
+      assert.equal(heroPreloads.length, 0, `${path} does not fetch the unused home illustration`);
+      continue;
+    }
+    assert.equal(heroPreloads.length, 1, "the image is discovered exactly once before the React bundle");
+    const [preload] = heroPreloads;
+    assert.equal(preload.type, source.type);
+    assert.equal(preload.imagesrcset, source.srcset);
+    assert.equal(preload.imagesizes, source.sizes);
+    assert.equal(preload.fetchpriority, "high");
+    assert.equal(preload.href, undefined, "no fallback URL that could force a duplicate image request");
+    assert.ok(html.indexOf('data-home-only') < html.indexOf('<script type="module"'));
   }
 });
 

@@ -27,6 +27,7 @@ const homeHtml = await readFile(new URL("../dist/index.html", import.meta.url), 
 for (const page of pages) {
   const pageUrl = `https://zhzhg-dev.github.io/${page.path}/`;
   const html = homeHtml
+    .replace(/^[\t ]*<link\b[^>]*\bdata-home-only\b[^>]*>\r?\n/gm, "")
     .replace(/<title>.*?<\/title>/, `<title>${page.title}</title>`)
     .replace(
       /<meta\s+name="description"\s+content="[^"]*"\s*\/>/,

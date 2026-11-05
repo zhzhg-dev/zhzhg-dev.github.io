@@ -191,6 +191,12 @@ test("valid case hashes render the matching full evidence and malformed hashes l
     assert.ok(elements(dialog.markup, "p").some(p => p.id === dialog["aria-describedby"]));
     const figure = elements(dialog.markup, "figure")[0];
     assert.ok(figure, "the case shows the actual image separately from its editorial cover");
+    const actionLinks = elements(dialog.markup, "a");
+    assert.deepEqual(actionLinks.map(link => link.href), [project.liveUrl, project.sourceUrl].filter(Boolean));
+    for (const link of actionLinks) {
+      assert.ok(dialog.markup.indexOf(link.markup) > dialog.markup.indexOf('class="studio-case__summary"'));
+      assert.ok(dialog.markup.indexOf(link.markup) < dialog.markup.indexOf(figure.markup), "the case action appears before the evidence image");
+    }
     if (/^Abstract\b/i.test(project.coverAlt)) {
       assert.doesNotMatch(figure.text, /Actual interface|this screenshot/);
     }

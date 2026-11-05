@@ -63,9 +63,9 @@ body.studio-case-open { overflow: hidden; }
 .studio-case__overview p { margin-block: 10px 22px; }
 .studio-case__technologies { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 27px; }
 .studio-case__technologies > li { padding: 7px 11px; border-radius: 20px; background: #eee4d6; font-size: 11px; line-height: 1.4; color: #625645; }
-.studio-case__body > .studio-project-links { margin-top: 23px; }
-.studio-case__body .studio-project-links > a { min-height: 44px; padding: 9px 18px; border-radius: 24px; background: var(--studio-blue, #294d76); color: #fff; font-size: 12px; text-decoration: none; }
-.studio-case__body .studio-project-links > a:hover { background: #173b65; }
+.studio-case__intro > .studio-project-links { margin-top: 18px; }
+.studio-case__intro .studio-project-links > a { min-height: 44px; padding: 9px 18px; border-radius: 24px; background: var(--studio-blue, #294d76); color: #fff; font-size: 12px; text-decoration: none; }
+.studio-case__intro .studio-project-links > a:hover { background: #173b65; }
 .studio-case__empty { padding: 20px 26px; }
 
 @media (max-width: 960px) {

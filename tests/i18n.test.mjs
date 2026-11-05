@@ -122,6 +122,23 @@ for (const page of Object.keys(pageCopy)) {
   }
 }
 
+test("only Experience has a bilingual index with real, keyboard-focusable section targets", () => {
+  for (const [language, label, links] of [
+    ["en", "On this page", ["Work & teaching", "Courses & honours", "Volunteering"]],
+    ["zh", "本页导航", ["工作与教学", "课程与荣誉", "志愿活动"]],
+  ]) {
+    const html = renderPage("experience", language);
+    const index = elements(html, "nav").find(nav => nav.class === "experience-index");
+    assert.ok(index);
+    assert.equal(index["aria-label"], label);
+    const anchors = ["work-title", "education-title", "community-title"];
+    assert.deepEqual(elements(index.markup, "a").map(link => [link.href, link.text.replace(/\s*↓$/, "")]),
+      anchors.map((id, i) => [`#${id}`, links[i]]));
+    for (const id of anchors) assert.equal(elements(html, "h2").find(heading => heading.id === id)?.tabindex, "-1");
+    for (const page of ["home", "projects", "contact"]) assert.doesNotMatch(renderPage(page, language), /class="experience-index"/);
+  }
+});
+
 test("the Tencent internship is scheduled in both languages and only the teaching assistant is current", () => {
   const expectedCopy = {
     en: { employer: "Tencent / LIGHTSPEED STUDIOS", title: "Game AI Product Management Intern", start: "Scheduled to start 16 Nov 2026", location: "Auckland, New Zealand.", scope: /generative AI.*agents.*product requirements/i, teaching: "Graduate Teaching Assistant", end: "Jul 2026 — 16 Nov 2026 (scheduled end)" },

@@ -42,7 +42,7 @@ function button(nodes, label) {
   return found;
 }
 
-test("only About owns a closed, labelled whiteboard dialog and its dedicated board trigger", () => {
+test("only About owns a closed, labelled whiteboard dialog with a visible action and a scene trigger", () => {
   const html = renderAt(App, { page: "home" });
   const dialogs = elements(html, "dialog");
   assert.equal(dialogs.length, 1);
@@ -56,6 +56,12 @@ test("only About owns a closed, labelled whiteboard dialog and its dedicated boa
   assert.equal(trigger["aria-haspopup"], "dialog");
   assert.equal(trigger["aria-controls"], lab.id);
   assert.equal(trigger["aria-expanded"], "false");
+  const visibleTrigger = elements(html, "button").find(item => item.class === "studio-intro__experiment");
+  assert.ok(visibleTrigger);
+  assert.equal(visibleTrigger.text, "Try the whiteboard");
+  assert.equal(visibleTrigger["aria-haspopup"], "dialog");
+  assert.equal(visibleTrigger["aria-controls"], lab.id);
+  assert.equal(visibleTrigger["aria-expanded"], "false");
   for (const page of ["experience", "contact"]) assert.equal(elements(renderAt(App, { page }), "dialog").length, 0);
   assert.doesNotMatch(renderAt(App, { page: "projects" }), /Close whiteboard experiment|whiteboard-lab/);
   assert.equal(elements(html, "h1").length, 1);
@@ -66,7 +72,7 @@ test("the board hotspot opens only the experiment while the personal note stays 
   try {
     let nodes = treeNodes(fixture.render());
     const trigger = { focus() {} };
-    const board = button(nodes, "Try the whiteboard");
+    const board = nodes.find(node => node.props.className?.includes("studio-hotspot--think"));
     board.props.onClick({ currentTarget: trigger });
     nodes = treeNodes(fixture.render());
     const experiment = nodes.find(node => node.type?.name === "WhiteboardExperiment");
@@ -74,13 +80,29 @@ test("the board hotspot opens only the experiment while the personal note stays 
     assert.equal(experiment.props.open, true);
     assert.equal(experiment.props.returnFocusRef.current, trigger);
     assert.equal(nodes.find(node => node.type === "aside").props.hidden, true);
-    const selected = button(nodes, "Try the whiteboard");
+    const selected = nodes.find(node => node.props.className?.includes("studio-hotspot--think"));
     assert.equal(selected.props["aria-expanded"], true);
     assert.equal(selected.props["aria-pressed"], true);
     assert.equal(selected.props["aria-controls"], experiment.props.id);
     experiment.props.onClose();
     nodes = treeNodes(fixture.render());
     assert.equal(nodes.find(node => node.type?.name === "WhiteboardExperiment").props.open, false);
+  } finally { fixture.dispose(); }
+});
+
+test("the visible whiteboard action uses the same experiment and restores focus to its own trigger", () => {
+  const fixture = componentHarness("StudioHome");
+  try {
+    let nodes = treeNodes(fixture.render());
+    const trigger = { focus() {} };
+    const visibleButton = nodes.find(node => node.props.className === "studio-intro__experiment");
+    visibleButton.props.onClick({ currentTarget: trigger });
+    nodes = treeNodes(fixture.render());
+    const experiment = nodes.find(node => node.type?.name === "WhiteboardExperiment");
+    assert.equal(experiment.props.open, true);
+    assert.equal(experiment.props.returnFocusRef.current, trigger);
+    assert.equal(nodes.find(node => node.props.className === "studio-intro__experiment").props["aria-expanded"], true);
+    assert.equal(nodes.find(node => node.type === "aside").props.hidden, true);
   } finally { fixture.dispose(); }
 });
 

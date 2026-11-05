@@ -173,7 +173,12 @@ export function StudioProjects({ projects }: { projects: Project[] }) {
     <dialog className="studio-case" ref={dialogRef} id={dialogId} aria-labelledby={titleId} aria-describedby={selectedProject ? descriptionId : undefined} onCancel={event => { event.preventDefault(); closeCase(); }} onClose={() => { if (selectedSlug && !dialogRef.current?.open) closeCase(); }} onClick={closeOnBackdrop} onKeyDown={keepFocusInside}>
       <div className="studio-case__header"><p>{selectedProject?.status ?? t("Project details", "项目详情")}</p><div className="studio-dialog-actions"><LanguageSwitch /><button ref={closeRef} type="button" className="studio-case__close" onClick={closeCase}><span aria-hidden="true">×</span>{t("Close case study", "关闭项目详情")}</button></div></div>
       {selectedProject ? <>
-        <div className="studio-case__intro"><h2 id={titleId} translate="no">{selectedProject.title}</h2><p className="studio-case__category">{selectedProject.eyebrow}</p><p className="studio-case__summary" id={descriptionId}>{selectedProject.shortDescription ?? selectedProject.description}</p></div>
+        <div className="studio-case__intro">
+          <h2 id={titleId} translate="no">{selectedProject.title}</h2>
+          <p className="studio-case__category">{selectedProject.eyebrow}</p>
+          <p className="studio-case__summary" id={descriptionId}>{selectedProject.shortDescription ?? selectedProject.description}</p>
+          {(selectedProject.liveUrl || selectedProject.sourceUrl) && <ProjectLinks project={selectedProject} />}
+        </div>
         {selectedProject.caseStudy && <div className="studio-case__context"><section><h3>{t("The problem", "想解决的问题")}</h3><p>{selectedProject.caseStudy.problem}</p></section><section><h3>{t("My work", "我做了什么")}</h3><p>{selectedProject.caseStudy.contribution}</p></section></div>}
         <figure className="studio-case__figure"><img className="studio-case__image" src={selectedProject.cover} alt={selectedProject.coverAlt} width={selectedProject.coverWidth ?? 1280} height={selectedProject.coverHeight ?? 720} decoding="async" /><figcaption>{selectedProject.coverCaption ?? (selectedProject.featured ? t("Actual interface. The gallery cover is an edited crop of this screenshot.", "真实界面截图。项目封面是在此截图基础上裁切编排而成。") : /abstract/i.test(selectedProject.coverAlt) ? t("Project illustration, not a screenshot of a deployed product.", "项目主题插画，不是已部署产品的界面截图。") : t("Actual interface screenshot.", "真实界面截图。"))}</figcaption></figure>
         <div className="studio-case__body">
@@ -184,7 +189,6 @@ export function StudioProjects({ projects }: { projects: Project[] }) {
             <details className="studio-case__overview"><summary>{t("Full project overview", "完整项目介绍")}</summary><p>{selectedProject.description}</p></details>
           </> : <>{selectedProject.shortDescription && <p>{selectedProject.description}</p>}{selectedProject.decision && <section className="studio-case__decision"><h3>{selectedProject.decisionTitle ?? t("A design decision", "一个设计选择")}</h3><p>{selectedProject.decision}</p></section>}</>}
           <ul className="studio-case__technologies" aria-label={t(`${selectedProject.title} technologies`, `${selectedProject.title} 技术栈`)}>{selectedProject.technologies.map(technology => <li key={technology} translate="no">{technology}</li>)}</ul>
-          <ProjectLinks project={selectedProject} />
         </div>
       </> : <h2 className="studio-case__empty" id={titleId}>{t("Project details", "项目详情")}</h2>}
     </dialog>

@@ -45,6 +45,7 @@
 .studio-about-display .studio-now a:hover { color: #2d4322; text-decoration-thickness: 2px; }
 .studio-about-display a:focus-visible { outline: 2px solid #405333; outline-offset: 6px; border-radius: 3px; }
 @media (max-width: 760px) {
+  .studio-about-display .studio-about { scroll-margin-top: 144px; }
   .studio-about-display .studio-about,
   .studio-about-display .studio-now { width: calc(100% - 48px); }
   .studio-about-display .studio-about { grid-template-columns: minmax(0, 1fr); gap: 28px; padding: 58px 0 49px; }

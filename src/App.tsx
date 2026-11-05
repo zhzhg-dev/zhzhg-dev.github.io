@@ -35,7 +35,22 @@ function Header({ page }: { page: PageName }) {
 
 function ExperiencePage() {
   const { t } = useLanguage();
-  return <><section className="studio-page-heading" id="top"><p>{t("About", "关于我")}</p><h1>{t("Work & background.", "经历与来路。")}</h1><p>{t("From a local newsroom to computing labs and graduate study.", "从地方新闻采编，到计算机教学与研究生学习。")}</p></section><StudioBackground /></>;
+  const sections = [
+    { id: "work-title", label: t("Work & teaching", "工作与教学") },
+    { id: "education-title", label: t("Courses & honours", "课程与荣誉") },
+    { id: "community-title", label: t("Volunteering", "志愿活动") },
+  ];
+  return <>
+    <section className="studio-page-heading" id="top">
+      <p>{t("About", "关于我")}</p>
+      <h1>{t("Work & background.", "经历与来路。")}</h1>
+      <p>{t("From a local newsroom to computing labs and graduate study.", "从地方新闻采编，到计算机教学与研究生学习。")}</p>
+      <nav className="experience-index" aria-label={t("On this page", "本页导航")}>
+        <ul>{sections.map(({ id, label }) => <li key={id}><a href={`#${id}`}>{label}<span aria-hidden="true">↓</span></a></li>)}</ul>
+      </nav>
+    </section>
+    <StudioBackground />
+  </>;
 }
 
 function ContactPage() {
