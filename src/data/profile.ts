@@ -165,6 +165,7 @@ export const projects: Project[] = [
     cover: "/projects/folio.png",
     coverAlt:
       "Folio comparison workspace with linked sources, evidence review status, and a decision brief action",
+    coverCaption: "Actual Folio interface: the comparison workspace with source-linked evidence.",
     coverWidth: 1440,
     coverHeight: 1000,
     coverPosition: "top",
@@ -353,6 +354,7 @@ export const projects: Project[] = [
     title: "Course Review & Campus Platform",
     eyebrow: "Full-stack team application",
     status: "Live demo",
+    cardSummary: "Browse course information and campus discussions.",
     description:
       "A MERN-platform for browsing university course information and campus discussions. My contribution focused on backend APIs, MongoDB integration, keyword search, course sorting, deployment support, and map links.",
     technologies: ["React", "Node.js", "Express", "MongoDB", "REST APIs"],
@@ -368,6 +370,7 @@ export const projects: Project[] = [
     title: "Svelte Study Planner",
     eyebrow: "Browser-based application",
     status: "Live demo",
+    cardSummary: "Plan study tasks and see what’s left at a glance.",
     description:
       "A focused study-planning application for creating, filtering, and completing tasks with progress summaries and local browser persistence—responsive, fast, and backend-free.",
     technologies: ["SvelteKit", "JavaScript", "localStorage", "Responsive UI"],
@@ -383,6 +386,7 @@ export const projects: Project[] = [
     title: "Rumour Propagation Simulation",
     eyebrow: "Undergraduate research project",
     status: "Undergraduate thesis",
+    cardSummary: "A cellular automata model of how rumours spread.",
     description:
       "A study of how rumours spread through heterogeneous cellular automata, connecting mathematical modelling with social and computational systems.",
     technologies: [

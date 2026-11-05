@@ -43,7 +43,7 @@ function ProjectLinks({ project }: { project: Project }) {
 }
 
 export function StudioProjects({ projects }: { projects: Project[] }) {
-  const { language, t, href } = useLanguage();
+  const { language, t } = useLanguage();
   const localizedProjects = useMemo(() => localizeProjects(projects, language), [projects, language]);
   const [selectedSlug, setSelectedSlug] = useState<string | null>(() => projectFromHash(projects));
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -57,6 +57,8 @@ export function StudioProjects({ projects }: { projects: Project[] }) {
   const descriptionId = useId();
   const dialogId = `${titleId}-case`;
   const selectedProject = localizedProjects.find(project => project.slug === selectedSlug);
+  const spotlight = localizedProjects.find(project => project.slug === "folio");
+  const gallery = localizedProjects.filter(project => project !== spotlight);
 
   useEffect(() => {
     const restore = () => {
@@ -155,20 +157,44 @@ export function StudioProjects({ projects }: { projects: Project[] }) {
     else if (!event.shiftKey && event.target === last) { event.preventDefault(); first.focus(); }
   }
 
+  function renderCaseTrigger(project: Project, fullScreenshot = false) {
+    return <button className={`studio-project-card__cover${fullScreenshot ? " studio-project-card__cover--spotlight" : ""}`} type="button"
+      ref={element => { if (element) triggerRefs.current.set(project.slug, element); else triggerRefs.current.delete(project.slug); }}
+      aria-label={t(`Explore ${project.title} case study`, `查看 ${project.title} 项目详情`)}
+      aria-haspopup="dialog" aria-controls={dialogId} onClick={event => openCase(project, event)}>
+      {fullScreenshot
+        ? <img src={project.cover} alt={project.coverAlt} width={project.coverWidth ?? 1280} height={project.coverHeight ?? 720} loading="eager" fetchPriority="high" decoding="async" />
+        : <ProjectCover project={project} />}
+      <span className="studio-project-card__explore" aria-hidden="true">{fullScreenshot ? t("Read case study", "阅读案例") : t("Explore project", "了解这个项目")}<span>↗</span></span>
+    </button>;
+  }
+
   return <section className="studio-projects" id="top" aria-labelledby="studio-projects-title">
     <header className="studio-projects__heading"><p className="studio-projects__label">{t("Selected", "认真做过的事")}</p><h1 id="studio-projects-title">{t("Projects", "项目与探索")}</h1><p className="studio-projects__hint">{t("Open a cover to explore the thinking behind the work.", "点开封面，看看每个项目背后的问题、选择与思考。")}</p></header>
-    <div className="studio-projects__grid">
-      {localizedProjects.map((project, index) => <article className={`studio-project-card studio-project-card--${project.slug}`} id={project.slug} key={project.slug} aria-labelledby={`${project.slug}-title`}>
-        <button className="studio-project-card__cover" type="button" ref={element => { if (element) triggerRefs.current.set(project.slug, element); else triggerRefs.current.delete(project.slug); }} aria-label={t(`Explore ${project.title} case study`, `查看 ${project.title} 项目详情`)} aria-haspopup="dialog" aria-controls={dialogId} onClick={event => openCase(project, event)}>
-          <ProjectCover project={project} index={index} />
-          <span className="studio-project-card__explore" aria-hidden="true">{t("Explore project", "了解这个项目")}<span>↗</span></span>
-        </button>
-        <h2 id={`${project.slug}-title`} translate="no">{project.title}</h2>
-        <p className="studio-project-card__subtitle">{project.cardSummary ?? project.shortDescription ?? project.eyebrow}</p>
-        <ProjectLinks project={project} />
-      </article>)}
-      <a className="studio-project-invite" href={href("/contact/")}><span className="studio-project-invite__image" aria-hidden="true">+</span><span className="studio-project-invite__title">{t("Have an idea?", "有个想法？")}</span><span className="studio-project-invite__copy">{t("Let’s compare notes.", "一起聊聊吧。")}</span></a>
-    </div>
+    {spotlight && <article className="studio-project-card studio-project-card--folio studio-project-card--spotlight" id={spotlight.slug} aria-labelledby={`${spotlight.slug}-title`}>
+      {renderCaseTrigger(spotlight, true)}
+      <div className="studio-spotlight__copy">
+        <p className="studio-spotlight__eyebrow">{t("Featured case", "精选案例")}</p>
+        <h2 id={`${spotlight.slug}-title`} translate="no">{spotlight.title}</h2>
+        <p className="studio-spotlight__summary">{spotlight.cardSummary ?? spotlight.shortDescription ?? spotlight.eyebrow}</p>
+        {spotlight.decision && <p className="studio-spotlight__decision">{spotlight.decision}</p>}
+        <div className="studio-spotlight__actions">
+          <p className="studio-spotlight__status">{spotlight.status}</p>
+          <ProjectLinks project={spotlight} />
+        </div>
+      </div>
+    </article>}
+    {gallery.length > 0 && <section className="studio-projects__gallery" aria-labelledby="project-gallery-title">
+      <h2 id="project-gallery-title">{spotlight ? t("More projects", "更多项目") : t("Project gallery", "项目展区")}</h2>
+      <div className="studio-projects__grid">
+        {gallery.map(project => <article className={`studio-project-card studio-project-card--${project.slug}`} id={project.slug} key={project.slug} aria-labelledby={`${project.slug}-title`}>
+          {renderCaseTrigger(project)}
+          <h3 id={`${project.slug}-title`} translate="no">{project.title}</h3>
+          <p className="studio-project-card__subtitle">{project.cardSummary ?? project.shortDescription ?? project.eyebrow}</p>
+          <ProjectLinks project={project} />
+        </article>)}
+      </div>
+    </section>}
     <StudioToolkit />
     <dialog className="studio-case" ref={dialogRef} id={dialogId} aria-labelledby={titleId} aria-describedby={selectedProject ? descriptionId : undefined} onCancel={event => { event.preventDefault(); closeCase(); }} onClose={() => { if (selectedSlug && !dialogRef.current?.open) closeCase(); }} onClick={closeOnBackdrop} onKeyDown={keepFocusInside}>
       <div className="studio-case__header"><p>{selectedProject?.status ?? t("Project details", "项目详情")}</p><div className="studio-dialog-actions"><LanguageSwitch /><button ref={closeRef} type="button" className="studio-case__close" onClick={closeCase}><span aria-hidden="true">×</span>{t("Close case study", "关闭项目详情")}</button></div></div>

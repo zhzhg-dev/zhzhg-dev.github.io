@@ -28,6 +28,7 @@ export const projectTranslations: Record<string, ProjectTranslation> = {
     decisionTitle: "是否通过审核，始终由人决定",
     decision: "资料更新会把受影响的发现标记为待审核，不会悄悄改写结论，也不会自动将其标为已核实。",
     coverAlt: "Folio 比较工作台，展示关联资料、证据审核状态和决策简报操作",
+    coverCaption: "Folio 的真实界面：在同一个工作台中比较方案，并查看关联的原始证据。",
   },
   explainlab: {
     eyebrow: "交互式系统 · 学习体验",
@@ -101,18 +102,21 @@ export const projectTranslations: Record<string, ProjectTranslation> = {
   "course-review-system": {
     eyebrow: "全栈团队应用",
     status: "在线演示",
+    cardSummary: "查找课程信息，浏览校园讨论。",
     description: "一个使用 MERN 技术栈的大学课程信息与校园讨论平台。我的贡献集中在后端 API、MongoDB 集成、关键词搜索、课程排序、部署支持和地图链接。",
     coverAlt: "Course Review System 在线演示首页",
   },
   "svelte-study-planner": {
     eyebrow: "浏览器端应用",
     status: "在线演示",
+    cardSummary: "整理学习任务，随时查看进度。",
     description: "一个专注的学习计划工具，支持创建、筛选和完成任务，提供进度汇总与浏览器本地保存。适配不同屏幕，轻量且无需后端。",
     coverAlt: "Svelte Study Planner 在线演示仪表盘",
   },
   "rumour-propagation": {
     eyebrow: "本科研究项目",
     status: "本科毕业论文",
+    cardSummary: "用异质元胞自动机模拟谣言传播。",
     description: "研究谣言如何在异质元胞自动机中传播，将数学建模与社会、计算系统相连接。",
     coverAlt: "展示不均匀传播波的抽象元胞自动机网格",
     coverCaption: "项目主题插画，不是已部署产品的界面截图。",

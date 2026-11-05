@@ -23,7 +23,7 @@ test("L2R updates its existing project and deep link with a completed research m
   assert.equal(project.sourceUrl, sourceUrl);
   assert.equal(project.liveUrl, undefined, "a team repository is not a public live racing demo");
   assert.ok(project.caseStudy && project.cardSummary);
-  assert.notEqual(project.featured, true, "the first three editorial screenshot covers remain a separate design choice");
+  assert.notEqual(project.featured, true, "the selected product screenshots remain a separate design choice");
   assert.ok(existsSync(resolve(repository, "public", project.cover.replace(/^\//, ""))));
   const text = JSON.stringify(project);
   assert.doesNotMatch(text, /Research in progress|Model Predictive Control|Imitation learning|warm-start|"MPC"/i);

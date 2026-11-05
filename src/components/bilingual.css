@@ -65,7 +65,7 @@
 .studio-site[data-language="zh"] .studio-contact-page h1,
 .studio-site[data-language="zh"] .studio-page-heading h1 { font-size: clamp(43px, 5vw, 66px); }
 .studio-site[data-language="zh"] .studio-projects__heading > .studio-projects__label { font-family: inherit; font-size: 13px; font-weight: 500; line-height: 1.5; }
-.studio-site[data-language="zh"] .studio-project-card h2 { font-family: var(--font-display); font-weight: 650; line-height: 1.2; letter-spacing: -.02em; }
+.studio-site[data-language="zh"] .studio-project-card > h3[translate="no"] { font-family: var(--font-display); font-weight: 650; line-height: 1.2; letter-spacing: -.02em; }
 .studio-site[data-language="zh"] .studio-project-card__subtitle { line-height: 1.9; }
 .studio-site[data-language="zh"] .contact h2 { font-size: clamp(30px, 3.5vw, 45px); }
 .studio-site[data-language="zh"] .studio-note p,

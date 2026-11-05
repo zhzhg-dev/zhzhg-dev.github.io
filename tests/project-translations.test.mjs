@@ -3,7 +3,7 @@ import { resolve } from "node:path";
 import test from "node:test";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { loadSource, repository, plainText, elements, attributes, treeNodes, treeText, withGlobals } from "./support/source-harness.mjs";
+import { loadSource, repository, elements, attributes, treeNodes, treeText, withGlobals } from "./support/source-harness.mjs";
 
 const cache = new Map();
 const { projects } = loadSource(resolve(repository, "src/data/profile.ts"), undefined, cache);
@@ -97,10 +97,11 @@ test("the real language provider renders all seven cards, descriptive labels and
     const cards = elements(html, "article");
     assert.equal(cards.length, 7);
     assert.equal(elements(html, "h1")[0].text, language === "zh" ? "项目与探索" : "Projects");
+    assert.equal(elements(html, "h2").find(heading => heading.id === "project-gallery-title")?.text, language === "zh" ? "更多项目" : "More projects");
     for (const project of data) {
       const card = cards.find(card => card.id === project.slug);
       assert.ok(card.text.includes(project.title));
-      assert.ok(card.text.includes(project.cardSummary ?? project.shortDescription ?? project.eyebrow));
+      if (project.slug !== "folio") assert.ok(card.text.includes(project.cardSummary ?? project.shortDescription ?? project.eyebrow));
       const trigger = elements(card.markup, "button")[0];
       assert.equal(trigger["aria-label"], language === "zh" ? `查看 ${project.title} 项目详情` : `Explore ${project.title} case study`);
       assert.equal(trigger["aria-haspopup"], "dialog");
@@ -114,10 +115,7 @@ test("the real language provider renders all seven cards, descriptive labels and
         if (language === "zh") assert.ok(hasChinese(link["aria-label"]));
       }
     }
-    const invitation = elements(html, "a").find(link => link.href === `/contact/?lang=${language}`);
-    assert.ok(invitation);
-    assert.ok(invitation.text.includes(language === "zh" ? "有个想法？" : "Have an idea?"));
-    assert.ok(plainText(html).includes(language === "zh" ? "让证据始终在身边。" : "Keep the evidence close."));
+    assert.doesNotMatch(html, /studio-project-invite|project-cover--folio/);
     assert.equal(elements(cards.find(card => card.id === "folio").markup, "a").some(link => link.text.includes(language === "zh" ? "在线体验" : "Live demo")), false);
   }
 });

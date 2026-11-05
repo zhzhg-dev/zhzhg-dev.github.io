@@ -129,22 +129,36 @@ test("Contact has actual professional destinations and no invented address, form
   assert.doesNotMatch(html, /<form\b|<input\b|<textarea\b|mailto:|@gmail\.com|studio-project-card/);
 });
 
-test("Projects owns all seven covers with accessible case triggers and explicit external actions", () => {
+test("Projects leads with a single Folio spotlight and six gallery covers, with accessible case triggers and external actions", () => {
   const html = renderAt(App, { page: "projects" });
   const cards = elements(html, "article");
   assert.equal(projects.length, 7);
   assert.equal(cards.length, projects.length);
+  const folio = cards.find(card => card.id === "folio");
+  const grid = elements(html, "div").find(item => item.class === "studio-projects__grid");
+  assert.ok(folio?.class?.split(/\s+/).includes("studio-project-card--spotlight"));
+  assert.ok(grid, "the remaining projects share a gallery");
+  assert.ok(html.indexOf(folio.markup) < html.indexOf(grid.markup), "the spotlight is before, not part of, the gallery");
+  const galleryTitle = elements(html, "h2").find(heading => heading.id === "project-gallery-title");
+  assert.equal(galleryTitle?.text, "More projects");
+  assert.ok(html.indexOf(galleryTitle.markup) < html.indexOf(grid.markup));
+  assert.deepEqual(elements(grid.markup, "article").map(card => card.id), projects.filter(project => project.slug !== "folio").map(project => project.slug));
+  assert.doesNotMatch(grid.markup, /studio-project-invite/);
   assert.equal(elements(html, "dialog").length, 1, "one native dialog hosts the selected case");
   const dialog = elements(html, "dialog")[0];
   assert.ok(dialog.id);
   assert.ok(dialog["aria-labelledby"]);
   assert.doesNotMatch(dialog.markup.slice(0, dialog.markup.indexOf(">") + 1), /\sopen(?:\s|=|>)/);
-  for (const [index, project] of projects.entries()) {
+  for (const project of projects) {
     const card = cards.find(card => card.id === project.slug);
+    const spotlight = project.slug === "folio";
     assert.ok(card, `${project.title} retains its deep-link identifier`);
-    assert.ok(card.text.includes(project.title));
-    if (project.cardSummary) assert.ok(card.text.includes(project.cardSummary), "the short card summary makes the project understandable before opening");
-    const button = elements(card.markup, "button")[0];
+    const heading = elements(card.markup, spotlight ? "h2" : "h3").find(item => item.id === card["aria-labelledby"]);
+    assert.equal(heading?.text, project.title);
+    if (!spotlight && project.cardSummary) assert.ok(card.text.includes(project.cardSummary), "the short card summary makes the project understandable before opening");
+    const buttons = elements(card.markup, "button");
+    assert.equal(buttons.length, 1);
+    const [button] = buttons;
     assert.equal(button.type, "button");
     assert.equal(button["aria-label"], `Explore ${project.title} case study`);
     assert.equal(button["aria-haspopup"], "dialog");
@@ -155,8 +169,14 @@ test("Projects owns all seven covers with accessible case triggers and explicit 
     assert.equal(image.alt, project.coverAlt);
     assert.equal(Number(image.width), project.coverWidth);
     assert.equal(Number(image.height), project.coverHeight);
-    assert.equal(image.loading, index < 3 ? "eager" : "lazy");
-    if (index < 3) {
+    assert.equal(image.loading, spotlight ? "eager" : "lazy");
+    if (spotlight) {
+      assert.equal(image.fetchpriority, "high");
+      assert.doesNotMatch(button.markup, /project-cover--folio|project-cover__frame/);
+    } else {
+      assert.notEqual(image.fetchpriority, "high");
+    }
+    if (["explainlab", "nz-electricity-forecasting"].includes(project.slug)) {
       assert.ok(button.markup.includes(`project-cover--${project.slug}`));
       assert.match(button.markup, /class="project-cover__frame"/);
       assert.match(button.markup, /aria-hidden="true"/);
@@ -169,10 +189,10 @@ test("Projects owns all seven covers with accessible case triggers and explicit 
       assert.ok(link.rel?.includes("noreferrer"));
     }
   }
-  const folio = cards.find(card => card.id === "folio");
-  assert.ok(elements(folio.markup, "a").some(link => link.href === "https://github.com/zhzhg-dev/folio"));
+  assert.deepEqual(elements(folio.markup, "a").map(link => link.href), ["https://github.com/zhzhg-dev/folio"]);
   assert.doesNotMatch(folio.markup, /Live demo/);
-  assert.ok(elements(html, "a").some(link => link.href === "/contact/" && link.text.includes("Have an idea?")));
+  const contact = elements(html, "section").find(section => section["aria-labelledby"] === "contact-title");
+  assert.ok(elements(contact?.markup ?? "", "a").some(link => link.href === "/contact/" && link.text.includes("Say hello")));
   const ids = [...html.matchAll(/<[a-z][^>]*>/g)].map(([tag]) => attributes(tag).id).filter(Boolean);
   assert.equal(ids.length, new Set(ids).size);
 });
@@ -203,6 +223,8 @@ test("valid case hashes render the matching full evidence and malformed hashes l
     if (project.slug === "folio") {
       assert.ok(dialog.text.includes("Working preview"));
       assert.doesNotMatch(dialog.markup, /Live demo/);
+      assert.match(figure.text, /Actual Folio interface/);
+      assert.doesNotMatch(figure.text, /edited crop/);
     }
   }
   for (const hash of ["", "#not-a-project", "#constructor", "#%E0%A4%A"]) {
@@ -213,7 +235,7 @@ test("valid case hashes render the matching full evidence and malformed hashes l
   }
 });
 
-test("four structured cases expose complete, bounded evidence while three editorial covers and compact fallbacks stay distinct", () => {
+test("four structured cases expose complete, bounded evidence while compact fallbacks stay distinct", () => {
   assert.deepEqual(projects.filter(project => project.caseStudy).map(project => project.slug), ["folio", "explainlab", "nz-electricity-forecasting", "learn-to-race"]);
   assert.deepEqual(projects.filter(project => project.featured).map(project => project.slug), ["folio", "explainlab", "nz-electricity-forecasting"]);
   for (const project of projects) {
