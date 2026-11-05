@@ -6,7 +6,7 @@ import { elements, loadSource, renderAt, repository } from "./support/source-har
 
 const { default: App } = loadSource(resolve(repository, "src/App.tsx"));
 const { StudioBackground } = loadSource(resolve(repository, "src/components/StudioBackground.tsx"));
-const { experience, education, community, communityAwardUrl, skills, projects } = loadSource(resolve(repository, "src/data/profile.ts"));
+const { experience, education, community, skills, projects } = loadSource(resolve(repository, "src/data/profile.ts"));
 
 function openingTag(markup) { return markup.slice(0, markup.indexOf(">") + 1); }
 function isOpen(markup) { return /\sopen(?:\s|=|>)/.test(openingTag(markup)); }
@@ -74,14 +74,24 @@ test("the complete background retains native responsibility details and real edu
   for (const qualification of education) for (const fact of Object.values(qualification)) assert.ok(qualifications.text.includes(fact));
   const note = elements(html, "aside").find(item => item["aria-labelledby"] === "community-title");
   assert.ok(note);
-  assert.equal(elements(note.markup, "h2")[0]?.text, "Volunteering");
-  for (const fact of Object.values(community)) assert.ok(note.text.includes(fact));
-  const awardLink = elements(note.markup, "a").find(link => /^Official award list(?:\s+↗)?$/.test(link.text));
-  assert.ok(awardLink);
-  assert.equal(awardLink.href, communityAwardUrl);
-  assert.match(awardLink.href, /^https:\/\/sxx\.youth\.cn\/[^#]+\.pdf#page=40$/i);
-  assert.equal(awardLink.target, "_blank");
-  assert.match(awardLink.rel, /\b(?:noopener|noreferrer)\b/);
+  assert.deepEqual(elements(note.markup, "h2").map(heading => heading.text), [community.distinction]);
+  assert.ok(note.text.includes("Volunteering"));
+  assert.ok(note.text.includes(community.recognition));
+  assert.match(community.recognition, /2022/);
+  assert.doesNotMatch(community.recognition, /2021/);
+  const reports = elements(note.markup, "article");
+  assert.equal(reports.length, 2);
+  assert.equal(community.entries.length, reports.length);
+  for (const [index, entry] of community.entries.entries()) {
+    const report = reports[index];
+    assert.equal(elements(report.markup, "h3")[0]?.text, entry.title);
+    for (const fact of [entry.organisation, entry.period, entry.description, entry.contribution].filter(Boolean)) assert.ok(report.text.includes(fact));
+    const links = elements(report.markup, "a");
+    assert.equal(links.length, 1);
+    assert.equal(links[0].href, entry.reportUrl);
+    assert.equal(links[0].target, "_blank");
+    assert.match(links[0].rel, /\b(?:noopener|noreferrer)\b/);
+  }
 });
 
 test("all five toolkit groups are directly readable with no fabricated proficiency scores or persistence", () => {

@@ -150,26 +150,41 @@ test("the Tencent internship is scheduled in both languages and only the teachin
   }
 });
 
-test("the bilingual volunteering card keeps the team recognition and links to the official award page", () => {
+test("the bilingual volunteering section leads with the team award and keeps the two official field reports separate", () => {
   const copy = {
-    en: ["Volunteering", "Gesanghua Outreach Team", "School of Mathematics, Southwest Minzu University", "Summer 2022", "National Outstanding Team", "Hongyuan County", "Official award list"],
-    zh: ["志愿活动", "“格桑花”宣讲团", "西南民族大学数学学院", "2022 年暑期", "国家级优秀团队", "红原县", "查看全国优秀团队名单"],
+    en: { category: "Volunteering", honour: "National Outstanding Team", team: "Gesanghua Outreach Team", school: "School of Mathematics, Southwest Minzu University", locations: ["Hongyuan", "Xiangcheng"] },
+    zh: { category: "志愿活动", honour: "国家级优秀团队", team: "格桑花", school: "西南民族大学数学学院", locations: ["红原", "乡城"] },
   };
-  for (const [language, [heading, ...facts]] of Object.entries(copy)) {
+  const reportUrls = ["https://sxxy.swun.edu.cn/info/1052/1327.htm", "https://sxxy.swun.edu.cn/info/1052/1413.htm"];
+  for (const [language, expected] of Object.entries(copy)) {
     for (const page of ["home", "experience"]) {
       const card = elements(renderPage(page, language), "aside").find(note => note["aria-labelledby"] === "community-title");
       assert.ok(card);
-      assert.equal(elements(card.markup, "h2")[0]?.text, heading);
-      for (const fact of facts) assert.ok(card.text.includes(fact), `${language} volunteer card preserves ${fact}`);
+      assert.deepEqual(elements(card.markup, "h2").map(heading => heading.text), [expected.honour]);
+      for (const fact of [expected.category, expected.team, expected.school]) assert.ok(card.text.includes(fact), `${language} preserves ${fact}`);
+      const reports = elements(card.markup, "article");
+      assert.equal(reports.length, 2);
+      assert.deepEqual(elements(card.markup, "a").map(link => link.href), reportUrls);
+      for (const [index, report] of reports.entries()) {
+        const year = [2022, 2021][index];
+        assert.match(report.text, new RegExp(`\\b${year}\\b`));
+        assert.ok(report.text.includes(expected.locations[index]));
+        assert.equal(elements(report.markup, "h3").length, 1);
+        const links = elements(report.markup, "a");
+        assert.deepEqual(links.map(link => [link.href, link.target]), [[reportUrls[index], "_blank"]]);
+      }
+      assert.ok(!reports[1].text.includes(expected.honour), "the earlier 2021 trip is not attributed the 2022 team award");
       if (language === "zh") {
-        assert.match(card.text, /科普入红原\s+奋斗向未来/);
-        for (const phrase of ["科普宣讲", "数学知识", "全程参与", "协调队员分工"]) assert.ok(card.text.includes(phrase));
-      } else for (const phrase of ["mathematics", "every programme activity", "coordinate"]) assert.ok(card.text.includes(phrase));
+        for (const fact of ["科普", "全程", "宣传部", "撰写"]) assert.ok(reports[0].text.includes(fact), `2022 report preserves ${fact}`);
+        assert.doesNotMatch(reports[1].text, /撰写|执笔/);
+      } else {
+        assert.match(reports[0].text, /mathematics|science outreach/i);
+        assert.match(reports[0].text, /publicity|communications/i);
+        assert.match(reports[0].text, /wrote|authored/i);
+        assert.doesNotMatch(reports[1].text, /wrote|authored/i);
+      }
+      assert.doesNotMatch(card.text, /Official award list|查看全国优秀团队名单|party history|ideological education|党史|思想政治|政治学习/i);
       assert.doesNotMatch(card.text, /led the team|won an individual award|获个人奖项|带领团队/i);
-      const link = elements(card.markup, "a").find(item => item.text.replace(/\s*↗$/, "") === facts.at(-1));
-      assert.ok(link);
-      assert.equal(link.href, "https://sxx.youth.cn/zytz/hdgg/202301/W020230104379084972171.pdf#page=40");
-      assert.equal(link.target, "_blank");
     }
   }
 });

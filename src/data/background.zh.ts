@@ -1,4 +1,4 @@
-import type { Education, Experience } from "./profile";
+import { communityReportUrls, type Community, type Education, type Experience } from "./profile";
 
 // Localised copy only. Dates, roles, qualifications and contribution boundaries
 // mirror the verified English record in profile.ts.
@@ -62,11 +62,27 @@ export const backgroundZh = {
     { category: "开发工具", items: ["Git", "GitHub Actions", "Docker", "VS Code", "Postman"] },
   ],
   community: {
-    title: "“格桑花”宣讲团",
-    organisation: "西南民族大学数学学院",
-    period: "2022 年暑期",
     distinction: "国家级优秀团队",
-    description: "在暑期“三下乡”社会实践中，我们赴四川红原县开展“科普入红原 奋斗向未来”活动，通过科普宣讲把数学知识带进高原牧区。",
-    contribution: "我全程参与各项活动，包括科普宣讲和现场志愿服务，并协助指导老师安排活动流程、协调队员分工。",
-  },
+    recognition: "2022 年红原实践团队获全国暑期社会实践优秀团队表彰。",
+    overview: "两年暑期，我和同学为川西偏远地区的孩子上课，到草原协助牧民，也参与科研基地的现场工作。",
+    entries: [
+      {
+        id: "hongyuan",
+        title: "红原县数学科普",
+        organisation: "西南民族大学数学学院 · “格桑花”宣讲团",
+        period: "2022 年暑期",
+        description: "我们赴红原县开展科普宣讲，把数学知识带进高原牧区。",
+        contribution: "我全程参与活动，并以数学学院学生会宣传部负责人的身份撰写了学院发布的红原实践报道。",
+        reportUrl: communityReportUrls.hongyuan,
+      },
+      {
+        id: "xiangcheng",
+        title: "乡城县暑期实践",
+        organisation: "西南民族大学数学学院",
+        period: "2021 年暑期",
+        description: "我随数学学院赴四川甘孜州乡城县，与同学一起参与当地的暑期帮扶活动。",
+        reportUrl: communityReportUrls.xiangcheng,
+      },
+    ],
+  } satisfies Community,
 };

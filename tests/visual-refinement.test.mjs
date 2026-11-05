@@ -23,7 +23,12 @@ function assertPersonalBackground(html, { complete = true } = {}) {
   for (const item of data.education) {
     for (const fact of [item.degree, item.institution, item.period, item.detail]) assert.ok(text.includes(fact));
   }
-  for (const fact of Object.values(data.community)) assert.ok(text.includes(fact));
+  const { distinction, recognition, entries } = data.community;
+  assert.ok(text.includes(distinction));
+  assert.ok(text.includes(recognition));
+  for (const entry of entries) {
+    for (const fact of [entry.title, entry.organisation, entry.period, entry.description, entry.contribution].filter(Boolean)) assert.ok(text.includes(fact));
+  }
   for (const group of data.skills) {
     assert.ok(text.includes(group.category));
     for (const skill of group.items) assert.ok(text.includes(skill));

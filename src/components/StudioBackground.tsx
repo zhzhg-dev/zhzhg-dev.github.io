@@ -1,4 +1,5 @@
-import { community, communityAwardUrl, education, experience, skills } from "../data/profile";
+import { useEffect, useRef } from "react";
+import { community, education, experience, skills } from "../data/profile";
 import { backgroundZh } from "../data/background.zh";
 import { useLanguage } from "../i18n";
 import "./studio-background.css";
@@ -6,6 +7,12 @@ import "./studio-background.css";
 export function StudioBackground({ compact = false }: { compact?: boolean }) {
   const { language, t, href } = useLanguage();
   const background = language === "zh" ? backgroundZh : { community, education, experience, skills };
+  const communityCard = useRef<HTMLElement>(null);
+  useEffect(() => {
+    if (window.location.hash === "#community-title") {
+      communityCard.current?.scrollIntoView({ behavior: "instant", block: "start" });
+    }
+  }, []);
   return <div className={"studio-background" + (compact ? " studio-background--compact" : "")}>
     <div className="background-journey">
     <section className="background-work" aria-labelledby="work-title">
@@ -37,18 +44,22 @@ export function StudioBackground({ compact = false }: { compact?: boolean }) {
       <div className="background-toolkit__list">{background.skills.map((group, index) => <article key={index}><h3>{group.category}</h3><ul>{group.items.map(item => <li key={item}>{item}</li>)}</ul></article>)}</div>
     </section>
 
-    <aside className="background-community" aria-labelledby="community-title">
-      <div>
-        <h2 id="community-title">{t("Volunteering", "志愿活动")}</h2>
-        <p className="background-community__award">{background.community.distinction}</p>
-        <p className="background-community__period">{background.community.period}</p>
+    <aside ref={communityCard} className="background-community" aria-labelledby="community-title">
+      <div className="background-community__intro">
+        <p className="background-community__label">{t("Volunteering", "志愿活动")}</p>
+        <h2 id="community-title">{background.community.distinction}</h2>
+        <p className="background-community__recognition">{background.community.recognition}</p>
+        <p className="background-community__overview">{background.community.overview}</p>
       </div>
-      <div>
-        <h3>{background.community.title}</h3>
-        <p className="background-community__organisation">{background.community.organisation}</p>
-        <p>{background.community.description}</p>
-        <p>{background.community.contribution}</p>
-        <a className="background-community__source" href={communityAwardUrl} target="_blank" rel="noreferrer">{t("Official award list", "查看全国优秀团队名单")}<span aria-hidden="true">↗</span></a>
+      <div className="background-community__entries">
+        {background.community.entries.map(entry => <article className="background-community__entry" key={entry.id} aria-labelledby={`volunteering-${entry.id}`}>
+          <p className="background-community__period">{entry.period}</p>
+          <h3 id={`volunteering-${entry.id}`}>{entry.title}</h3>
+          <p className="background-community__organisation">{entry.organisation}</p>
+          <p className="background-community__copy">{entry.description}</p>
+          {entry.contribution && <p className="background-community__copy">{entry.contribution}</p>}
+          <a className="background-community__source" href={entry.reportUrl} target="_blank" rel="noreferrer" aria-label={`${t("School report (Chinese)", "阅读学院报道")}：${entry.title}`}>{t("School report (Chinese)", "阅读学院报道")}<span aria-hidden="true">↗</span></a>
+        </article>)}
       </div>
     </aside>
   </div>;

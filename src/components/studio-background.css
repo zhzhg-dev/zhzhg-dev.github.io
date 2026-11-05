@@ -53,13 +53,18 @@
 .studio-background .background-toolkit ul { display: flex; flex-wrap: wrap; gap: 4px 15px; margin-top: 13px; min-width: 0; }
 .studio-background .background-toolkit li { color: var(--background-muted); font-size: 12px; line-height: 1.9; }
 .studio-background .background-community { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 45px; padding: 35px 39px; border-radius: 26px; background: #e4e8d8; }
-.studio-background .background-community h2 { font-size: 28px; }
-.studio-background .background-community__award { margin-top: 16px; max-width: 25ch; color: #526444; font-size: 14px; font-weight: 600; line-height: 1.7; }
-.studio-background .background-community__period { margin-top: 5px; color: var(--background-muted); font-size: 12px; line-height: 1.7; }
+.studio-background :is(.background-community, #community-title) { scroll-margin-top: 108px; }
+.studio-background .background-community h2 { margin-top: 9px; font-size: clamp(29px, 3vw, 40px); text-wrap: balance; }
+.studio-background .background-community__label,
+.studio-background .background-community__period { color: var(--background-green); font-size: 12px; font-weight: 550; line-height: 1.7; }
+.studio-background .background-community__recognition { margin-top: 12px; color: var(--background-green); font-size: 13px; font-weight: 550; line-height: 1.7; }
+.studio-background .background-community__overview,
+.studio-background .background-community__copy { margin-top: 13px; max-width: 65ch; color: #5d6654; font-size: 14px; line-height: 1.85; }
+.studio-background .background-community__entry + .background-community__entry { margin-top: 14px; padding-top: 20px; border-top: 1px solid #cbd4bf; }
 .studio-background .background-community h3 { font-family: var(--font-display); font-size: 21px; line-height: 1.3; letter-spacing: -.01em; font-weight: 600; }
-.studio-background .background-community div:last-child > p { margin-top: 14px; max-width: 65ch; color: #5d6654; font-size: 13px; line-height: 1.85; }
-.studio-background .background-community div:last-child > .background-community__organisation { margin-top: 7px; font-size: 12px; }
-.studio-background .background-community__source { margin-top: 9px; }
+.studio-background .background-community__period { margin-bottom: 5px; }
+.studio-background .background-community__organisation { margin-top: 7px; color: var(--background-muted); font-size: 12px; line-height: 1.65; }
+.studio-background .background-community__source { margin-top: 5px; }
 @media (max-width: 960px) {
   .studio-background--compact .background-journey { gap: 20px; }
   .studio-background .background-work, .studio-background .background-education { padding: 30px; }
@@ -84,7 +89,7 @@
   .studio-background .background-toolkit h3 { font-size: 20px; }
   .studio-background .background-toolkit li { font-size: 13px; }
   .studio-background .background-community { grid-template-columns: minmax(0, 1fr); gap: 22px; padding: 28px 25px; border-radius: 24px; }
-  .studio-background .background-community h2 { max-width: none; }
-  .studio-background .background-community__award { max-width: none; margin-top: 12px; }
+  .studio-background :is(.background-community, #community-title) { scroll-margin-top: 144px; }
+  .studio-background .background-community h2 { font-size: 30px; }
   .studio-background .background-community h3 { font-size: 21px; }
 }

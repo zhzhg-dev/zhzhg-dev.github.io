@@ -465,15 +465,47 @@ export const education: Education[] = [
   },
 ];
 
-export const communityAwardUrl = "https://sxx.youth.cn/zytz/hdgg/202301/W020230104379084972171.pdf#page=40";
+export const communityReportUrls = {
+  hongyuan: "https://sxxy.swun.edu.cn/info/1052/1327.htm",
+  xiangcheng: "https://sxxy.swun.edu.cn/info/1052/1413.htm",
+} as const;
 
-export const community = {
-  title: "Gesanghua Outreach Team",
-  organisation: "School of Mathematics, Southwest Minzu University",
-  period: "Summer 2022",
+export type Community = {
+  distinction: string;
+  recognition: string;
+  overview: string;
+  entries: {
+    id: keyof typeof communityReportUrls;
+    title: string;
+    organisation: string;
+    period: string;
+    description: string;
+    contribution?: string;
+    reportUrl: string;
+  }[];
+};
+
+export const community: Community = {
   distinction: "National Outstanding Team",
-  description:
-    "As part of the Three Rural Areas summer programme, our team visited Hongyuan County, Sichuan, to share mathematics with highland pastoral communities through public science talks.",
-  contribution:
-    "I took part in every programme activity, including the science outreach sessions, and helped faculty advisers coordinate the schedule and team responsibilities.",
+  recognition: "Team recognition for the 2022 Hongyuan outreach programme.",
+  overview: "Across two summers in western Sichuan, my classmates and I taught children in remote communities, helped herders on the grasslands, and took part in on-site work at a research base.",
+  entries: [
+    {
+      id: "hongyuan",
+      title: "Mathematics outreach in Hongyuan County",
+      organisation: "Gesanghua Outreach Team · School of Mathematics, Southwest Minzu University",
+      period: "Summer 2022",
+      description: "Our team brought mathematics to highland pastoral communities through science outreach talks.",
+      contribution: "I took part throughout and wrote the school’s published report as Head of Communications for the School of Mathematics Student Union.",
+      reportUrl: communityReportUrls.hongyuan,
+    },
+    {
+      id: "xiangcheng",
+      title: "Community volunteering in Xiangcheng County",
+      organisation: "School of Mathematics, Southwest Minzu University",
+      period: "Summer 2021",
+      description: "I joined the School of Mathematics team in Xiangcheng County, Garzê, to support rural communities during the summer field programme.",
+      reportUrl: communityReportUrls.xiangcheng,
+    },
+  ],
 };
