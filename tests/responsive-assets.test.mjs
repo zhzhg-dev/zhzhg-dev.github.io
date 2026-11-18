@@ -101,20 +101,23 @@ test("self-hosted WOFF2 fonts are real, smaller, licensed and used before the or
 });
 
 test("all public page previews share the actual 1200×630 studio artwork and descriptive metadata", () => {
-  const image = file("public", "og-studio.png");
+  const image = file("public", "og-grant-game-ai.png");
   assert.deepEqual([...image.subarray(0, 8)], [137, 80, 78, 71, 13, 10, 26, 10]);
   assert.equal(image.readUInt32BE(16), 1200);
   assert.equal(image.readUInt32BE(20), 630);
-  assert.deepEqual(file("dist", "og-studio.png"), image);
+  assert.deepEqual(file("dist", "og-grant-game-ai.png"), image);
   for (const route of ["", "projects/", "experience/", "contact/"]) {
     const html = file("dist", `${route}index.html`).toString();
     const metadata = [...html.matchAll(/<meta\b[^>]*>/g)].map(([tag]) => attributes(tag));
     const value = key => metadata.find(meta => meta.property === key || meta.name === key)?.content;
-    for (const key of ["og:image", "twitter:image"]) assert.equal(value(key), "https://zhzhg-dev.github.io/og-studio.png");
+    for (const key of ["og:image", "twitter:image"]) assert.equal(value(key), "https://zhzhg-dev.github.io/og-grant-game-ai.png");
+    assert.equal(value("og:image:type"), "image/png");
     assert.equal(value("og:image:width"), "1200");
     assert.equal(value("og:image:height"), "630");
     for (const key of ["og:image:alt", "twitter:image:alt"]) {
       assert.match(value(key), /Grant/);
+      assert.match(value(key), /Game AI Product Management/);
+      assert.doesNotMatch(value(key), /Tencent|LIGHTSPEED|\bintern(?:ship)?\b|腾讯|光子工作室|实习/i);
       assert.match(value(key), /studio|workspace|工作室/i);
     }
   }

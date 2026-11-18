@@ -12,7 +12,9 @@ const repository = fileURLToPath(new URL("../", import.meta.url));
 const original = resolve(repository, "public/studio/grant-cozy-studio-v2.png");
 const outputs = [];
 
-for (const width of [480, 768, 1200, 1448]) {
+// The share card has its own release cycle; do not re-encode the site hero
+// just to change the lettering on the cover.
+for (const width of process.argv.includes("--cover-only") ? [] : [480, 768, 1200, 1448]) {
   const path = resolve(repository, `public/studio/grant-cozy-studio-v2-${width}.webp`);
   await sharp(original).resize({ width, withoutEnlargement: true })
     .webp({ quality: 86, alphaQuality: 100, effort: 5 }).toFile(path);
@@ -28,18 +30,25 @@ async function textLayer(text, font, fontfile, color, left, top) {
   } }).png().toBuffer();
   return { input, left, top };
 }
-const art = await sharp(original).resize({ width: 800 }).png().toBuffer();
-const badge = Buffer.from('<svg width="254" height="46" xmlns="http://www.w3.org/2000/svg"><rect width="254" height="46" rx="23" fill="#647954"/></svg>');
-const shareCard = resolve(repository, "public/og-studio.png");
+// Use the same forest-green paper strip as the homepage. Measure the full
+// title in the local font before cutting the strip so it never clips.
+const field = await textLayer("Game AI Product Management", "Onest SemiBold 27", bodyFont, "#fffdf6", 18, 13);
+const fieldSize = await sharp(field.input).metadata();
+const stripWidth = fieldSize.width + 36, stripHeight = fieldSize.height + 26;
+const transparent = { r: 0, g: 0, b: 0, alpha: 0 };
+const strip = await sharp(Buffer.from(
+  `<svg xmlns="http://www.w3.org/2000/svg" width="${stripWidth}" height="${stripHeight}"><rect width="100%" height="100%" rx="3" fill="#536c4d"/></svg>`
+)).composite([field]).png().toBuffer();
+const paperLabel = await sharp(strip).rotate(-2, { background: transparent }).png().toBuffer();
+const art = await sharp(original).resize({ width: 736 }).png().toBuffer();
+const shareCard = resolve(repository, "public/og-grant-game-ai.png");
 await sharp({ create: { width: 1200, height: 630, channels: 4, background: "#f7f0e5" } })
   .composite([
-    { input: art, left: 400, top: 20 },
-    await textLayer("Grant.", "Bricolage Grotesque Bold 104", displayFont, "#30372e", 76, 223),
-    { input: badge, left: 83, top: 350 },
-    await textLayer("AI product builder", "Onest SemiBold 23", bodyFont, "#ffffff", 98, 362),
-    await textLayer("A mathematical mind.", "Onest 21", bodyFont, "#626753", 82, 430),
-    await textLayer("A builder’s curiosity.", "Onest 21", bodyFont, "#626753", 82, 462),
-    await textLayer("Auckland, New Zealand", "Onest Medium 13", bodyFont, "#626753", 80, 62),
+    { input: art, left: 457, top: 41 },
+    await textLayer("Hi, make yourself at home.", "Onest 23", bodyFont, "#626753", 70, 168),
+    await textLayer("Grant.", "Bricolage Grotesque Bold 132", displayFont, "#30372e", 64, 218),
+    { input: paperLabel, left: 68, top: 337 },
+    await textLayer("Auckland, New Zealand", "Onest Medium 18", bodyFont, "#626753", 73, 443),
   ])
   .flatten({ background: "#f7f0e5" }).png({ compressionLevel: 9 }).toFile(shareCard);
 outputs.push({ path: shareCard, bytes: (await stat(shareCard)).size });

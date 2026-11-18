@@ -86,7 +86,7 @@ function App({ page }: { page: PageName }) {
     document.querySelector('meta[name="description"]')?.setAttribute("content", description);
     for (const selector of ['meta[property="og:title"]', 'meta[name="twitter:title"]']) document.querySelector(selector)?.setAttribute("content", title);
     for (const selector of ['meta[property="og:description"]', 'meta[name="twitter:description"]']) document.querySelector(selector)?.setAttribute("content", description);
-    const imageDescription = t("Grant’s illustrated Auckland studio, with a wooden desk, a mathematical whiteboard and a city window.", "Grant 的奥克兰小工作室：温暖的木桌、数学白板和窗外的城市。");
+    const imageDescription = t("Grant. Game AI Product Management. Grant at his desk in an illustrated Auckland studio.", "封面写着 Grant 和 Game AI Product Management（游戏 AI 产品管理），配图是 Grant 坐在奥克兰工作室的书桌前。");
     for (const selector of ['meta[property="og:image:alt"]', 'meta[name="twitter:image:alt"]']) document.querySelector(selector)?.setAttribute("content", imageDescription);
     document.querySelector('meta[property="og:locale"]')?.setAttribute("content", language === "zh" ? "zh_CN" : "en_NZ");
     document.querySelector('link[rel="canonical"]')?.setAttribute("href", meta.url);

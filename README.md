@@ -33,7 +33,7 @@ Cream, woodland ink, sage and honey orange form a shared visual system. The orig
 
 Bricolage Grotesque provides display typography and Onest provides body and navigation text. Both variable fonts use self-hosted WOFF2 Latin subsets from the official Google Fonts distribution, with the original TTF files as secondary fallbacks and their Open Font License files in `public/fonts/`; no external font request is needed. Font preloads match the WOFF2 resources actually used by the CSS.
 
-The hero uses a responsive `<picture>` with transparent 480, 768, 1200 and 1448px WebP variants, layout-aware `sizes`, intrinsic dimensions and a high-priority PNG fallback. A matching home-only preload lets browsers discover the image before React renders. Smaller screens need not download the original full-size PNG. This illustration belongs only on About. Social previews use `public/og-studio.png`, a 1200×630 composition based on the same workspace artwork.
+The hero uses a responsive `<picture>` with transparent 480, 768, 1200 and 1448px WebP variants, layout-aware `sizes`, intrinsic dimensions and a high-priority PNG fallback. A matching home-only preload lets browsers discover the image before React renders. Smaller screens need not download the original full-size PNG. This illustration belongs only on About. All four pages share `public/og-grant-game-ai.png`, a 1200×630 cover pairing the illustrated studio with “Grant.” and “Game AI Product Management”. Its separate URL distinguishes it from the previous cover in social preview caches.
 
 The lower About page uses the same light visual language as the studio hero, with soft paper tones and a compact work/education journey. The real L2R replay and its bounded caption stay on Projects. Home links to the complete background, where work details can be read or collapsed. All five toolkit groups are directly readable on Projects rather than hidden in separate drawers. Education and community keep their deep-link anchors. These presentation changes add no account, data collection or runtime dependency.
 
@@ -80,7 +80,9 @@ $env:PORTFOLIO_ASSET_NODE_MODULES = 'C:\path\to\asset-tools\node_modules'
 node scripts/prepare-studio-assets.mjs
 ```
 
-The directory must contain an installed `sharp` package and its native dependencies; replace the example with your actual path. The script reads the original transparent PNG and local TTF fonts, then recreates the four WebPs and `og-studio.png`. It does not download or regenerate the Google Fonts WOFF2 subsets. Any compression figures are comparisons of asset file bytes, not Lighthouse results or measured page-load improvements.
+Pass `--cover-only` to render just the share card without re-encoding the homepage illustration.
+
+The directory must contain an installed `sharp` package and its native dependencies; replace the example with your actual path. The script reads the original transparent PNG and local TTF fonts, then recreates the four WebPs and `og-grant-game-ai.png`. It does not download or regenerate the Google Fonts WOFF2 subsets. Any compression figures are comparisons of asset file bytes, not Lighthouse results or measured page-load improvements.
 
 ## Checks
 
