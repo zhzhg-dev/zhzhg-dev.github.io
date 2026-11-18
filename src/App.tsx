@@ -11,7 +11,7 @@ import "./components/bilingual.css";
 export type PageName = "home" | "experience" | "projects" | "contact";
 
 const pageMeta = {
-  home: { title: ["Grant | Game AI & Prototyping", "Grant｜游戏 AI 与原型开发"], description: ["Grant is a Game AI Product Management Intern at Tencent LIGHTSPEED STUDIOS in Auckland. Outside work, he builds research tools and studies machine learning.", "我是 Grant，在奥克兰的腾讯光子工作室群担任游戏 AI 产品管理实习生。工作之外，我做研究工具，也在奥克兰大学学习机器学习。"], url: profile.canonicalUrl },
+  home: { title: ["Grant | Game AI Product Management", "Grant｜游戏 AI 产品管理"], description: ["Grant explores game AI product management in Auckland: testing what AI agents can do and building tools people can try for themselves.", "我是 Grant，在奥克兰探索游戏 AI 产品管理。我喜欢弄清楚 AI 智能体能做到什么，也喜欢把想法做成别人能亲手试试的工具。"], url: profile.canonicalUrl },
   experience: { title: ["Experience | Grant", "经历与背景｜Grant"], description: ["Grant’s current game AI internship at Tencent LIGHTSPEED STUDIOS, earlier teaching and newsroom roles, education and volunteer work.", "从腾讯光子工作室群的游戏 AI 产品实习，到此前的计算机教学与融媒采编：这里记录了 Grant 的工作、学习与志愿经历。"], url: `${profile.canonicalUrl}experience/` },
   projects: { title: ["Projects | Grant", "项目｜Grant"], description: ["Explore Folio, ExplainLab and L2R: Grant’s personal software projects and university research in AI, simulation and forecasting.", "看看工作之外的项目：从 Folio、ExplainLab 到 L2R，了解我如何做研究工具、用仿真测试赛车策略，以及预测用电需求。"], url: `${profile.canonicalUrl}projects/` },
   contact: { title: ["Contact | Grant", "联系我｜Grant"], description: ["Say hello to Grant in Auckland. Find him on LinkedIn or browse his personal code and experiments on GitHub.", "在 LinkedIn 找 Grant 聊聊游戏 AI 与评估，也可以到 GitHub 看看我的个人项目和实验。"], url: `${profile.canonicalUrl}contact/` },

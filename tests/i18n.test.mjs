@@ -139,16 +139,17 @@ test("only Experience has a bilingual index with real, keyboard-focusable sectio
   }
 });
 
-test("the hero links to the active Tencent role in both languages; the teaching record ends on the changeover", () => {
+test("the bilingual hero introduces the field; the work history keeps the full role and changeover", () => {
   const expectedCopy = {
     en: { employer: /Tencent/i, title: "Game AI Product Management Intern", start: "16 Nov 2026 — Present", scope: /agents?/i, teaching: "Graduate Teaching Assistant", end: /Jul(?:y)? 2026.*16 Nov(?:ember)? 2026/ },
     zh: { employer: /腾讯/, title: "游戏 AI 产品管理实习生", start: "2026 年 11 月 16 日 — 至今", scope: /智能体/, teaching: "研究生助教", end: /2026 年 7 月.*2026 年 11 月 16 日/ },
   };
   for (const [language, copy] of Object.entries(expectedCopy)) {
     const hero = elements(renderPage("home", language), "section").find(section => section.id === "top");
-    assert.ok(hero?.text.includes(copy.title));
-    assert.match(hero.text, copy.employer);
-    assert.ok(elements(hero.markup, "a").some(link => link.href === localizedHref("/experience/#work-title", language)));
+    assert.ok(hero);
+    const label = elements(hero.markup, "p").find(item => item.class === "studio-role");
+    assert.equal(label?.text, language === "en" ? "Game AI Product Management" : "游戏 AI 产品管理");
+    assert.doesNotMatch(hero.markup, /Tencent|LIGHTSPEED|\bintern(?:ship)?\b|腾讯|光子工作室|实习/i);
     for (const page of ["home", "experience"]) {
       const html = renderPage(page, language);
       const work = elements(html, "section").find(section => section["aria-labelledby"] === "work-title");
@@ -188,7 +189,8 @@ test("switching languages keeps page descriptions and social previews current", 
       const descriptions = ['meta[name="description"]', 'meta[property="og:description"]', 'meta[name="twitter:description"]']
         .map(selector => values.get(selector + ":content"));
       for (const description of descriptions) {
-        assert.match(description, language === "en" ? /Tencent/i : /腾讯/);
+        if (page === "home") assert.doesNotMatch(description, /Tencent|LIGHTSPEED|\bintern(?:ship)?\b|腾讯|光子工作室|实习/i);
+        else assert.match(description, language === "en" ? /Tencent/i : /腾讯/);
         assert.match(description, language === "en" ? /game AI/i : /游戏\s*AI/i);
         assert.doesNotMatch(description, /scheduled to start|计划入职|即将入职/i);
       }

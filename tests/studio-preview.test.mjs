@@ -143,8 +143,8 @@ test("the illustrated introduction preserves current personal facts and one mean
   for (const fact of ["Master of Information Technology", "University of Auckland", "Mathematics", "AI product"]) {
     assert.ok(text.toLowerCase().includes(fact.toLowerCase()), `preserve ${fact}`);
   }
-  assert.match(plainText(hero), /Game AI Product Management Intern/i);
-  assert.match(plainText(hero), /Tencent/i);
+  assert.match(plainText(hero), /Game AI Product Management/);
+  assert.doesNotMatch(plainText(hero), /Tencent|LIGHTSPEED|\bintern(?:ship)?\b/i);
   assert.doesNotMatch(text, /Incoming|Open to internship|seeking a role|looking for (?:a|an) (?:role|internship)|scheduled to start/i);
   assert.doesNotMatch(text, /David Heckhoff|Dennis Snellenberg|production-ready|award-winning/i);
   assert.equal((hero.match(/<img\b/g) || []).length, 1);

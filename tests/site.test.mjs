@@ -77,16 +77,21 @@ test("all page outputs retain canonical URLs and light browser metadata", () => 
   }
 });
 
-test("search engines and share previews see the current role before JavaScript runs", () => {
+test("home previews introduce Grant’s field while Experience and structured data retain his role", () => {
   for (const { path, html } of pages.filter(page => ["/", "/experience/"].includes(page.path))) {
     const metadata = [...html.matchAll(/<meta\b[^>]*>/g)].map(([tag]) => attributes(tag));
     for (const name of ["description", "og:description", "twitter:description"]) {
       const value = metadata.find(meta => (meta.name ?? meta.property) === name)?.content;
-      assert.match(value, /Tencent/i, path + " " + name);
+      if (path === "/") assert.doesNotMatch(value, /Tencent|LIGHTSPEED|\bintern(?:ship)?\b/i, name);
+      else assert.match(value, /Tencent/i, name);
       assert.match(value, /game AI/i);
       assert.doesNotMatch(value, /incoming|scheduled|building and teaching in Auckland/i);
     }
   }
+  const fallback = elements(pages[0].html, "noscript")[0];
+  assert.ok(fallback);
+  assert.match(fallback.text, /game AI product management/i);
+  assert.doesNotMatch(fallback.text, /Tencent|LIGHTSPEED|\bintern(?:ship)?\b/i);
   const schema = JSON.parse(pages[0].html.match(/<script\b[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/)[1]);
   assert.equal(schema["@type"], "Person");
   assert.equal(schema.jobTitle, experience.find(role => role.status === "current").role);
