@@ -41,8 +41,10 @@
 .studio-site .studio-intro { width: 32%; margin-left: 7%; pointer-events: auto; }
 .studio-welcome { margin-bottom: 24px; font-size: 14px; line-height: 1.6; color: #6b695c; }
 .studio-site .studio-intro h1 { font-size: clamp(80px, 8.1vw, 134px); font-weight: 750; line-height: .97; letter-spacing: -.045em; }
-.studio-site .studio-role { margin: 21px 0 0 5px; padding: 8px 14px; background: #647954; border-radius: 4px; font-size: clamp(15px, 1.4vw, 21px); transform: rotate(-3deg); }
-.studio-site .studio-intro__copy { margin-top: 34px; color: #6b695c; font-size: clamp(14px, 1.1vw, 17px); line-height: 1.8; }
+.studio-site .studio-role { display: block; width: fit-content; max-width: 100%; white-space: normal; text-wrap: balance; margin: 18px 0 0; padding: 7px 12px; background: #536c4d; border-radius: 3px; font-size: clamp(15px, 1.25vw, 19px); line-height: 1.25; transform: rotate(-2deg); transform-origin: left center; }
+.studio-byline__employer { display: inline-flex; align-items: center; gap: .6em; min-height: 44px; padding: 5px 2px; color: #495f40; font-size: 13px; font-weight: 600; text-decoration: underline; text-decoration-color: #a4ad94; text-underline-offset: 4px; }
+.studio-byline__employer:hover, .studio-byline__employer:focus-visible { text-decoration-color: currentColor; }
+.studio-site .studio-intro__copy { margin-top: 7px; max-width: 33ch; color: #5b6153; font-size: clamp(14px, 1.1vw, 17px); line-height: 1.7; }
 .studio-intro__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 15px; margin-top: 18px; }
 .studio-intro__link, .studio-intro__experiment { display: inline-flex; gap: 8px; align-items: center; min-height: 44px; font-size: 13px; font-weight: 600; color: #40583b; }
 .studio-intro__experiment { padding: 8px 12px; border: 1px solid #becaaf; border-radius: 12px; background: #e2e9d7; }
@@ -132,7 +134,7 @@
   .studio-site .studio-welcome { margin-bottom: 18px; font-size: 12px; }
   .studio-site .studio-intro h1 { font-size: clamp(42px, 11.5vw, 78px); line-height: 1.08; letter-spacing: -.045em; }
   .studio-site .studio-role { margin: 14px 0 0 3px; padding: 7px 11px; font-size: 14px; }
-  .studio-site .studio-intro__copy { max-width: 290px; margin-top: 23px; font-size: 13px; line-height: 1.75; }
+  .studio-site .studio-intro__copy { max-width: 36ch; margin-top: 2px; font-size: 14px; line-height: 1.7; }
   .studio-intro__actions { margin-top: 13px; }
   .studio-site .studio-scene { position: relative; inset: auto; width: 100%; margin: 24px 0 0; transform: none; flex-shrink: 0; }
   .studio-site .studio-hotspot__dot { width: 26px; height: 26px; font-size: 18px; }

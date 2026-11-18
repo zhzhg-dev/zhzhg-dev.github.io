@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { access, readFile, readdir } from "node:fs/promises";
+import { access, readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import test from "node:test";
 import { attributes, elements, loadSource, renderAt, repository } from "./support/source-harness.mjs";
@@ -8,14 +8,8 @@ const pages = await Promise.all(["", "experience/", "projects/", "contact/"].map
   path: `/${path}`,
   html: await readFile(new URL(`../dist/${path}index.html`, import.meta.url), "utf8"),
 })));
-const appSource = await readFile(new URL("../src/App.tsx", import.meta.url), "utf8");
-const homeSource = await readFile(new URL("../src/components/StudioHome.tsx", import.meta.url), "utf8");
-const projectSource = await readFile(new URL("../src/components/StudioProjects.tsx", import.meta.url), "utf8");
-const componentSources = (await Promise.all((await readdir(new URL("../src/components/", import.meta.url)))
-  .filter(name => name.endsWith(".tsx"))
-  .map(name => readFile(new URL(`../src/components/${name}`, import.meta.url), "utf8")))).join("\n");
 const dataSource = await readFile(new URL("../src/data/profile.ts", import.meta.url), "utf8");
-const { experience } = loadSource(resolve(repository, "src/data/profile.ts"));
+const { experience, projects } = loadSource(resolve(repository, "src/data/profile.ts"));
 const { StudioHome } = loadSource(resolve(repository, "src/components/StudioHome.tsx"));
 const workflow = await readFile(new URL("../.github/workflows/deploy.yml", import.meta.url), "utf8");
 
@@ -61,20 +55,15 @@ test("public profile and publication claims stay accurate", () => {
   assert.match(dataSource, /game AI/i);
   assert.match(dataSource, /built on a dataset of 52,608/);
   assert.doesNotMatch(dataSource, /improved performance|production-ready AI|@gmail\.com/);
-  const experienceStart = dataSource.indexOf("export const experience");
-  const experienceEnd = dataSource.indexOf("export const projects");
-  assert.ok(experienceStart >= 0 && experienceEnd > experienceStart);
-  const outsideExperience = dataSource.slice(0, experienceStart) + dataSource.slice(experienceEnd);
-  assert.doesNotMatch(outsideExperience + appSource + homeSource + projectSource + componentSources,
-    /Tencent|腾讯|Incoming|Open to internship|internship and graduate opportunities/i);
-  const internship = experience.find(role => role.organisation === "Tencent / LIGHTSPEED STUDIOS");
+  assert.doesNotMatch(JSON.stringify(projects), /Tencent|腾讯|LIGHTSPEED STUDIOS|光子工作室群/i, "independent work does not imply an employer affiliation");
+  const internship = experience.find(role => /Tencent/i.test(role.organisation));
   assert.ok(internship);
-  assert.equal(internship.period, "Scheduled to start 16 Nov 2026");
-  assert.equal(internship.summary, "Auckland, New Zealand.");
-  assert.equal(internship.status, "upcoming");
-  assert.match(internship.scope, /generative AI.*product requirements/);
-  assert.equal(internship.story, undefined, "future work has scope, not outcomes");
-  assert.deepEqual(experience.filter(role => role.status === "current").map(role => role.role), ["Graduate Teaching Assistant"]);
+  assert.equal(internship.period, "16 Nov 2026 — Present");
+  assert.equal(internship.role, "Game AI Product Management Intern");
+  assert.deepEqual(experience.filter(role => role.status === "current"), [internship]);
+  assert.equal(internship.story, undefined, "only role scope is public; no invented STAR outcome");
+  assert.doesNotMatch(internship.summary + (internship.scope ?? ""), /\d+(?:\.\d+)?\s*(?:%|users|players)|launched|shipped|boosted|increased by/i);
+  assert.doesNotMatch(JSON.stringify(experience), /scheduled to start|scheduled end|incoming|seeking (?:an? )?internship/i);
   const folio = dataSource.slice(dataSource.indexOf('slug: "folio"'), dataSource.indexOf('slug: "explainlab"'));
   assert.match(folio, /Working preview/);
   assert.doesNotMatch(folio, /liveUrl:/);
@@ -86,6 +75,23 @@ test("all page outputs retain canonical URLs and light browser metadata", () => 
     assert.match(html, /name="color-scheme"\s+content="light"/);
     assert.equal(html.match(/<link\b[^>]*rel="canonical"[^>]*href="([^"]+)"/)?.[1], `https://zhzhg-dev.github.io${path}`);
   }
+});
+
+test("search engines and share previews see the current role before JavaScript runs", () => {
+  for (const { path, html } of pages.filter(page => ["/", "/experience/"].includes(page.path))) {
+    const metadata = [...html.matchAll(/<meta\b[^>]*>/g)].map(([tag]) => attributes(tag));
+    for (const name of ["description", "og:description", "twitter:description"]) {
+      const value = metadata.find(meta => (meta.name ?? meta.property) === name)?.content;
+      assert.match(value, /Tencent/i, path + " " + name);
+      assert.match(value, /game AI/i);
+      assert.doesNotMatch(value, /incoming|scheduled|building and teaching in Auckland/i);
+    }
+  }
+  const schema = JSON.parse(pages[0].html.match(/<script\b[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/)[1]);
+  assert.equal(schema["@type"], "Person");
+  assert.equal(schema.jobTitle, experience.find(role => role.status === "current").role);
+  assert.match(schema.worksFor.name, /LIGHTSPEED STUDIOS/i);
+  assert.match(schema.worksFor.parentOrganization.name, /Tencent/i);
 });
 
 test("only About preloads the exact responsive hero candidate the browser will use", () => {

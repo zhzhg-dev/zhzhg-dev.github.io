@@ -7,17 +7,16 @@ export const backgroundZh = {
     {
       role: "游戏 AI 产品管理实习生",
       organisation: "腾讯光子工作室群",
-      period: "计划于 2026 年 11 月 16 日入职",
-      summary: "新西兰奥克兰。",
-      status: "upcoming",
-      scope: "岗位方向是探索生成式 AI 和智能体在游戏中的应用，评估模型与智能体的能力，并将应用场景整理为产品需求。",
+      period: "2026 年 11 月 16 日 — 至今",
+      summary: "参与 AI 模型与智能体评估，为游戏研发人员开发工具原型。",
+      status: "current",
+      scope: "工作地点：新西兰奥克兰。",
     },
     {
       role: "研究生助教",
       organisation: "奥克兰大学 · 计算机科学学院",
-      period: "2026 年 7 月 — 2026 年 11 月 16 日（预计结束）",
-      status: "current",
-      summary: "每周协助两组 COMPSCI 111 实验课，覆盖约 30 名学生，也在 Open Lab 提供答疑。",
+      period: "2026 年 7 月 — 2026 年 11 月 16 日",
+      summary: "任教期间，每周为两组 COMPSCI 111 实验课约 30 名学生提供辅导，也在 Open Lab 帮学生排查技术问题。",
       story: {
         situation: "计算机入门实验课的学生编程基础不同，遇到的问题也各不相同。",
         task: "帮助学生读懂实验和作业要求、配置开发工具，并学会独立排查问题。",

@@ -2,17 +2,20 @@ import { useId, useRef, useState, type PointerEvent } from "react";
 import { AucklandClock } from "./AucklandClock";
 import { WhiteboardExperiment } from "./WhiteboardExperiment";
 import { StudioAbout } from "./StudioAbout";
+import { experience } from "../data/profile";
+import { backgroundZh } from "../data/background.zh";
 import { useLanguage } from "../i18n";
 import "./studio-home.css";
 
 type StudioSpot = "build" | "think" | "home";
 
 export function StudioHome() {
-  const { t, href } = useLanguage();
+  const { language, t, href } = useLanguage();
+  const currentRole = (language === "zh" ? backgroundZh.experience : experience).find(role => role.status === "current");
   const spots: { id: StudioSpot; label: string; title: string; description: string; href: string; link: string }[] = [
     { id: "build", label: t("At the screen", "屏幕里的项目"), title: t("From an idea to something useful.", "让想法成为能用的东西。"), description: t("I build research tools, systems experiments, and forecasting projects. AI is most interesting to me when I can put it to the test.", "我做研究工具、系统实验和预测项目。对我来说，AI 最有趣的地方，是把它放进真实的问题里，看看它到底能做到什么。"), href: "/projects/", link: t("Explore my projects", "看看我的项目") },
     { id: "think", label: t("On the board", "白板上的想法"), title: t("A little mathematical curiosity.", "一点数学上的好奇心。"), description: t("My background is in Information and Computational Science. I like understanding the assumptions behind a model, not just the answer it gives.", "我的本科专业是信息与计算科学。我喜欢弄清楚模型背后的假设，而不只是拿到一个答案。"), href: "/#education-title", link: t("My background", "我的学习背景") },
-    { id: "home", label: t("Auckland time", "奥克兰时钟"), title: t("Auckland, New Zealand.", "新西兰，奥克兰。"), description: t("This is where I study, teach, and build.", "这里是我学习、教学和做项目的地方。"), href: "/#studio-about", link: t("A little more about me", "再了解我一点") },
+    { id: "home", label: t("Auckland time", "奥克兰时钟"), title: t("Auckland, New Zealand.", "新西兰，奥克兰。"), description: t("This is home while I work in game AI and study at the University of Auckland.", "我在这座城市做游戏 AI，也在奥克兰大学读书。"), href: "/#studio-about", link: t("A little more about me", "再了解我一点") },
   ];
   const titleId = useId();
   const noteId = useId();
@@ -56,8 +59,11 @@ export function StudioHome() {
       <div className="studio-intro">
         <p className="studio-welcome">{t("Hi, make yourself at home.", "嗨，欢迎来我的小工作室。")}</p>
         <h1 id={titleId} translate="no" lang="en" aria-label="Grant">Grant<span className="studio-name-stop">.</span></h1>
-        <p className="studio-role">{t("AI product builder", "AI 产品构建者")}</p>
-        <p className="studio-intro__copy">{t("A mathematical mind.", "用数学理解问题，")}<br />{" "}{t("A curiosity for what’s possible.", "用好奇心探索可能。")}</p>
+        {currentRole && <div className="studio-byline">
+          <p className="studio-role">{currentRole.role}</p>
+          <a className="studio-byline__employer" href={href("/experience/#work-title")}>{currentRole.organisation}<span aria-hidden="true">↗</span></a>
+        </div>}
+        <p className="studio-intro__copy">{t("I test AI models and agents, and build prototypes for game developers.", "我做 AI 模型与智能体评估，也为游戏研发做工具原型。")}</p>
         <div className="studio-intro__actions">
           <button className="studio-intro__experiment" type="button" aria-haspopup="dialog" aria-expanded={whiteboardOpen} aria-controls={whiteboardId} onClick={event => openWhiteboard(event.currentTarget)}>
             <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false"><path d="M2.5 2.5v11h11M5 10c1.4 0 1.5-4 3.5-4 1.5 0 1.8 1.5 3 1.5 1 0 1.5-1.5 2-3"/></svg>

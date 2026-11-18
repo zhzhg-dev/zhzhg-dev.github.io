@@ -3,7 +3,7 @@ export type Experience = {
   organisation: string;
   period: string;
   summary: string;
-  status?: "upcoming" | "current";
+  status?: "current";
   scope?: string;
   story?: {
     situation: string;
@@ -57,16 +57,16 @@ export const profile = {
   name: "Grant",
   alternativeName: "Zhang Zihang",
   headline:
-    "I turn ideas into practical AI-enabled products—connecting user needs, working prototypes, and evidence from evaluation.",
+    "I evaluate AI models and agents and prototype tools for game developers.",
   location: "Auckland, New Zealand",
-  availability: "Building AI products · Exploring game AI",
+  availability: "Game AI Product Management Intern at Tencent LIGHTSPEED STUDIOS",
   github: "https://github.com/zhzhg-dev",
   linkedin: "https://www.linkedin.com/in/grant-zhang-zahz/",
   canonicalUrl: "https://zhzhg-dev.github.io/",
   about: [
-    "I’m a Master of Information Technology student and Graduate Teaching Assistant at the University of Auckland, with a foundation in mathematics and computational science. I enjoy turning an unclear problem into a useful product: understand the need, define the requirements, build a prototype, and evaluate what works.",
-    "My recent projects include Folio, a research workspace with traceable evidence and optional on-device AI; ExplainLab, an interactive systems simulator; electricity-demand forecasting; and L2R, a completed research milestone comparing PPO and SAC on unfamiliar racing tracks. I’m especially interested in AI product experiences, model evaluation, and how intelligent systems can support games and creative work.",
-    "Teaching keeps my work grounded in the person using it. I value clear explanations, testable assumptions, and thoughtful iteration as much as the technology itself.",
+    "I’m a Game AI Product Management Intern at Tencent’s LIGHTSPEED STUDIOS in Auckland and a Master of Information Technology student at the University of Auckland.",
+    "Outside work, I build tools like Folio, a research workspace that keeps each finding connected to its source. At university, I compared reinforcement learning policies on unfamiliar simulated racetracks with the L2R team.",
+    "Teaching introductory computing taught me to ask where an explanation stops making sense. I bring the same question to the tools I build.",
   ],
 };
 
@@ -80,17 +80,16 @@ export const experience: Experience[] = [
   {
     role: "Game AI Product Management Intern",
     organisation: "Tencent / LIGHTSPEED STUDIOS",
-    period: "Scheduled to start 16 Nov 2026",
-    summary: "Auckland, New Zealand.",
-    status: "upcoming",
-    scope: "The role focuses on exploring generative AI and agents for games, evaluating their capabilities, and translating use cases into product requirements.",
+    period: "16 Nov 2026 — Present",
+    summary: "I evaluate AI models and agents and prototype tools for game developers.",
+    status: "current",
+    scope: "Based in Auckland, New Zealand.",
   },
   {
     role: "Graduate Teaching Assistant",
     organisation: "University of Auckland · School of Computer Science",
-    period: "Jul 2026 — 16 Nov 2026 (scheduled end)",
-    status: "current",
-    summary: "Support approximately 30 students across two weekly COMPSCI 111 labs, plus drop-in Open Lab sessions.",
+    period: "Jul 2026 — 16 Nov 2026",
+    summary: "Supported about 30 students across two weekly COMPSCI 111 labs and helped students troubleshoot during drop-in Open Lab sessions.",
     story: {
       situation: "Students in introductory computing labs arrived with different levels of programming experience.",
       task: "Help students understand lab and assignment instructions, get their tools working, and troubleshoot independently.",

@@ -58,7 +58,7 @@ test("the actual provider renders its no-browser default in English rather than 
   const html = withGlobals({ window: undefined }, () => renderToStaticMarkup(createElement(LanguageProvider, null, createElement(App, { page: "home" }))));
   const header = elements(html, "header").find(element => element.class === "site-header");
   assert.deepEqual(elements(elements(header.markup, "nav")[0].markup, "a").map(link => link.text), ["About", "Projects", "Contact"]);
-  assert.match(plainText(html), /Hi, make yourself at home\./);
+  assert.match(plainText(html), /Game AI Product Management Intern/i);
   assert.equal(elements(header.markup, "button").find(button => button["aria-label"] === "Switch to English")["aria-pressed"], "true");
 });
 
@@ -73,8 +73,8 @@ test("localized internal addresses retain route, query and project hash without 
 
 const pageCopy = {
   home: {
-    zh: ["嗨，欢迎来我的小工作室。", "AI 产品构建者", "用数学理解问题，", "用好奇心探索可能。", "最近在探索。", "工作与教学", "教育背景", "志愿活动", "研究生助教", "信息技术硕士"],
-    en: ["Hi, make yourself at home.", "AI product builder", "A mathematical mind.", "A curiosity for what’s possible.", "What I’m exploring.", "Work & teaching", "Education", "Volunteering", "Graduate Teaching Assistant", "Master of Information Technology"],
+    zh: ["游戏 AI 产品管理实习生", "腾讯", "教育背景", "志愿活动", "研究生助教", "信息技术硕士", "Folio", "L2R"],
+    en: ["Game AI Product Management Intern", "Tencent", "Education", "Volunteering", "Graduate Teaching Assistant", "Master of Information Technology", "Folio", "L2R"],
   },
   experience: {
     zh: ["经历与来路。", "工作与成果", "研究生助教", "融媒采编", "奥克兰大学", "西南民族大学", "教育背景", "国家级优秀团队"],
@@ -85,8 +85,8 @@ const pageCopy = {
     en: ["Selected", "Projects", "AI products, systems experiments, and research.", "Folio", "More projects", "ExplainLab", "L2R Autonomous Racing", "View details", "Live demo", "Source", "Say hello", "My toolkit", "Product & evaluation"],
   },
   contact: {
-    zh: ["随时欢迎。", "聊聊吧。", "从交流开始", "代码与实验", "我们可以聊这些。", "目前在新西兰奥克兰。", "LinkedIn", "GitHub"],
-    en: ["The door is open.", "Say hello.", "A conversation", "Code & experiments", "A few good starting points.", "Based in Auckland, New Zealand.", "LinkedIn", "GitHub"],
+    zh: ["聊聊吧。", "从交流开始", "代码与实验", "游戏 AI", "LinkedIn", "GitHub"],
+    en: ["Say hello.", "A conversation", "Code & experiments", "game AI", "LinkedIn", "GitHub"],
   },
 };
 
@@ -139,33 +139,79 @@ test("only Experience has a bilingual index with real, keyboard-focusable sectio
   }
 });
 
-test("the Tencent internship is scheduled in both languages and only the teaching assistant is current", () => {
+test("the hero links to the active Tencent role in both languages; the teaching record ends on the changeover", () => {
   const expectedCopy = {
-    en: { employer: "Tencent / LIGHTSPEED STUDIOS", title: "Game AI Product Management Intern", start: "Scheduled to start 16 Nov 2026", location: "Auckland, New Zealand.", scope: /generative AI.*agents.*product requirements/i, teaching: "Graduate Teaching Assistant", end: "Jul 2026 — 16 Nov 2026 (scheduled end)" },
-    zh: { employer: "腾讯光子工作室群", title: "游戏 AI 产品管理实习生", start: "计划于 2026 年 11 月 16 日入职", location: "新西兰奥克兰。", scope: /生成式 AI.*智能体.*产品需求/, teaching: "研究生助教", end: "2026 年 7 月 — 2026 年 11 月 16 日（预计结束）" },
+    en: { employer: /Tencent/i, title: "Game AI Product Management Intern", start: "16 Nov 2026 — Present", scope: /agents?/i, teaching: "Graduate Teaching Assistant", end: /Jul(?:y)? 2026.*16 Nov(?:ember)? 2026/ },
+    zh: { employer: /腾讯/, title: "游戏 AI 产品管理实习生", start: "2026 年 11 月 16 日 — 至今", scope: /智能体/, teaching: "研究生助教", end: /2026 年 7 月.*2026 年 11 月 16 日/ },
   };
   for (const [language, copy] of Object.entries(expectedCopy)) {
+    const hero = elements(renderPage("home", language), "section").find(section => section.id === "top");
+    assert.ok(hero?.text.includes(copy.title));
+    assert.match(hero.text, copy.employer);
+    assert.ok(elements(hero.markup, "a").some(link => link.href === localizedHref("/experience/#work-title", language)));
     for (const page of ["home", "experience"]) {
       const html = renderPage(page, language);
       const work = elements(html, "section").find(section => section["aria-labelledby"] === "work-title");
       assert.ok(work);
       const records = elements(work.markup, "li").filter(item => item.class?.split(/\s+/).includes("background-work__entry"));
-      const scheduled = records.find(item => item.text.includes(copy.employer));
       const current = records.filter(item => item.class.split(/\s+/).includes("background-work__entry--current"));
-      assert.ok(scheduled);
-      assert.equal(elements(scheduled.markup, "h3")[0]?.text, copy.title);
-      assert.ok(elements(scheduled.markup, "article")[0]?.text.startsWith([copy.employer, copy.title, copy.location].join(" ")));
-      assert.ok(scheduled.text.includes(copy.start));
-      assert.doesNotMatch(scheduled.markup, /background-work__entry--current|<details\b|<dl\b|<ul\b/);
-      if (page === "experience") assert.match(scheduled.text, copy.scope);
-      else assert.doesNotMatch(scheduled.text, copy.scope);
       assert.equal(current.length, 1);
-      assert.equal(elements(current[0].markup, "h3")[0]?.text, copy.teaching);
-      assert.ok(current[0].text.includes(copy.end));
-      assert.match(current[0].text, /COMPSCI 111/);
-      if (page === "experience") assert.match(elements(current[0].markup, "details")[0]?.markup ?? "", /^<details\b[^>]*\sopen(?:=|\s|>)/);
-      assert.doesNotMatch(html.replace(work.markup, ""), /Tencent|腾讯/);
+      const [internship] = current;
+      assert.equal(elements(internship.markup, "h3")[0]?.text, copy.title);
+      assert.match(internship.text, copy.employer);
+      assert.ok(internship.text.includes(copy.start));
+      if (page === "experience") assert.match(internship.text, copy.scope);
+      assert.doesNotMatch(internship.markup, /<details\b|<dl\b|\d+\s*[%％]/, "scope only, not an unsupported outcome");
+      const teaching = records.find(item => elements(item.markup, "h3")[0]?.text === copy.teaching);
+      assert.ok(teaching);
+      assert.match(teaching.text, copy.end);
+      assert.match(teaching.text, /COMPSCI 111/);
+      assert.doesNotMatch(teaching.class, /background-work__entry--current/);
+      assert.doesNotMatch(work.text, /scheduled|计划于|预计结束|即将入职/i);
     }
+  }
+});
+
+test("switching languages keeps page descriptions and social previews current", () => {
+  let language = "en";
+  const { default: MetadataApp } = loadSource(resolve(repository, "src/App.tsx"), {
+    useContext() { return { language, t: (en, zh) => language === "zh" ? zh : en }; },
+    useEffect(callback) { callback(); },
+  });
+  for (const page of ["home", "experience"]) {
+    const values = new Map();
+    const document = {
+      querySelector(selector) { return { setAttribute(key, value) { values.set(selector + ":" + key, value); } }; },
+    };
+    for (language of ["en", "zh", "en"]) {
+      withGlobals({ document }, () => MetadataApp({ page }));
+      const descriptions = ['meta[name="description"]', 'meta[property="og:description"]', 'meta[name="twitter:description"]']
+        .map(selector => values.get(selector + ":content"));
+      for (const description of descriptions) {
+        assert.match(description, language === "en" ? /Tencent/i : /腾讯/);
+        assert.match(description, language === "en" ? /game AI/i : /游戏\s*AI/i);
+        assert.doesNotMatch(description, /scheduled to start|计划入职|即将入职/i);
+      }
+      assert.equal(values.get('meta[property="og:locale"]:content'), language === "en" ? "en_NZ" : "zh_CN");
+    }
+  }
+});
+
+test("the two home research notes link to independent work and attribute L2R's simulated runs to Grant", () => {
+  for (const language of ["en", "zh"]) {
+    const home = renderPage("home", language);
+    const section = elements(home, "section").find(item => item["aria-labelledby"] === "studio-now-title");
+    assert.ok(section);
+    assert.doesNotMatch(section.text, /Tencent|腾讯|LIGHTSPEED STUDIOS/i);
+    const notes = elements(section.markup, "article");
+    assert.equal(notes.length, 2);
+    const articleFor = slug => notes.find(note => elements(note.markup, "a").some(link => link.href === localizedHref("/projects/#" + slug, language)));
+    const racing = articleFor("learn-to-race"), folio = articleFor("folio");
+    assert.ok(racing && folio && racing !== folio);
+    assert.equal(articleFor("explainlab"), folio);
+    assert.match(racing.text, /10\s+(?:次\s*)?SAC/i);
+    assert.match(racing.text, language === "en" ? /simulat/i : /仿真|模拟/);
+    assert.match(folio.text, language === "en" ? /personal project/i : /个人项目/);
   }
 });
 

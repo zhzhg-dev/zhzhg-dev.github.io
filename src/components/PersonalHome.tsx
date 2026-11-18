@@ -45,8 +45,8 @@ export function PersonalHome() {
         <div className="personal-home__opening">
           <div className="personal-home__introduction">
             <p>
-              I’m a Master of Information Technology student and Graduate Teaching
-              Assistant at the University of Auckland.
+              I’m a Game AI Product Management Intern at Tencent’s LIGHTSPEED STUDIOS
+              and a Master of Information Technology student at the University of Auckland.
             </p>
 
             <div
@@ -93,7 +93,7 @@ export function PersonalHome() {
             building a prototype, and evaluating what actually works.
           </p>
           <p>
-            At university, I support COMPSCI 111 laboratories and Open Lab
+            As a teaching assistant, I supported COMPSCI 111 laboratories and Open Lab
             sessions. Helping someone work through a bug is a good reminder
             that the person using a system matters as much as the system itself.
           </p>

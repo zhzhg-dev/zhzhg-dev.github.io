@@ -11,10 +11,10 @@ import "./components/bilingual.css";
 export type PageName = "home" | "experience" | "projects" | "contact";
 
 const pageMeta = {
-  home: { title: ["Grant | AI Product Builder", "Grant｜AI 产品与好奇心"], description: ["Grant: a mathematical mind, an AI builder, and a teacher. Based in Auckland, New Zealand.", "我是 Grant，在奥克兰学习、构建 AI 产品，也参与计算机教学。从数学出发，探索 AI、仿真与有用的软件。"], url: profile.canonicalUrl },
-  experience: { title: ["Experience | Grant", "经历与背景｜Grant"], description: ["Grant’s work in teaching and multimedia reporting, selected coursework, honours, and volunteering.", "Grant 的教学与融媒采编经历、所修课程、荣誉与志愿活动。"], url: `${profile.canonicalUrl}experience/` },
-  projects: { title: ["Projects | Grant", "项目｜Grant"], description: ["Explore Folio, ExplainLab, electricity forecasting, and other AI, simulation, and software projects by Grant.", "探索 Folio、ExplainLab、L2R 与新西兰电力预测：从 AI 产品到仿真研究，看看我的思考、实现与验证。"], url: `${profile.canonicalUrl}projects/` },
-  contact: { title: ["Contact | Grant", "联系我｜Grant"], description: ["Connect with Grant on LinkedIn and GitHub. Based in Auckland, exploring AI products, game AI, and useful software.", "通过 LinkedIn 和 GitHub 联系 Grant。聊聊 AI 产品、游戏 AI、教学，或一个值得一起尝试的想法。"], url: `${profile.canonicalUrl}contact/` },
+  home: { title: ["Grant | Game AI & Prototyping", "Grant｜游戏 AI 与原型开发"], description: ["Grant is a Game AI Product Management Intern at Tencent LIGHTSPEED STUDIOS in Auckland. Outside work, he builds research tools and studies machine learning.", "我是 Grant，在奥克兰的腾讯光子工作室群担任游戏 AI 产品管理实习生。工作之外，我做研究工具，也在奥克兰大学学习机器学习。"], url: profile.canonicalUrl },
+  experience: { title: ["Experience | Grant", "经历与背景｜Grant"], description: ["Grant’s current game AI internship at Tencent LIGHTSPEED STUDIOS, earlier teaching and newsroom roles, education and volunteer work.", "从腾讯光子工作室群的游戏 AI 产品实习，到此前的计算机教学与融媒采编：这里记录了 Grant 的工作、学习与志愿经历。"], url: `${profile.canonicalUrl}experience/` },
+  projects: { title: ["Projects | Grant", "项目｜Grant"], description: ["Explore Folio, ExplainLab and L2R: Grant’s personal software projects and university research in AI, simulation and forecasting.", "看看工作之外的项目：从 Folio、ExplainLab 到 L2R，了解我如何做研究工具、用仿真测试赛车策略，以及预测用电需求。"], url: `${profile.canonicalUrl}projects/` },
+  contact: { title: ["Contact | Grant", "联系我｜Grant"], description: ["Say hello to Grant in Auckland. Find him on LinkedIn or browse his personal code and experiments on GitHub.", "在 LinkedIn 找 Grant 聊聊游戏 AI 与评估，也可以到 GitHub 看看我的个人项目和实验。"], url: `${profile.canonicalUrl}contact/` },
 };
 
 function Header({ page }: { page: PageName }) {
@@ -44,7 +44,7 @@ function ExperiencePage() {
     <section className="studio-page-heading" id="top">
       <p>{t("About", "关于我")}</p>
       <h1>{t("Work & background.", "经历与来路。")}</h1>
-      <p>{t("From a local newsroom to computing labs and graduate study.", "从地方新闻采编，到计算机教学与研究生学习。")}</p>
+      <p>{t("I now work on game AI at Tencent LIGHTSPEED STUDIOS in Auckland. Before that, I taught computing labs and worked in a local newsroom.", "我现在在奥克兰的腾讯光子工作室群做游戏 AI 产品实习。在此之前，我带过计算机实验课，也在洛阳的新闻编辑部做过融媒采编。")}</p>
       <nav className="experience-index" aria-label={t("On this page", "本页导航")}>
         <ul>{sections.map(({ id, label }) => <li key={id}><a href={`#${id}`}>{label}<span aria-hidden="true">↓</span></a></li>)}</ul>
       </nav>
@@ -56,13 +56,13 @@ function ExperiencePage() {
 function ContactPage() {
   const { t } = useLanguage();
   return <section className="studio-contact-page" id="top" aria-labelledby="contact-page-title">
-    <div className="studio-contact-page__intro"><p className="studio-page-label">{t("The door is open.", "随时欢迎。")}</p><h1 id="contact-page-title">{t("Say hello.", "聊聊吧。")}</h1><p>{t("A question, a different perspective, or something worth building together. I’d like to hear it.", "一个问题、一种不同的看法，或是一个值得一起做的想法。我都很想听听。")}</p></div>
+    <div className="studio-contact-page__intro"><p className="studio-page-label">{t("The door is open.", "随时欢迎。")}</p><h1 id="contact-page-title">{t("Say hello.", "聊聊吧。")}</h1><p>{t("Tried one of my projects? Tell me what worked, what surprised you, or where it fell short.", "试过我的某个项目吗？哪里好用，哪里让你意外，哪一步没走通，我都想听听。")}</p></div>
     <div className="studio-contact-options">
       <a className="studio-contact-option studio-contact-option--linkedin" href={profile.linkedin} target="_blank" rel="noreferrer"><span>{t("A conversation", "从交流开始")}</span><h2 translate="no">LinkedIn</h2><p>{t("The best place to say hello.", "找我聊聊，来这里就好。")}</p><span className="studio-contact-option__arrow" aria-hidden="true">↗</span></a>
       <a className="studio-contact-option studio-contact-option--github" href={profile.github} target="_blank" rel="noreferrer"><span>{t("Code & experiments", "代码与实验")}</span><h2 translate="no">GitHub</h2><p>{t("Explore the work behind the scenes.", "看看项目背后的实现。")}</p><span className="studio-contact-option__arrow" aria-hidden="true">↗</span></a>
     </div>
     <section className="studio-conversations" aria-labelledby="conversation-title"><h2 id="conversation-title">{t("A few good starting points.", "我们可以聊这些。")}</h2><ul><li>{t("Making AI research tools more useful—and easier to question.", "让 AI 研究工具更好用，也更经得起追问。")}</li><li>{t("Comparing approaches to game AI, simulation, or model evaluation.", "游戏 AI、仿真，以及如何公平地评价一个模型。")}</li><li>{t("Exchanging notes on a project, a technical decision, or teaching.", "交流项目思路、技术取舍，或教学中的小发现。")}</li></ul></section>
-    <div className="studio-contact-note"><p>{t("Based in Auckland, New Zealand.", "目前在新西兰奥克兰。")}</p><p>{t("I’m curious about AI products, game AI, and tools that make difficult things a little clearer.", "我关注 AI 产品、游戏 AI，也喜欢把复杂的事情讲清楚、做明白。")}</p></div>
+    <div className="studio-contact-note"><p>{t("Based in Auckland, New Zealand.", "目前在新西兰奥克兰。")}</p><p>{t("If you have a question about a project, send me its name or a link. I’ll know where to start.", "如果是项目上的问题，把项目名或链接一起发给我，我们就能从具体的地方聊起。")}</p></div>
   </section>;
 }
 

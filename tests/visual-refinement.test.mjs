@@ -58,10 +58,14 @@ test("all routes expose the same three real tabs, exactly one active tab and one
     assert.doesNotMatch(html, /Incoming|Open to internship|internship and graduate opportunities|Compare with the current website/i);
     const work = elements(html, "section").find(section => section["aria-labelledby"] === "work-title");
     if (page === "home" || page === "experience") {
-      assert.ok(work, `${page} shows the scheduled internship in its work history`);
-      assert.match(work.text, /Scheduled to start 16 Nov 2026 Tencent \/ LIGHTSPEED STUDIOS Game AI Product Management Intern/);
-      assert.doesNotMatch(html.replace(work.markup, ""), /Tencent|腾讯/i);
-    } else assert.doesNotMatch(html, /Tencent|腾讯/i);
+      assert.ok(work, `${page} shows the active internship in its work history`);
+      const current = elements(work.markup, "li").filter(record => record.class?.split(" ").includes("background-work__entry--current"));
+      assert.equal(current.length, 1);
+      assert.match(current[0].text, /Tencent/i);
+      assert.match(current[0].text, /Game AI Product Management Intern/i);
+    } else if (page === "projects") {
+      for (const article of elements(html, "article")) assert.doesNotMatch(article.text, /Tencent|腾讯|LIGHTSPEED STUDIOS/i);
+    }
     assert.equal(elements(html, "form").length, 0, "no nonfunctional contact form should be advertised");
   }
 });
@@ -70,7 +74,7 @@ test("About introduces Grant and owns personal background without turning into a
   const html = renderAt(App, { page: "home" });
   const text = plainText(html);
   assertPersonalBackground(html, { complete: false });
-  for (const fact of ["Grant", "Master of Information Technology", "Graduate Teaching Assistant", "University of Auckland", "Auckland", "AI product", "Mathematics"]) assert.ok(text.includes(fact));
+  for (const fact of ["Grant", "Master of Information Technology", "Game AI Product Management Intern", "Graduate Teaching Assistant", "University of Auckland", "mathematics"]) assert.ok(text.toLowerCase().includes(fact.toLowerCase()));
   assert.doesNotMatch(text, /Grant\s+Zhang/);
   assert.match(text, /game AI/i);
   const images = [...html.matchAll(/<img\b[^>]*>/g)].map(([tag]) => attributes(tag));
@@ -100,25 +104,26 @@ test("the compatible Experience address preserves the complete background and se
   assert.equal(elements(html, "dialog").length, 0);
 });
 
-test("About keeps concise personal context and current interests without inventing employment or another navigation tab", () => {
+test("About distinguishes personal research from employment without adding a navigation tab", () => {
   const html = renderAt(App, { page: "home" });
   const introduction = elements(html, "section").find(section => section.id === "studio-about");
   const now = elements(html, "section").find(section => section["aria-labelledby"] === "studio-now-title");
   assert.ok(introduction && now);
   const personalText = plainText(html).toLowerCase();
   for (const fact of ["cellular automata", "Folio", "ExplainLab", "COMPSCI 111", "Open Lab"]) assert.ok(personalText.includes(fact.toLowerCase()));
-  assert.match(now.text, /AI tools people can inspect/);
-  assert.match(now.text, /Game AI & simulation/);
+  assert.match(now.text, /Folio/i);
+  assert.match(now.text, /L2R/i);
   assert.ok(elements(now.markup, "a").some(link => link.href === "/projects/#folio"));
   assert.ok(elements(now.markup, "a").some(link => link.href === "/projects/#learn-to-race"));
   assert.equal(elements(primaryNavigation(html).markup, "a").length, 3);
-  assert.doesNotMatch(introduction.markup + now.markup, /<dialog\b|<canvas\b|Tencent|腾讯|Incoming|seeking a role/i);
+  assert.doesNotMatch(now.text, /Tencent|腾讯|LIGHTSPEED STUDIOS/i);
+  assert.doesNotMatch(introduction.markup + now.markup, /<dialog\b|<canvas\b|Incoming|seeking a role/i);
 });
 
 test("Contact has actual professional destinations and no invented address, form or project catalogue", () => {
   const html = renderAt(App, { page: "contact" });
   assert.ok(plainText(html).includes("Say hello."));
-  assert.match(plainText(html), /Auckland, New Zealand/);
+  assert.match(plainText(html), /game AI/i);
   const links = elements(html, "a");
   for (const target of [profile.linkedin, profile.github]) {
     const link = links.find(link => link.href === target);

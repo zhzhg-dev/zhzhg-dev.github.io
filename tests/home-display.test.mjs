@@ -18,8 +18,9 @@ test("the personal display uses readable personal context without a second decor
   assert.ok(introduction);
   assert.equal(elements(introduction.markup, "h2").length, 1);
   assert.doesNotMatch(introduction.markup, /<img\b|study-notebook|<canvas\b|<iframe\b/);
-  for (const fact of ["Grant", "Master of Information Technology", "Graduate Teaching Assistant", "University of Auckland"]) assert.ok(introduction.text.includes(fact));
+  for (const fact of ["Master of Information Technology", "University of Auckland"]) assert.ok(introduction.text.includes(fact));
   assert.match(introduction.text, /mathematics/i);
+  assert.doesNotMatch(introduction.text, /currently (?:am |working as )?a graduate teaching assistant|and Graduate Teaching Assistant at/i);
   for (const project of projects) assert.ok(!html.includes(`src="${project.cover}"`), "project evidence images stay on their case page");
   assert.doesNotMatch(html, /studio-projects__grid|studio-project-card__cover/);
   for (const page of ["experience", "contact"]) {

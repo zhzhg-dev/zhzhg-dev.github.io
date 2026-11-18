@@ -1,6 +1,6 @@
 # Grant — Personal website
 
-A personal website for Grant Zhang, a Master of Information Technology student and Graduate Teaching Assistant at the University of Auckland, with a mathematical background and an interest in practical AI products, simulation, and game AI.
+A personal website for Grant Zhang, a Game AI Product Management Intern at Tencent’s LIGHTSPEED STUDIOS in Auckland and a Master of Information Technology student at the University of Auckland.
 
 Production: [zhzhg-dev.github.io](https://zhzhg-dev.github.io/)
 
@@ -25,7 +25,7 @@ The three visible tabs are **About**, **Projects**, and **Contact**. They are re
 
 Folio is a working preview with public source code, not an advertised live public demo. ExplainLab is an educational systems simulator, not an AI application or production benchmark. Electricity forecasting results describe historical holdout evaluation, not operational forecasts or market advice. L2R is a completed course-research milestone, not physical racing-car deployment. Public copy does not list future employment as present experience or describe Grant as seeking a role.
 
-The work timeline lists the teaching assistantship through its scheduled 16 November 2026 end. The Tencent / LIGHTSPEED STUDIOS internship is shown as scheduled to start that day; its description gives the posted focus, not claimed experience or outcomes. The teaching and Luoyang TV records use a situation/task/action/result format. The TV engagement numbers describe one credited WeChat Channels post at the time of capture, not personal performance. Education lists selected coursework and undergraduate honours without showing GPA. Volunteering highlights the National Outstanding Team recognition for the 2022 Hongyuan trip and records the separate 2021 Xiangcheng trip. The two entries link to the School of Mathematics’ [Hongyuan report](https://sxxy.swun.edu.cn/info/1052/1327.htm) and [Xiangcheng report](https://sxxy.swun.edu.cn/info/1052/1413.htm). Grant’s authorship is attributed to the Hongyuan report only.
+The work timeline records the end of the teaching assistantship and start of the Tencent / LIGHTSPEED STUDIOS internship on 16 November 2026. The current role describes AI model and agent evaluation and prototyping tools for game development. Personal and university projects are separate from employer work. The teaching and Luoyang TV records use a situation/task/action/result format. The TV engagement numbers describe one credited WeChat Channels post at the time of capture, not personal performance. Education lists selected coursework and undergraduate honours without showing GPA. Volunteering highlights the National Outstanding Team recognition for the 2022 Hongyuan trip and records the separate 2021 Xiangcheng trip. The two entries link to the School of Mathematics’ [Hongyuan report](https://sxxy.swun.edu.cn/info/1052/1327.htm) and [Xiangcheng report](https://sxxy.swun.edu.cn/info/1052/1413.htm). Grant’s authorship is attributed to the Hongyuan report only.
 
 ## Visual and interaction system
 

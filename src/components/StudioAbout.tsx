@@ -1,6 +1,22 @@
 import "./studio-about.css";
 import { useLanguage } from "../i18n";
 
+// Small margin drawings, not plots of experimental results.
+function NotebookDrawing({ type }: { type: "track" | "source" }) {
+  return <svg className="studio-now__drawing" width="84" height="58" viewBox="0 0 84 58" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
+    {type === "track" ? <>
+      <path d="M12 29C12 16 26 8 37 11c9 3 7 12 15 12 7 0 12-9 20-4 9 6 2 21-7 25-10 5-16-5-23-5-8 0-12 10-22 5-6-3-9-8-8-15Z" />
+      <path d="M18 29c0-9 11-16 18-12 5 3 7 12 16 12 10 0 14-9 18-6 5 4-2 14-8 16-7 3-12-6-21-6-10 0-13 10-20 5-3-2-4-6-3-9Z" />
+      <path d="m24 12 4 7m-7-5 4 7" strokeWidth="2.5" />
+    </> : <>
+      <path d="m20 12 31-4 5 36-31 4z" />
+      <path d="m32 14 31 3-3 34-31-3z" fill="var(--note-paper)" />
+      <path d="m38 24 17 2m-18 4 13 1m-13 5 8 1" />
+      <path d="m57 33 6-5 6 1m-6-1-1 6" />
+    </>}
+  </svg>;
+}
+
 export function StudioAbout() {
   const { t, href } = useLanguage();
   return <div className="studio-about-display">
@@ -9,18 +25,26 @@ export function StudioAbout() {
         <h2 id="studio-about-title">{t("A little", "关于我，")}<br />{t("about me.", "多一点。")}</h2>
       </div>
       <div className="studio-about__copy">
-        <p>{t("I’m Grant, a Master of Information Technology student and Graduate Teaching Assistant at the University of Auckland.", "我是 Grant，目前在奥克兰大学攻读信息技术硕士，同时担任研究生助教。")}</p>
-        <p>{t("I came to computing through mathematics and computational science. These days, I’m interested in AI products, game AI, and simulation: making something useful, then understanding where it works and where it doesn’t.", "我从数学和计算科学走进计算机领域。现在，我关注 AI 产品、游戏 AI 与仿真：先做出有用的东西，再认真弄清楚它在什么情况下有效，又在哪里会失灵。")}</p>
-        <p>{t("Teaching keeps the person on the other side of the screen in mind. A good explanation matters just as much to me as a working piece of code.", "教学让我始终记得，屏幕另一端是一个真实的人。对我来说，把一件事讲清楚，和让一段代码跑起来同样重要。")}</p>
-        <ul className="studio-about__threads" aria-label={t("The threads in my work", "贯穿我工作的兴趣")}><li>{t("Mathematics", "数学")}</li><li>{t("AI product experiences", "AI 产品体验")}</li><li>{t("Teaching & learning", "教学与学习")}</li></ul>
+        <p>{t("I came to computing through mathematics. I’m studying for a Master of Information Technology at the University of Auckland alongside my work in game AI.", "我从数学走进计算机领域。现在，我一边做游戏 AI，一边在奥克兰大学攻读信息技术硕士。")}</p>
+        <p>{t("When I was a teaching assistant for COMPSCI 111, I often sat beside a student to work through a bug. I still like working that way: try one small change together and see what it tells us.", "以前做 COMPSCI 111 助教时，我常和学生坐在一起排查报错。我现在依然喜欢这种方式：一起改一个小地方，再看看结果说明了什么。")}</p>
       </div>
     </section>
 
     <section className="studio-now" aria-labelledby="studio-now-title">
-      <div className="studio-now__intro"><h2 id="studio-now-title">{t("What I’m exploring.", "最近在探索。")}</h2><p>{t("Two interests I keep coming back to.", "两个让我不断追问的方向。")}</p></div>
+      <div className="studio-now__intro"><h2 id="studio-now-title">{t("What I’m exploring.", "最近在探索。")}</h2><p>{t("Two questions from my university and personal projects.", "我在课程研究和个人项目里追问的两个问题。")}</p></div>
       <div className="studio-now__items">
-        <article className="studio-now__research"><p className="studio-now__context" translate="no">Folio & ExplainLab</p><h3>{t("AI tools people", "让 AI 工具")}<br />{t("can inspect", "经得起追问")}</h3><p>{t("Keep the original evidence close. Make the assumptions visible. Let a person try an idea and question the result.", "保留原始证据，写清模型假设。让使用者能亲手验证一个想法，也能对结果提出疑问。")}</p><a href={href("/projects/#folio")}>{t("Explore Folio", "看看 Folio")}<span aria-hidden="true">↗</span></a></article>
-        <article className="studio-now__simulation"><p className="studio-now__context">{t("L2R research", "L2R 研究")}</p><h3>{t("Game AI & simulation", "游戏 AI 与仿真")}</h3><p>{t("L2R’s research milestone is complete. My part included 10 SAC training runs, Related Work writing, and organising the team’s presentation. The next questions are about robust evaluation.", "L2R 已完成阶段性研究。我负责了 10 次 SAC 训练、报告的 Related Work 部分，并参与组织团队展示。接下来，我想继续探索更稳健的评估方式。")}</p><a href={href("/projects/#learn-to-race")}>{t("Explore L2R", "看看 L2R")}<span aria-hidden="true">↗</span></a></article>
+        <article className="studio-now__simulation">
+          <div className="studio-now__margin"><p className="studio-now__context">{t("L2R / University research", "L2R / 课程研究")}</p><NotebookDrawing type="track" /></div>
+          <h3>{t("What happens on a new track?", "换条赛道，还会开吗？")}</h3>
+          <p>{t("Our team trained racing agents and tested them on unfamiliar tracks in simulation. I ran 10 SAC training runs, about 20 million environment steps in total.", "我们训练赛车智能体，再把它放进没见过的仿真赛道。我负责了 10 次 SAC 训练，合计约 2,000 万个环境步。")}</p>
+          <a href={href("/projects/#learn-to-race")}>{t("Read the L2R study", "看 L2R 实验")}<span aria-hidden="true">↗</span></a>
+        </article>
+        <article className="studio-now__research">
+          <div className="studio-now__margin"><p className="studio-now__context">{t("Folio / Personal project", "Folio / 个人项目")}</p><NotebookDrawing type="source" /></div>
+          <h3>{t("Can I trace this claim?", "这句话的依据在哪？")}</h3>
+          <p>{t("In Folio, a citation leads back to the passage and version I read, even after a source changes. In ExplainLab, I take a different route to the same idea: change an input and watch what happens.", "在 Folio 里，即使资料更新，引用仍能带我回到当时读的那段原文。做 ExplainLab 时我换了种方式：让人亲手改一个输入，看结果怎么变。")}</p>
+          <div className="studio-now__links"><a href={href("/projects/#folio")}>{t("Inside Folio", "看看 Folio")}<span aria-hidden="true">↗</span></a><a href={href("/projects/#explainlab")}>{t("Explore ExplainLab", "看看 ExplainLab")}<span aria-hidden="true">↗</span></a></div>
+        </article>
       </div>
     </section>
   </div>;

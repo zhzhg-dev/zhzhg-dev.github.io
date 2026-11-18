@@ -140,17 +140,19 @@ test("the illustrated introduction preserves current personal facts and one mean
   const text = plainText(html);
   assert.match(text, /Grant\s*\./);
   assert.doesNotMatch(text, /Grant\s+Zhang/);
-  for (const fact of ["Master of Information Technology", "Graduate Teaching Assistant", "University of Auckland", "Mathematics", "AI product"]) {
+  for (const fact of ["Master of Information Technology", "University of Auckland", "Mathematics", "AI product"]) {
     assert.ok(text.toLowerCase().includes(fact.toLowerCase()), `preserve ${fact}`);
   }
-  assert.doesNotMatch(text, /Tencent|腾讯|Incoming|Open to internship|seeking|looking for (?:a|an) (?:role|internship)/i);
+  assert.match(plainText(hero), /Game AI Product Management Intern/i);
+  assert.match(plainText(hero), /Tencent/i);
+  assert.doesNotMatch(text, /Incoming|Open to internship|seeking a role|looking for (?:a|an) (?:role|internship)|scheduled to start/i);
   assert.doesNotMatch(text, /David Heckhoff|Dennis Snellenberg|production-ready|award-winning/i);
   assert.equal((hero.match(/<img\b/g) || []).length, 1);
   assert.match(hero, /src="\/studio\/grant-cozy-studio-v2\.png"/);
   assert.match(hero, /width="1448"/);
   assert.match(hero, /height="1086"/);
   assert.match(hero, /fetchPriority="high"|fetchpriority="high"/);
-  assert.match(hero, /alt="[^\"]*(?:workspace|studio)[^\"]*"/i);
+  assert.match(hero, /alt="[^"]*(?:workspace|studio)[^"]*"/i);
   assert.doesNotMatch(hero, /loading="lazy"/);
   assert.doesNotMatch(html, /<canvas\b|<iframe\b|<video\b/);
   assert.match(html, /<aside\b[^>]*aria-label="Workspace detail"[^>]*hidden=""/);
